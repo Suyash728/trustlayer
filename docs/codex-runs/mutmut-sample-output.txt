@@ -1,0 +1,159 @@
+Created [`demo-repos/pricing-py`](/home/suyash/Projects/TrustLayer/demo-repos/pricing-py) with Python 3.11 venv support and added [`.gitignore`](/home/suyash/Projects/TrustLayer/.gitignore).
+
+Final verification:
+
+- Coverage: **100%** (9 passed)
+- Mutation score: **61.68%** — 66 killed / 107 total
+- Surviving mutants: **41**
+
+`mutmut result-ids` is not available in installed mutmut 3.6.0, so counts were derived from `mutmut results --all true`.
+
+```text
+    pricing.x_apply_volume_discount__mutmut_1: killed
+    pricing.x_apply_volume_discount__mutmut_2: killed
+    pricing.x_apply_volume_discount__mutmut_3: survived
+    pricing.x_apply_volume_discount__mutmut_4: survived
+    pricing.x_apply_volume_discount__mutmut_5: killed
+    pricing.x_apply_volume_discount__mutmut_6: survived
+    pricing.x_apply_volume_discount__mutmut_7: survived
+    pricing.x_apply_volume_discount__mutmut_8: killed
+    pricing.x_apply_volume_discount__mutmut_9: survived
+    pricing.x_apply_volume_discount__mutmut_10: survived
+    pricing.x_apply_volume_discount__mutmut_11: survived
+    pricing.x_apply_volume_discount__mutmut_12: killed
+    pricing.x_apply_volume_discount__mutmut_13: killed
+    pricing.x_apply_volume_discount__mutmut_14: killed
+    pricing.x_apply_volume_discount__mutmut_15: killed
+    pricing.x_apply_volume_discount__mutmut_16: killed
+    pricing.x_apply_volume_discount__mutmut_17: killed
+    pricing.x_apply_volume_discount__mutmut_18: killed
+    pricing.x_apply_volume_discount__mutmut_19: killed
+    pricing.x_calculate_gst__mutmut_1: killed
+    pricing.x_calculate_gst__mutmut_2: killed
+    pricing.x_calculate_gst__mutmut_3: survived
+    pricing.x_calculate_gst__mutmut_4: survived
+    pricing.x_calculate_gst__mutmut_5: survived
+    pricing.x_calculate_gst__mutmut_6: killed
+    pricing.x_calculate_gst__mutmut_7: survived
+    pricing.x_calculate_gst__mutmut_8: killed
+    pricing.x_calculate_gst__mutmut_9: survived
+    pricing.x_calculate_gst__mutmut_10: killed
+    pricing.x_calculate_gst__mutmut_11: killed
+    pricing.x_calculate_gst__mutmut_12: survived
+    pricing.x_calculate_gst__mutmut_13: killed
+    pricing.x_calculate_gst__mutmut_14: survived
+    pricing.x_calculate_gst__mutmut_15: killed
+    pricing.x_calculate_gst__mutmut_16: killed
+    pricing.x_calculate_gst__mutmut_17: killed
+    pricing.x_calculate_gst__mutmut_18: killed
+    pricing.x_calculate_gst__mutmut_19: killed
+    pricing.x_calculate_gst__mutmut_20: killed
+    pricing.x_calculate_gst__mutmut_21: killed
+    pricing.x_qualifies_for_free_shipping__mutmut_1: survived
+    pricing.x_qualifies_for_free_shipping__mutmut_2: survived
+    pricing.x_accrue_loyalty_points__mutmut_1: killed
+    pricing.x_accrue_loyalty_points__mutmut_2: killed
+    pricing.x_accrue_loyalty_points__mutmut_3: survived
+    pricing.x_accrue_loyalty_points__mutmut_4: killed
+    pricing.x_accrue_loyalty_points__mutmut_5: killed
+    pricing.x_accrue_loyalty_points__mutmut_6: killed
+    pricing.x_accrue_loyalty_points__mutmut_7: killed
+    pricing.x_accrue_loyalty_points__mutmut_8: killed
+    pricing.x_accrue_loyalty_points__mutmut_9: survived
+    pricing.x_accrue_loyalty_points__mutmut_10: survived
+    pricing.x_accrue_loyalty_points__mutmut_11: survived
+    pricing.x_accrue_loyalty_points__mutmut_12: survived
+    pricing.x_apply_coupon_discounts__mutmut_1: killed
+    pricing.x_apply_coupon_discounts__mutmut_2: killed
+    pricing.x_apply_coupon_discounts__mutmut_3: survived
+    pricing.x_apply_coupon_discounts__mutmut_4: survived
+    pricing.x_apply_coupon_discounts__mutmut_5: survived
+    pricing.x_apply_coupon_discounts__mutmut_6: killed
+    pricing.x_apply_coupon_discounts__mutmut_7: killed
+    pricing.x_apply_coupon_discounts__mutmut_8: killed
+    pricing.x_apply_coupon_discounts__mutmut_9: killed
+    pricing.x_apply_coupon_discounts__mutmut_10: killed
+    pricing.x_apply_coupon_discounts__mutmut_11: survived
+    pricing.x_apply_coupon_discounts__mutmut_12: survived
+    pricing.x_apply_coupon_discounts__mutmut_13: killed
+    pricing.x_apply_coupon_discounts__mutmut_14: survived
+    pricing.x_apply_coupon_discounts__mutmut_15: killed
+    pricing.x_apply_coupon_discounts__mutmut_16: survived
+    pricing.x_apply_coupon_discounts__mutmut_17: killed
+    pricing.x_apply_coupon_discounts__mutmut_18: survived
+    pricing.x_apply_coupon_discounts__mutmut_19: survived
+    pricing.x_apply_coupon_discounts__mutmut_20: survived
+    pricing.x_apply_coupon_discounts__mutmut_21: survived
+    pricing.x_is_refund_eligible__mutmut_1: survived
+    pricing.x_is_refund_eligible__mutmut_2: survived
+    pricing.x_is_refund_eligible__mutmut_3: survived
+    pricing.x_is_refund_eligible__mutmut_4: survived
+    pricing.x_is_refund_eligible__mutmut_5: survived
+    pricing.x_calculate_order_total__mutmut_1: killed
+    pricing.x_calculate_order_total__mutmut_2: killed
+    pricing.x_calculate_order_total__mutmut_3: killed
+    pricing.x_calculate_order_total__mutmut_4: killed
+    pricing.x_calculate_order_total__mutmut_5: killed
+    pricing.x_calculate_order_total__mutmut_6: killed
+    pricing.x_calculate_order_total__mutmut_7: killed
+    pricing.x_calculate_order_total__mutmut_8: killed
+    pricing.x_calculate_order_total__mutmut_9: killed
+    pricing.x_calculate_order_total__mutmut_10: killed
+    pricing.x_calculate_order_total__mutmut_11: killed
+    pricing.x_calculate_order_total__mutmut_12: killed
+    pricing.x_calculate_order_total__mutmut_13: killed
+    pricing.x_calculate_order_total__mutmut_14: killed
+    pricing.x_calculate_order_total__mutmut_15: killed
+    pricing.x_calculate_order_total__mutmut_16: killed
+    pricing.x_calculate_order_total__mutmut_17: killed
+    pricing.x_calculate_order_total__mutmut_18: killed
+    pricing.x_calculate_order_total__mutmut_19: killed
+    pricing.x_calculate_order_total__mutmut_20: killed
+    pricing.x_calculate_order_total__mutmut_21: killed
+    pricing.x_calculate_order_total__mutmut_22: killed
+    pricing.x_calculate_order_total__mutmut_23: killed
+    pricing.x_calculate_order_total__mutmut_24: survived
+    pricing.x_calculate_order_total__mutmut_25: survived
+    pricing.x_calculate_order_total__mutmut_26: survived
+    pricing.x_calculate_order_total__mutmut_27: survived
+```
+
+```text
+# pricing.x_apply_volume_discount__mutmut_3: survived
+--- src/pricing.py
++++ src/pricing.py
+@@ -1,4 +1,4 @@
+ def apply_volume_discount(subtotal: float, quantity: int) -> float:
+     """Apply the volume discount associated with the number of units ordered."""
+-    rate = 0.15 if quantity >= 50 else 0.10 if quantity >= 20 else 0.05 if quantity >= 10 else 0.0
++    rate = 0.15 if quantity > 50 else 0.10 if quantity >= 20 else 0.05 if quantity >= 10 else 0.0
+     return round(subtotal * (1 - rate), 2)
+```
+
+
+Implemented [`mutation.py`](/home/suyash/Projects/TrustLayer/apps/api/app/services/mutation.py) and its real-output parser test in [`test_mutation.py`](/home/suyash/Projects/TrustLayer/apps/api/tests/test_mutation.py). Every subprocess call uses a 60-second timeout.
+
+```text
+.                                                                        [100%]
+1 passed in 0.03s
+```
+
+```text
+id: pricing.x_apply_volume_discount__mutmut_3
+file: src/pricing.py
+line: 3
+diff:
+--- src/pricing.py
++++ src/pricing.py
+```
+
+```text
+"""Small pricing helpers for the storefront checkout flow."""
+
+from decimal import Decimal, ROUND_HALF_UP
+
+
+```
+
+This does not point at the `rate` statement: it is currently line 7.
+

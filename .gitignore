@@ -1,0 +1,34 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+auth.json
+
+# Python
+__pycache__/
+*.py[cod]
+.Python
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Mutation testing
+mutants/
+.mutmut-cache
+
+# JavaScript / Next.js
+node_modules/
+.next/
+out/
+dist/
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/

@@ -57,3 +57,16 @@ If you think something outside this list is needed, stop and ask.
 - After implementing, self-review your own diff before reporting done: look for
   unhandled errors, missing timeouts, and any API you assumed exists without checking.
 - If blocked after one retry, stop and report the blocker with two options. Do not guess.
+
+## mutmut 3.6.0 output format (VERIFIED — do not rediscover this)
+- `mutmut results --all true` → one line per mutant:
+  `<module>.x_<funcname>__mutmut_<N>: <status>` where status is killed|survived|(others).
+  The text before `: ` is the exact ID to pass to `mutmut show`.
+- `mutmut show <id>` → `# <id>: <status>` header, then a unified diff with
+  `--- <path>` / `+++ <path>` (no a/ b/ prefix) and a standard `@@ -a,b +c,d @@` hunk.
+  Derive the changed line number by walking the hunk from its start line — mutmut
+  does not print a line number directly.
+- `mutmut result-ids` does NOT exist in 3.6.0. Never call it.
+- `mutmut show` diffs the FUNCTION in isolation. Its @@ hunk offsets are relative to
+  the function body, NOT the file. Never derive file line numbers from the hunk —
+  locate the removed line's text in the real source file instead.
