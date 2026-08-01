@@ -1,0 +1,18 @@
+version = 1
+requires-python = ">=3.12"
+
+[[package]]
+name = "anyio"
+version = "4.3.0"
+
+[[package]]
+name = "httpx"
+version = "0.27.0"
+
+[[package]]
+name = "pydantic"
+version = "2.7.1"
+
+[[package]]
+name = "pytest"
+version = "8.2.0"

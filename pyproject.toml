@@ -1,0 +1,49 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "trustlayer"
+version = "0.1.0"
+description = "Proves whether AI-written tests actually catch bugs."
+requires-python = ">=3.12"
+dependencies = [
+    "typer>=0.12",
+    "rich>=13.7",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+trustlayer = "trustlayer.cli:app"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["trustlayer"]
+
+# Single pytest config for the whole repo. Do NOT add [tool.pytest.ini_options] to
+# apps/api/pyproject.toml if one is ever added there: pytest uses exactly one config
+# file (the nearest one going up), so a second table would silently take over for any
+# invocation inside apps/api and diverge from root-level runs.
+[tool.pytest.ini_options]
+testpaths = ["tests", "apps/api/tests"]
+# "apps/api" is what makes `app` importable. Drop it once apps/api becomes a real
+# pip-installed package, otherwise `app` gets two module identities.
+pythonpath = [".", "apps/api"]
+norecursedirs = ["tests/fixtures", "demo-repos", ".venv", "node_modules", "mutants"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+# Fixtures are deliberately malformed/unpinned sample repos, not project code.
+extend-exclude = ["tests/fixtures", "demo-repos"]
+
+# Matches the import style already used in apps/api: one alphabetical run per section,
+# with `import x` and `from x import y` interleaved by module name.
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
+lines-after-imports = 2

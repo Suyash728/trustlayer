@@ -1,0 +1,5 @@
+# Runtime dependencies
+fastapi==0.111.0
+uvicorn>=0.29
+
+-r requirements-dev.txt

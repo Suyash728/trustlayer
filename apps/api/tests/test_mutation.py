@@ -12,9 +12,15 @@ PRICING_SOURCE_PATH = REPOSITORY_ROOT / "demo-repos" / "pricing-py" / "src" / "p
 
 
 def _load_real_mutmut_output() -> tuple[str, str]:
+    """Return the recorded `mutmut results` and `mutmut show` output.
+
+    These are the first two text blocks in the transcript. Later blocks are narrative
+    from the same run, so this selects what it needs rather than pinning the file's
+    total block count.
+    """
     sample = SAMPLE_OUTPUT_PATH.read_text()
     blocks = re.findall(r"```text\n(.*?)\n```", sample, flags=re.DOTALL)
-    assert len(blocks) == 2
+    assert len(blocks) >= 2
     return blocks[0], blocks[1]
 
 

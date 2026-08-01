@@ -1,0 +1,31 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+    devDependencies:
+      typescript:
+        specifier: 5.4.5
+        version: 5.4.5
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0(@types/node@20.12.7)
+
+packages:
+
+  react@18.2.0:
+    resolution: {integrity: sha512-placeholder}
+
+  typescript@5.4.5:
+    resolution: {integrity: sha512-placeholder}
+
+  vitest@1.6.0:
+    resolution: {integrity: sha512-placeholder}
