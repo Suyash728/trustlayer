@@ -5,10 +5,13 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from pathlib import Path
 import re
+import sqlite3
 import sys
+import time
 from typing import Annotated
 
 from rich.console import Console
+from rich.text import Text
 import typer
 
 from trustlayer.checks.api_resolution import check_api_resolution
@@ -18,6 +21,7 @@ from trustlayer.checks.fail_open import check_fail_open
 from trustlayer.checks.stale_models import check_stale_models, load_registry
 from trustlayer.detect import profile_repository
 from trustlayer.report import EXIT_ERROR, Report, render_json, render_registry, render_text
+from trustlayer.store import diff_runs, list_runs, save_run
 from trustlayer.suite import inspect_suite
 
 
@@ -59,6 +63,7 @@ def audit(
         str | None,
         typer.Option("--warn-expiring-within", metavar="90d", help="Also flag models retiring within this window."),
     ] = None,
+    no_save: Annotated[bool, typer.Option("--no-save", help="Do not record this run in ~/.trustlayer/runs.db.")] = False,
 ) -> None:
     """Audit a repository and report findings by severity.
 
@@ -77,14 +82,24 @@ def audit(
     except ValueError as error:
         raise _fail(str(error)) from error
 
+    started = time.monotonic()
     try:
         profile = profile_repository(path)
         results = _run_checks(path, selected, warn_days)
         suite = inspect_suite(path)
     except OSError as error:
         raise _fail(f"could not audit {path}: {error}") from error
+    duration = time.monotonic() - started
 
     report = Report(root=path.resolve(), profile=profile, results=results, suite=suite)
+
+    if not no_save:
+        try:
+            save_run(report, duration)
+        except (OSError, sqlite3.Error) as error:
+            # Persistence is a convenience; failing to record must not change the verdict
+            # a hook branches on, so this is a warning on stderr, not an exit code.
+            Console(stderr=True).print(f"warning: could not record run: {error}")
 
     if as_json:
         # stdout carries JSON and nothing else, so it stays pipeable.
@@ -241,5 +256,121 @@ def harden(
     console.print(f"cost            ${result.total_cost_usd}")
     console.print("\n--- diff for review (nothing applied) ---")
     console.print(result.diff or "(no changes)")
+if __name__ == "__main__":  # pragma: no cover
+    sys.exit(app())
+
+
+SEVERITY_STYLE = {"high": "red", "medium": "yellow", "low": "cyan"}
+
+
+def _counts_cell(counts: dict) -> Text:
+    cell = Text()
+    for index, name in enumerate(("high", "medium", "low")):
+        if index:
+            cell.append("  ")
+        value = counts.get(name, 0)
+        cell.append(f"{value} {name}", style=SEVERITY_STYLE[name] if value else "")
+    return cell
+
+
+@app.command()
+def history(
+    path: Annotated[Path, typer.Argument(help="Repository to show history for.")],
+    limit: Annotated[int, typer.Option("-n", "--limit", help="How many runs to show.")] = 10,
+    no_color: Annotated[bool, typer.Option("--no-color")] = False,
+) -> None:
+    """Show the last N recorded runs for a repository."""
+    if not path.is_dir():
+        raise _fail(f"{path} is not a directory")
+
+    console = Console(no_color=no_color)
+    try:
+        runs = list_runs(path, limit=limit)
+    except sqlite3.Error as error:
+        raise _fail(f"could not read the run database: {error}") from error
+
+    if not runs:
+        # An empty history is a fact, not a failure - exit 0 so a script can branch on it.
+        console.print(Text(f"no runs recorded for {path.resolve()}"))
+        return
+
+    console.print(Text(f"{path.resolve()}  |  {len(runs)} run(s)"))
+    console.print()
+    for run in runs:
+        line = Text(f"  #{run.id:<4} {run.started_at[:19]}  {run.short_sha}")
+        if run.dirty:
+            line.append("+dirty", style="yellow")
+        line.append(f"  {run.duration_s:5.1f}s  ")
+        line.append_text(_counts_cell(run.counts))
+        console.print(line)
+
+
+@app.command()
+def diff(
+    path: Annotated[Path, typer.Argument(help="Repository to diff.")],
+    no_color: Annotated[bool, typer.Option("--no-color")] = False,
+) -> None:
+    """Show findings that appeared or disappeared since the previous run."""
+    if not path.is_dir():
+        raise _fail(f"{path} is not a directory")
+
+    console = Console(no_color=no_color)
+    try:
+        runs = list_runs(path, limit=2)
+    except sqlite3.Error as error:
+        raise _fail(f"could not read the run database: {error}") from error
+
+    if len(runs) < 2:
+        console.print(Text(f"need two runs to diff; {len(runs)} recorded for {path.resolve()}"))
+        return
+
+    latest, prior = runs[0], runs[1]
+    appeared, disappeared = diff_runs(prior.id, latest.id)
+
+    console.print(Text(f"#{prior.id} {prior.short_sha}  ->  #{latest.id} {latest.short_sha}"))
+    console.print()
+
+    if not appeared and not disappeared:
+        console.print(Text("no change"))
+        return
+
+    for label, findings, style in (("appeared", appeared, "red"), ("disappeared", disappeared, "green")):
+        if not findings:
+            continue
+        header = Text(f"{label} ({len(findings)})", style=style)
+        console.print(header)
+        for finding in findings:
+            row = Text("  ")
+            row.append(f"{finding.severity.upper():<7}", style=SEVERITY_STYLE.get(finding.severity, ""))
+            row.append(f"{finding.file}:{finding.line}  {finding.claim}")
+            console.print(row)
+            console.print(Text(f"         {finding.check}  {finding.verdict}"))
+        console.print()
+
+
+@app.command()
+def ui(
+    port: Annotated[int, typer.Option("--port", help="Port to serve on.")] = 7777,
+    host: Annotated[str, typer.Option("--host", help="Interface to bind.")] = "127.0.0.1",
+    no_browser: Annotated[bool, typer.Option("--no-browser", help="Do not open a browser.")] = False,
+) -> None:
+    """Serve the local run browser. Read-only: it cannot trigger a run."""
+    import threading
+    import webbrowser
+
+    import uvicorn
+
+    from trustlayer.ui import create_app
+
+    url = f"http://{host}:{port}"
+    Console().print(f"trustlayer ui  {url}   (ctrl-c to stop)")
+
+    if not no_browser:
+        # Open after a short delay so the server is listening when the tab loads.
+        threading.Timer(0.8, lambda: webbrowser.open(url)).start()
+
+    uvicorn.run(create_app(), host=host, port=port, log_level="warning")
+
+
 if __name__ == "__main__":  # pragma: no cover
     sys.exit(app())

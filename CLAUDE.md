@@ -43,8 +43,12 @@ the misunderstanding into the suite and everything downstream would inherit it.
   This replaced the Codex CLI that `AGENTS.md` pinned — see "Decisions that changed".
 - **Mutation testing**: mutmut 3.6.0 + pytest.
 - **TypeScript checks**: ts-morph 27.0.2 via Node 24 (`trustlayer/checks/node/`).
-- **Not built**: FastAPI backend, Next.js frontend, SSE streaming, Railway/Vercel deploy.
-  `apps/web/` is an empty directory. `apps/api/` holds only the mutmut re-export and its test.
+- **Persistence**: SQLite at `~/.trustlayer/runs.db`, stdlib `sqlite3`, no ORM.
+- **Local UI**: FastAPI + Jinja2 on `localhost:7777`, Tailwind and HTMX from CDN.
+  One process, no build step, no `node_modules`. Read-only: it cannot trigger a run.
+- **Not built**: Next.js frontend, SSE streaming, Railway/Vercel deploy, any remote
+  surface. `apps/web/` is an empty directory. `apps/api/` holds only the mutmut re-export
+  and its test.
 
 ## Commands (verified)
 
@@ -52,10 +56,13 @@ the misunderstanding into the suite and everything downstream would inherit it.
 uv sync                                        # install; there is no requirements.txt
 npm install --prefix trustlayer/checks/node    # optional: enables the TypeScript checks
 uv run ruff check .                            # lint — must be clean
-uv run pytest -q                               # 104 tests, single config at the repo root
+uv run pytest -q                               # 126 tests, single config at the repo root
 uv run trustlayer audit <path> --all
 uv run trustlayer baseline <repo> --module src/x.py
 uv run trustlayer harden <repo> --target 90
+uv run trustlayer history <repo> -n 10
+uv run trustlayer diff <repo>
+uv run trustlayer ui                           # localhost:7777, opens a browser
 ```
 
 > `ruff format` has **never** been run on this repo — it would reformat 18 of 31 files.
@@ -77,6 +84,19 @@ uv run trustlayer harden <repo> --target 90
   `can_use_tool` is silently skipped whenever an allowlist entry allows a whole tool
   (`CanUseToolShadowedWarning`). The hook is consulted for every call. If you touch the
   gate, the denial matrix in `tests/test_agent.py` is the contract.
+- **All SQLite access lives in `trustlayer/store.py`.** `check` is a SQL reserved word,
+  so the column is quoted as `"check"` in every statement — unquoting it anywhere is a
+  syntax error at table creation, which `tests/test_store.py` pins.
+- **`audit` records a run by default** (`--no-save` opts out). A failure to record is a
+  warning on stderr, never a change to the exit code a hook branches on.
+- **A run stores git context honestly.** `git_sha` plus `git_root`, `git_dirty`, and
+  `path_is_repo_root` in `summary_json`, because auditing a subdirectory records the
+  *parent* repo's SHA and a dirty tree is not comparable to a commit.
+- **`diff` matches findings on `(check, file, claim, verdict)` — never the line number.**
+  A finding that moved because someone added an import is the same finding.
+- **The UI is read-only.** It renders the database and cannot trigger a run or write to a
+  repository. Severity is a reserved *status* palette; counts are ink and a small coloured
+  mark carries identity, so a colour never means anything on its own.
 - **The agent never writes to a real repository.** It works in a temp copy
   (`trustlayer/agent/workspace.py`); runs end by printing a diff and applying nothing.
 - Every subprocess call has an explicit timeout. No exceptions.
@@ -102,9 +122,10 @@ Built and shipped:
 | L2 | Four mechanical checks: api-resolution, stale-models, fail-open, composed |
 | L3 | Report layer — grouped findings, severity exit codes, `--json`, suite state |
 | L4 | Agent layer — `run_agent`, `baseline` generation, `harden` mutation loop |
+| L5 | Persistence (`~/.trustlayer/runs.db`), `history`, `diff`, and a local read-only `ui` |
 
 `AGENTS.md` froze scope to a web app (public URL, SSE stream, single run view). **That list
-was superseded by direct instruction** across L1–L4; none of it was built and the CLI was
+was superseded by direct instruction** across L1–L5; none of it was built and the CLI was
 built instead. It is recorded here as history, not as a plan.
 
 Still do **not** build without asking: auth, user accounts, a PR bot, GitHub App
