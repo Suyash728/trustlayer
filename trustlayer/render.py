@@ -1,14 +1,20 @@
-"""Rich rendering of a RepoProfile. Consumes RepoProfile only; never re-reads manifests."""
+"""Rich rendering. Consumes RepoProfile and CheckResult only; never re-reads manifests."""
 
 from __future__ import annotations
+
+from datetime import date
 
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
+from trustlayer.checks.base import CheckResult, Severity
+from trustlayer.checks.stale_models import DeprecatedModel
 from trustlayer.detect import Project, RepoProfile
 
+
+SEVERITY_STYLES = {Severity.HIGH: "bold red", Severity.MEDIUM: "yellow", Severity.LOW: "cyan"}
 
 FINDING_STYLES = {
     "unpinned-dependency": "yellow",
@@ -106,3 +112,96 @@ def _findings_table(profile: RepoProfile) -> Table:
             finding.detail,
         )
     return table
+
+
+def render_check_results(results: list[CheckResult], console: Console) -> None:
+    """Print the per-check status table, then every finding with its evidence."""
+    console.print(_checks_table(results))
+
+    findings = [finding for result in results for finding in result.findings]
+    if not findings:
+        return
+
+    console.print()
+    console.print(Text("Findings", style="bold"))
+    for finding in findings:
+        style = SEVERITY_STYLES[finding.severity]
+        header = Text()
+        header.append(f"{finding.severity.value.upper():<6} ", style=style)
+        header.append(f"{finding.file}:{finding.line}", style="bold")
+        header.append(f"  [{finding.check}]", style="dim")
+        console.print(header)
+        console.print(Text(f"       claim    {finding.claim}"))
+        console.print(Text(f"       verdict  {finding.verdict}", style=style))
+        for line in finding.evidence:
+            if line:
+                console.print(Text(f"       - {line}", style="dim"))
+        console.print()
+
+
+def _checks_table(results: list[CheckResult]) -> Table:
+    table = Table(title="Checks", title_justify="left", header_style="bold")
+    table.add_column("Check")
+    table.add_column("Status")
+    table.add_column("High", justify="right")
+    table.add_column("Medium", justify="right")
+    table.add_column("Low", justify="right")
+    table.add_column("Note")
+
+    for result in results:
+        counts = result.counts
+        if result.skipped:
+            status = Text("skipped", style="dim")
+            note = Text(result.skip_reason or "", style="dim")
+            cells = [Text("-", style="dim")] * 3
+        else:
+            status = Text("ran", style="green")
+            note = Text("; ".join(result.notes), style="dim")
+            cells = [
+                Text(str(counts[Severity.HIGH]), style="bold red" if counts[Severity.HIGH] else "dim"),
+                Text(str(counts[Severity.MEDIUM]), style="yellow" if counts[Severity.MEDIUM] else "dim"),
+                Text(str(counts[Severity.LOW]), style="cyan" if counts[Severity.LOW] else "dim"),
+            ]
+        table.add_row(result.check, status, *cells, note)
+    return table
+
+
+def render_registry(registry: list[DeprecatedModel], console: Console, today: date) -> None:
+    """Print the model deprecation registry, marking anything never verified."""
+    table = Table(title="Model deprecation registry", title_justify="left", header_style="bold")
+    table.add_column("Model ID")
+    table.add_column("Provider")
+    table.add_column("Date")
+    table.add_column("Status")
+    table.add_column("Successor")
+    table.add_column("Source")
+
+    for model in registry:
+        status = model.status(today)
+        table.add_row(
+            model.model_id,
+            model.provider,
+            str(model.deprecated_on) if model.deprecated_on else Text("not recorded", style="dim"),
+            Text(status, style="red" if status == "retired" else "yellow"),
+            model.successor or Text("none recorded", style="dim"),
+            Text(model.source_url, style="green")
+            if (model.verified and model.source_url)
+            else Text("UNVERIFIED", style="bold yellow"),
+        )
+
+    console.print(table)
+    unverified = sum(1 for model in registry if not (model.verified and model.source_url))
+    if unverified:
+        console.print(
+            Text(
+                f"\n{unverified} of {len(registry)} entries are UNVERIFIED: seeded from a maintainer "
+                "note, not confirmed against a vendor deprecation page.",
+                style="yellow",
+            )
+        )
+    console.print(
+        Text(
+            "This registry is hand-maintained and goes stale. See README.md.",
+            style="dim",
+        )
+    )
