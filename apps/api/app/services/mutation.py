@@ -1,7 +1,7 @@
 """Mutation-testing command helpers and mutmut output parsing.
 
 The implementation lives in `trustlayer.mutation`; this module re-exports it so the
-architecture rule in AGENTS.md still holds ("all mutation-tool invocations go through
+architecture rule in CLAUDE.md still holds ("all mutation-tool invocations go through
 app/services/mutation.py") while the dependency points from the API app into the
 `trustlayer` package rather than the other way around.
 
