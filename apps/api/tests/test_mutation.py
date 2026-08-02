@@ -40,7 +40,10 @@ def test_get_survivors_parses_the_recorded_mutmut_3_6_output():
         assert command[1] == "show"
         return subprocess.CompletedProcess(command, 0, stdout=show_output)
 
-    with patch("app.services.mutation.subprocess.run", side_effect=run_mutmut) as run:
+    # The implementation moved to trustlayer.mutation, so that is where subprocess lives.
+    # app.services.mutation re-exports it; patching this module's namespace would no
+    # longer intercept the call.
+    with patch("trustlayer.mutation.subprocess.run", side_effect=run_mutmut) as run:
         survivors = get_survivors(PRICING_SOURCE_PATH.parents[1])
 
     assert len(survivors) == 41

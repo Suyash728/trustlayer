@@ -152,5 +152,94 @@ def models(
     render_registry(registry, Console(no_color=no_color), today=datetime.now(tz=UTC).date())
 
 
+
+@app.command()
+def baseline(
+    path: Annotated[Path, typer.Argument(help="Repository containing the module.")],
+    module: Annotated[str, typer.Option("--module", help="Module to generate tests for.")],
+    budget: Annotated[float, typer.Option("--budget", help="Max USD for the run.")] = 2.0,
+    timeout: Annotated[float, typer.Option("--timeout", help="Seconds per agent turn-set.")] = 600,
+) -> None:
+    """Generate a pytest suite for an untested module, discarding whatever fails."""
+    if not path.is_dir():
+        raise _fail(f"{path} is not a directory")
+
+    from trustlayer.agent.baseline import generate_baseline
+    from trustlayer.agent.workspace import diff_workspace, workspace
+
+    console = Console()
+    with workspace(path) as space:
+        result = generate_baseline(
+            space.path, space.path / module, tools_root=path,
+            timeout=timeout, max_budget_usd=budget
+        )
+        diff = diff_workspace(space)
+
+    if result.error:
+        console.print(f"[red]baseline failed:[/red] {result.error}")
+        raise typer.Exit(code=EXIT_ERROR)
+
+    console.print(f"module        {result.module}")
+    console.print(f"functions     {len(result.functions)}  |  branches {result.branches}")
+    console.print(f"tests written {result.tests_written}")
+    console.print(f"tests kept    {result.tests_kept}")
+    console.print(
+        f"[bold yellow]tests DISCARDED {result.tests_discarded}"
+        f"  ({result.discard_rate}% of written)[/bold yellow]"
+    )
+    for file, name in result.discards:
+        console.print(f"  - {file}::{name}")
+    console.print(
+        f"coverage      {result.coverage_before or 0:.0f}% -> {result.coverage_after or 0:.0f}%"
+    )
+    if result.agent and result.agent.denied:
+        console.print(f"denied tools  {len(result.agent.denied)}")
+        for denial in result.agent.denied:
+            console.print(f"  - {denial}")
+    console.print("\n--- diff for review (nothing applied) ---")
+    console.print(diff or "(no changes)")
+
+
+@app.command()
+def harden(
+    path: Annotated[Path, typer.Argument(help="Repository to harden.")],
+    target: Annotated[float, typer.Option("--target", help="Mutation score to reach.")] = 90.0,
+    max_iterations: Annotated[int, typer.Option("--max-iterations")] = 5,
+    budget: Annotated[float, typer.Option("--budget", help="Max USD per agent turn-set.")] = 2.0,
+    keep_workspace: Annotated[bool, typer.Option("--keep-workspace")] = False,
+) -> None:
+    """Raise a repository's mutation score. Runs in a temp copy; applies nothing."""
+    if not path.is_dir():
+        raise _fail(f"{path} is not a directory")
+
+    from trustlayer.agent.harden import harden as run_harden
+
+    console = Console()
+    result = run_harden(
+        path,
+        target_score=target,
+        max_iterations=max_iterations,
+        max_budget_usd=budget,
+        keep_workspace=keep_workspace,
+    )
+
+    if result.error:
+        console.print(f"[red]harden failed:[/red] {result.error}")
+        raise typer.Exit(code=EXIT_ERROR)
+
+    console.print(f"baseline score  {result.baseline_score}%")
+    for step in result.iterations:
+        arrow = f"{step.score_before}% -> {step.score_after}%"
+        console.print(
+            f"  iteration {step.number}  {arrow:>18}  ({step.improvement:+}%)"
+            f"  targeted {len(step.survivors_targeted)}"
+            f"  written {step.tests_written}  discarded {step.tests_discarded}"
+        )
+    console.print(f"final score     {result.final_score}%  ({result.improvement:+}%)")
+    console.print(f"[bold]stopped[/bold]         {result.stopped_because}")
+    console.print(f"tests discarded {result.total_discarded}")
+    console.print(f"cost            ${result.total_cost_usd}")
+    console.print("\n--- diff for review (nothing applied) ---")
+    console.print(result.diff or "(no changes)")
 if __name__ == "__main__":  # pragma: no cover
     sys.exit(app())
