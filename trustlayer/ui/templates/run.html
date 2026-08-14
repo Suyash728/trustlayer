@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block subtitle %}run #{{ run.id }}{% endblock %}
+{% block content %}
+  <div class="mb-6">
+    <div class="text-sm">{{ run.repo_name }}</div>
+    <div class="ink-3 text-xs mt-1 truncate">{{ run.repo_path }}</div>
+    <div class="ink-3 text-xs mt-2">
+      {{ run.started_at[:19] }} &middot; {{ run.short_sha }}{% if run.dirty %}<span style="color: var(--medium)">+dirty</span>{% endif %}
+      &middot; {{ "%.1f"|format(run.duration_s) }}s &middot; exit {{ run.exit_code }}
+    </div>
+    <div class="mt-3">{% with counts = run.counts %}{% include "_counts.html" %}{% endwith %}</div>
+  </div>
+
+  {% if history|length > 1 %}
+    <form action="/compare" method="get" class="panel rounded p-4 mb-6 flex items-end gap-3 text-xs">
+      <label class="flex flex-col gap-1">
+        <span class="ink-3">compare</span>
+        <select name="a" class="rounded px-2 py-1" style="background: var(--surface-2); color: var(--ink); border:1px solid var(--border)">
+          {% for other in history %}<option value="{{ other.id }}" {% if other.id != run.id and loop.index0 == 1 %}selected{% endif %}>#{{ other.id }} {{ other.started_at[:19] }}</option>{% endfor %}
+        </select>
+      </label>
+      <label class="flex flex-col gap-1">
+        <span class="ink-3">with</span>
+        <select name="b" class="rounded px-2 py-1" style="background: var(--surface-2); color: var(--ink); border:1px solid var(--border)">
+          {% for other in history %}<option value="{{ other.id }}" {% if other.id == run.id %}selected{% endif %}>#{{ other.id }} {{ other.started_at[:19] }}</option>{% endfor %}
+        </select>
+      </label>
+      <button class="rounded px-3 py-1" style="border:1px solid var(--accent); color: var(--accent)">compare</button>
+    </form>
+  {% endif %}
+
+  {% if not groups %}
+    <div class="panel rounded p-6 text-sm ink-2">No findings in this run.</div>
+  {% endif %}
+
+  {% for check, findings in groups %}
+    <section class="mb-6">
+      <h2 class="text-xs ink-3 mb-2">{{ check }} <span class="ink-3">({{ findings|length }})</span></h2>
+      <div class="panel rounded divide-y" style="border-color: var(--border)">
+        {% for finding in findings %}
+          <details class="row px-5 py-3" style="border-color: var(--border)">
+            <summary class="flex items-baseline gap-3 text-xs"
+                     hx-get="/runs/{{ run.id }}/finding/{{ finding.id }}"
+                     hx-target="next .evidence" hx-swap="innerHTML" hx-trigger="click once">
+              <span class="mark mark-{{ finding.severity }} translate-y-[1px]"></span>
+              <span class="ink-2 w-14 shrink-0">{{ finding.severity }}</span>
+              <span class="shrink-0">{{ finding.file }}:{{ finding.line }}</span>
+              <span class="ink-2 truncate">{{ finding.claim }}</span>
+            </summary>
+            <div class="evidence mt-2 pl-8 text-xs ink-3">loading&hellip;</div>
+          </details>
+        {% endfor %}
+      </div>
+    </section>
+  {% endfor %}
+{% endblock %}

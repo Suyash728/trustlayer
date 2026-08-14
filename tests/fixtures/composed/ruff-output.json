@@ -1,0 +1,40 @@
+[
+  {
+    "cell": null,
+    "code": "S110",
+    "end_location": {
+      "column": 13,
+      "row": 27
+    },
+    "filename": "/home/suyash/Projects/TrustLayer/tests/fixtures/failopen-dirty/app.py",
+    "fix": null,
+    "location": {
+      "column": 5,
+      "row": 26
+    },
+    "message": "`try`-`except`-`pass` detected, consider logging the exception",
+    "name": "try-except-pass",
+    "noqa_row": 26,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/try-except-pass"
+  },
+  {
+    "cell": null,
+    "code": "E722",
+    "end_location": {
+      "column": 11,
+      "row": 33
+    },
+    "filename": "/home/suyash/Projects/TrustLayer/tests/fixtures/failopen-dirty/app.py",
+    "fix": null,
+    "location": {
+      "column": 5,
+      "row": 33
+    },
+    "message": "Do not use bare `except`",
+    "name": "bare-except",
+    "noqa_row": 33,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/bare-except"
+  }
+]

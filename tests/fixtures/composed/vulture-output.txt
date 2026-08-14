@@ -1,0 +1,5 @@
+tests/fixtures/failopen-dirty/app.py:11: unused variable 'API_BASE_URL' (60% confidence)
+tests/fixtures/failopen-dirty/app.py:12: unused variable 'DATABASE_DSN' (60% confidence)
+tests/fixtures/failopen-dirty/app.py:15: unused function 'check_access' (60% confidence)
+tests/fixtures/failopen-dirty/app.py:23: unused function 'load_settings' (60% confidence)
+tests/fixtures/failopen-dirty/app.py:30: unused function 'read_cache' (60% confidence)

@@ -1,0 +1,69 @@
+# TrustLayer model deprecation registry
+#
+# THIS FILE GOES STALE. It is a hand-maintained snapshot, not a live feed. Vendors retire
+# models on their own schedule; nothing here updates itself. Review it periodically and on
+# every release. See README.md, "Maintaining the model deprecation registry".
+#
+# verified = false means the entry was seeded from a maintainer's note and has NOT been
+# confirmed against a vendor deprecation page. `trustlayer models --list` prints these as
+# UNVERIFIED. Do not treat an unverified row as authoritative: fill in source_url from the
+# official notice and flip verified to true.
+#
+# Fields
+#   provider       vendor namespace the model ID belongs to
+#   deprecated_on  date of retirement; OMIT the key when the date is not known
+#   successor      recommended replacement; empty string when the vendor named none
+#   source_url     official deprecation notice
+#   verified       true only when source_url was checked by a human
+#
+# A model ID may contain a `*` wildcard, which matches the rest of an ID segment.
+
+[models."llama-3.1-8b-instant"]
+provider = "groq"
+deprecated_on = 2026-06-17
+successor = "openai/gpt-oss-20b"
+source_url = ""
+verified = false
+
+[models."llama-3.3-70b-versatile"]
+provider = "groq"
+deprecated_on = 2026-06-17
+successor = "openai/gpt-oss-120b"
+source_url = ""
+verified = false
+
+# "gemini-2.0-flash family" per maintainer note. No successor was given, and inventing one
+# would be exactly the failure this check exists to catch, so the field is left empty.
+[models."gemini-2.0-flash*"]
+provider = "google"
+deprecated_on = 2026-06-01
+successor = ""
+source_url = ""
+verified = false
+
+[models."gemini-2.5-flash"]
+provider = "google"
+deprecated_on = 2026-10-16
+successor = "gemini-3.5-flash"
+source_url = ""
+verified = false
+
+# Retired per maintainer note, no date given, so deprecated_on is omitted rather than guessed.
+# These are Google Gemini API embedding model IDs, not OpenAI's.
+[models."text-embedding-004"]
+provider = "google"
+successor = ""
+source_url = ""
+verified = false
+
+[models."embedding-001"]
+provider = "google"
+successor = ""
+source_url = ""
+verified = false
+
+[models."gemini-embedding-exp-*"]
+provider = "google"
+successor = ""
+source_url = ""
+verified = false

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}TrustLayer{% endblock %}</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+<style>
+  /* Severity is a STATUS palette - fixed, never themed, never reused as a series colour.
+     Steps and their dark-surface contrast come from the validated reference palette.
+     Counts and paths stay in ink; these colours only ever paint a small mark beside
+     a text label, so a status colour never carries meaning alone. */
+  :root {
+    --surface-0: #131312;
+    --surface-1: #1a1a19;
+    --surface-2: #232322;
+    --border:    #302f2d;
+    --ink:       #f2f1ec;
+    --ink-2:     #c3c2b7;
+    --ink-3:     #8a8980;
+    --accent:    #3987e5;   /* the single accent: links, focus, active state */
+    --high:      #d03b3b;   /* status: critical */
+    --medium:    #fab219;   /* status: warning  */
+    --low:       #8a8980;   /* low is not an alarm - it stays muted ink */
+  }
+  html, body { background: var(--surface-0); color: var(--ink); }
+  body { font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .panel { background: var(--surface-1); border: 1px solid var(--border); }
+  .row:hover { background: var(--surface-2); }
+  .mark { width: .55rem; height: .55rem; border-radius: 2px; display: inline-block; }
+  .mark-high { background: var(--high); }
+  .mark-medium { background: var(--medium); }
+  .mark-low { background: var(--low); }
+  .ink-2 { color: var(--ink-2); }
+  .ink-3 { color: var(--ink-3); }
+  .accent { color: var(--accent); }
+  summary { cursor: pointer; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+</head>
+<body class="min-h-screen">
+<header class="border-b" style="border-color: var(--border)">
+  <div class="max-w-5xl mx-auto px-6 py-4 flex items-baseline gap-6">
+    <a href="/" class="text-sm tracking-wide" style="color: var(--ink)">trustlayer</a>
+    <span class="ink-3 text-xs">{% block subtitle %}{% endblock %}</span>
+  </div>
+</header>
+<main class="max-w-5xl mx-auto px-6 py-8">
+  {% block content %}{% endblock %}
+</main>
+<footer class="max-w-5xl mx-auto px-6 pb-10 pt-4 ink-3 text-xs">
+  read-only view of ~/.trustlayer/runs.db &middot; no LLM produces any verdict
+</footer>
+</body>
+</html>

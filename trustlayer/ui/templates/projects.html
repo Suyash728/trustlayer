@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block subtitle %}projects{% endblock %}
+{% block content %}
+  {% if not rows %}
+    <div class="panel rounded p-6 text-sm ink-2">
+      No runs recorded yet. Run <span class="accent">trustlayer audit &lt;path&gt;</span> to record one.
+    </div>
+  {% else %}
+    <div class="panel rounded divide-y" style="border-color: var(--border)">
+      {% for row in rows %}
+        {% set run = row.run %}
+        <div class="row px-5 py-4 flex items-center justify-between gap-6"
+             style="border-color: var(--border)">
+          <div class="min-w-0">
+            <a href="/runs/{{ run.id }}" class="text-sm">{{ run.repo_name }}</a>
+            <div class="ink-3 text-xs truncate mt-0.5">{{ run.repo_path }}</div>
+            <div class="ink-3 text-xs mt-1">
+              {{ run.started_at[:19] }} &middot; {{ run.short_sha }}{% if run.dirty %}<span style="color: var(--medium)">+dirty</span>{% endif %}
+            </div>
+          </div>
+          <div class="flex items-center gap-6 shrink-0">
+            {% with counts = run.counts %}{% include "_counts.html" %}{% endwith %}
+            <span class="text-xs w-24 text-right" title="change in total findings vs the previous run">
+              {% if row.trend.direction == "worse" %}
+                <span style="color: var(--high)">{{ row.trend.symbol }}</span> <span class="ink-2">{{ row.trend.label }}</span>
+              {% elif row.trend.direction == "better" %}
+                <span class="ink-2">{{ row.trend.symbol }} {{ row.trend.label }}</span>
+              {% else %}
+                <span class="ink-3">{{ row.trend.symbol }} {{ row.trend.label }}</span>
+              {% endif %}
+            </span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}

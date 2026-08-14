@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block subtitle %}compare{% endblock %}
+{% block content %}
+  <div class="mb-6 text-sm">
+    #{{ before.id }} <span class="ink-3">{{ before.short_sha }}</span>
+    <span class="ink-3">&rarr;</span>
+    #{{ after.id }} <span class="ink-3">{{ after.short_sha }}</span>
+    <div class="ink-3 text-xs mt-1 truncate">{{ after.repo_path }}</div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    {% for label, findings in (("appeared", appeared), ("disappeared", disappeared)) %}
+      <section>
+        <h2 class="text-xs ink-3 mb-2">{{ label }} <span class="ink-3">({{ findings|length }})</span></h2>
+        <div class="panel rounded divide-y" style="border-color: var(--border)">
+          {% if not findings %}
+            <div class="px-5 py-4 text-xs ink-3">none</div>
+          {% endif %}
+          {% for finding in findings %}
+            <div class="row px-5 py-3 text-xs" style="border-color: var(--border)">
+              <div class="flex items-baseline gap-3">
+                <span class="mark mark-{{ finding.severity }} translate-y-[1px]"></span>
+                <span>{{ finding.file }}:{{ finding.line }}</span>
+              </div>
+              <div class="ink-2 mt-1 pl-5 break-words">{{ finding.claim }}</div>
+              <div class="ink-3 mt-0.5 pl-5">{{ finding.check }} &middot; {{ finding.verdict }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endfor %}
+  </div>
+
+  {% if not appeared and not disappeared %}
+    <div class="panel rounded p-6 text-sm ink-2 mt-4">No change between these two runs.</div>
+  {% endif %}
+{% endblock %}

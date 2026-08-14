@@ -1,0 +1,5 @@
+<div class="mb-1 ink-2">{{ finding.verdict }}</div>
+{% for line in finding.evidence %}
+  <div class="whitespace-pre-wrap break-words">{{ line }}</div>
+{% endfor %}
+{% if not finding.evidence %}<div>no evidence recorded</div>{% endif %}
