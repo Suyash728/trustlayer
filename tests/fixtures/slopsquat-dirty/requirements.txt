@@ -1,0 +1,12 @@
+# A dependency list of the shape an LLM produces: mostly right, quietly wrong.
+requests==2.32.3
+fastapi==0.115.0
+
+# does not exist on any index
+langchain-comunity==0.2.1
+
+# exists, but is young and barely downloaded
+obscure-helper==0.0.1
+
+# one edit from a popular package, and otherwise unremarkable
+requesst==1.0.0

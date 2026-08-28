@@ -13,7 +13,7 @@ creation, which is why the round-trip test is load-bearing rather than decorativ
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 import json
 from pathlib import Path
 import sqlite3
@@ -48,9 +48,20 @@ CREATE TABLE IF NOT EXISTS findings (
     evidence TEXT NOT NULL
 ) STRICT;
 
+CREATE TABLE IF NOT EXISTS registry_cache (
+    ecosystem  TEXT NOT NULL,
+    name       TEXT NOT NULL,
+    fetched_at TEXT NOT NULL,
+    payload    TEXT NOT NULL,
+    PRIMARY KEY (ecosystem, name)
+) STRICT;
+
 CREATE INDEX IF NOT EXISTS runs_by_repo ON runs (repo_path, started_at DESC);
 CREATE INDEX IF NOT EXISTS findings_by_run ON findings (run_id);
 """
+
+REGISTRY_CACHE_TTL_HOURS = 24
+SQLITE_PARAMETER_CHUNK = 500
 
 
 @dataclass(frozen=True)
@@ -268,6 +279,57 @@ def diff_runs(
     appeared = [finding for finding in after if finding.identity not in before_ids]
     disappeared = [finding for finding in before if finding.identity not in after_ids]
     return appeared, disappeared
+
+
+def read_registry_cache(
+    ecosystem: str,
+    names: list[str],
+    db_path: Path | str | None = None,
+    ignore_ttl: bool = False,
+) -> dict[str, str]:
+    """Cached registry payloads by name, dropping anything older than the TTL.
+
+    `ignore_ttl` is what makes `--no-network` reproduce an online run: offline there is no
+    fresher answer available, so a stale record beats refusing to answer. Online the TTL
+    applies, because a package's risk profile genuinely changes.
+    """
+    if not names:
+        return {}
+
+    cutoff = (datetime.now(tz=UTC) - timedelta(hours=REGISTRY_CACHE_TTL_HOURS)).isoformat()
+    found: dict[str, str] = {}
+
+    with connect(db_path) as connection:
+        for start in range(0, len(names), SQLITE_PARAMETER_CHUNK):
+            chunk = names[start : start + SQLITE_PARAMETER_CHUNK]
+            placeholders = ",".join("?" * len(chunk))
+            query = (
+                f"SELECT name, payload FROM registry_cache WHERE ecosystem = ? AND name IN ({placeholders})"
+            )
+            params: list = [ecosystem, *chunk]
+            if not ignore_ttl:
+                query += " AND fetched_at >= ?"
+                params.append(cutoff)
+            for row in connection.execute(query, params):
+                found[row["name"]] = row["payload"]
+
+    return found
+
+
+def write_registry_cache(
+    ecosystem: str, entries: list[tuple[str, str]], db_path: Path | str | None = None
+) -> None:
+    """Upsert cached payloads. Callers pass only successful lookups; failures are not cached."""
+    if not entries:
+        return
+    moment = datetime.now(tz=UTC).isoformat()
+    with connect(db_path) as connection:
+        connection.executemany(
+            "INSERT INTO registry_cache (ecosystem, name, fetched_at, payload) VALUES (?, ?, ?, ?)"
+            " ON CONFLICT(ecosystem, name) DO UPDATE SET fetched_at = excluded.fetched_at,"
+            " payload = excluded.payload",
+            [(ecosystem, name, moment, payload) for name, payload in entries],
+        )
 
 
 def _run_row(row: sqlite3.Row) -> RunRow:

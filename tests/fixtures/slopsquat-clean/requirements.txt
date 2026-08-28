@@ -1,0 +1,4 @@
+# Every entry is a real, widely used package.
+requests==2.32.3
+fastapi==0.115.0
+pydantic==2.9.2

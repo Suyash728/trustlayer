@@ -1,0 +1,8010 @@
+{
+ "_comment": "THIS FILE GOES STALE. Hand-maintained snapshot of the most-downloaded PyPI projects, used as the typo-adjacency corpus and as an offline popularity baseline. Nothing here updates itself. Regenerate periodically; see README.md, 'Maintaining the top-packages corpus'.",
+ "source": "ClickHouse",
+ "upstream_url": "https://hugovk.github.io/top-pypi-packages/top-pypi-packages.min.json",
+ "upstream_last_update": "2026-08-01 06:34:08",
+ "vendored_on": "2026-08-16",
+ "count": 2000,
+ "packages": [
+  {
+   "name": "boto3",
+   "downloads": 3717556977
+  },
+  {
+   "name": "packaging",
+   "downloads": 2198449167
+  },
+  {
+   "name": "typing-extensions",
+   "downloads": 1904238788
+  },
+  {
+   "name": "certifi",
+   "downloads": 1861401883
+  },
+  {
+   "name": "urllib3",
+   "downloads": 1843477278
+  },
+  {
+   "name": "idna",
+   "downloads": 1760742555
+  },
+  {
+   "name": "requests",
+   "downloads": 1756048205
+  },
+  {
+   "name": "charset-normalizer",
+   "downloads": 1674555757
+  },
+  {
+   "name": "setuptools",
+   "downloads": 1563563625
+  },
+  {
+   "name": "botocore",
+   "downloads": 1497531138
+  },
+  {
+   "name": "cryptography",
+   "downloads": 1479413072
+  },
+  {
+   "name": "cffi",
+   "downloads": 1303772314
+  },
+  {
+   "name": "pluggy",
+   "downloads": 1280274438
+  },
+  {
+   "name": "pygments",
+   "downloads": 1270057742
+  },
+  {
+   "name": "pyyaml",
+   "downloads": 1194612572
+  },
+  {
+   "name": "python-dateutil",
+   "downloads": 1188011910
+  },
+  {
+   "name": "six",
+   "downloads": 1177269151
+  },
+  {
+   "name": "aiobotocore",
+   "downloads": 1164834706
+  },
+  {
+   "name": "numpy",
+   "downloads": 1143792865
+  },
+  {
+   "name": "pycparser",
+   "downloads": 1107200067
+  },
+  {
+   "name": "pydantic",
+   "downloads": 1105778495
+  },
+  {
+   "name": "pytest",
+   "downloads": 1091772181
+  },
+  {
+   "name": "click",
+   "downloads": 1089240135
+  },
+  {
+   "name": "iniconfig",
+   "downloads": 1033526081
+  },
+  {
+   "name": "anyio",
+   "downloads": 1032777959
+  },
+  {
+   "name": "pydantic-core",
+   "downloads": 1007754482
+  },
+  {
+   "name": "grpcio-status",
+   "downloads": 951128296
+  },
+  {
+   "name": "attrs",
+   "downloads": 924894579
+  },
+  {
+   "name": "s3transfer",
+   "downloads": 924268948
+  },
+  {
+   "name": "h11",
+   "downloads": 894878618
+  },
+  {
+   "name": "fsspec",
+   "downloads": 878523962
+  },
+  {
+   "name": "annotated-types",
+   "downloads": 871281123
+  },
+  {
+   "name": "protobuf",
+   "downloads": 868343626
+  },
+  {
+   "name": "markupsafe",
+   "downloads": 797118023
+  },
+  {
+   "name": "httpx",
+   "downloads": 796983818
+  },
+  {
+   "name": "httpcore",
+   "downloads": 783609098
+  },
+  {
+   "name": "typing-inspection",
+   "downloads": 782958676
+  },
+  {
+   "name": "pandas",
+   "downloads": 769110377
+  },
+  {
+   "name": "platformdirs",
+   "downloads": 763006168
+  },
+  {
+   "name": "pathspec",
+   "downloads": 742847330
+  },
+  {
+   "name": "python-dotenv",
+   "downloads": 740099887
+  },
+  {
+   "name": "jinja2",
+   "downloads": 718583427
+  },
+  {
+   "name": "filelock",
+   "downloads": 717124668
+  },
+  {
+   "name": "pyjwt",
+   "downloads": 715697201
+  },
+  {
+   "name": "s3fs",
+   "downloads": 704379780
+  },
+  {
+   "name": "litellm",
+   "downloads": 682782233
+  },
+  {
+   "name": "jmespath",
+   "downloads": 652344301
+  },
+  {
+   "name": "tqdm",
+   "downloads": 648606617
+  },
+  {
+   "name": "aiohttp",
+   "downloads": 643629740
+  },
+  {
+   "name": "yarl",
+   "downloads": 621403276
+  },
+  {
+   "name": "pip",
+   "downloads": 617503549
+  },
+  {
+   "name": "rich",
+   "downloads": 613852561
+  },
+  {
+   "name": "markdown-it-py",
+   "downloads": 613779408
+  },
+  {
+   "name": "rpds-py",
+   "downloads": 613601443
+  },
+  {
+   "name": "uvicorn",
+   "downloads": 609510360
+  },
+  {
+   "name": "starlette",
+   "downloads": 605601182
+  },
+  {
+   "name": "jsonschema",
+   "downloads": 596925041
+  },
+  {
+   "name": "wheel",
+   "downloads": 595760140
+  },
+  {
+   "name": "multidict",
+   "downloads": 594005645
+  },
+  {
+   "name": "google-auth",
+   "downloads": 590070847
+  },
+  {
+   "name": "propcache",
+   "downloads": 587094457
+  },
+  {
+   "name": "pyasn1",
+   "downloads": 570897622
+  },
+  {
+   "name": "fastapi",
+   "downloads": 568552369
+  },
+  {
+   "name": "aiohappyeyeballs",
+   "downloads": 560621750
+  },
+  {
+   "name": "frozenlist",
+   "downloads": 554242815
+  },
+  {
+   "name": "pytz",
+   "downloads": 551686335
+  },
+  {
+   "name": "mdurl",
+   "downloads": 548051038
+  },
+  {
+   "name": "pillow",
+   "downloads": 547140713
+  },
+  {
+   "name": "referencing",
+   "downloads": 545376376
+  },
+  {
+   "name": "importlib-metadata",
+   "downloads": 544435691
+  },
+  {
+   "name": "websockets",
+   "downloads": 543199444
+  },
+  {
+   "name": "opentelemetry-semantic-conventions",
+   "downloads": 542941923
+  },
+  {
+   "name": "trove-classifiers",
+   "downloads": 540435669
+  },
+  {
+   "name": "jsonschema-specifications",
+   "downloads": 540286306
+  },
+  {
+   "name": "aiosignal",
+   "downloads": 537226203
+  },
+  {
+   "name": "virtualenv",
+   "downloads": 532873318
+  },
+  {
+   "name": "zipp",
+   "downloads": 531220461
+  },
+  {
+   "name": "opentelemetry-sdk",
+   "downloads": 521829274
+  },
+  {
+   "name": "googleapis-common-protos",
+   "downloads": 513693594
+  },
+  {
+   "name": "tzdata",
+   "downloads": 504527593
+  },
+  {
+   "name": "wrapt",
+   "downloads": 495611441
+  },
+  {
+   "name": "sniffio",
+   "downloads": 487249508
+  },
+  {
+   "name": "hatchling",
+   "downloads": 484194815
+  },
+  {
+   "name": "google-api-core",
+   "downloads": 482456775
+  },
+  {
+   "name": "greenlet",
+   "downloads": 476388596
+  },
+  {
+   "name": "opentelemetry-api",
+   "downloads": 463796331
+  },
+  {
+   "name": "pyasn1-modules",
+   "downloads": 462465610
+  },
+  {
+   "name": "annotated-doc",
+   "downloads": 456245916
+  },
+  {
+   "name": "pydantic-settings",
+   "downloads": 453025118
+  },
+  {
+   "name": "scipy",
+   "downloads": 448963567
+  },
+  {
+   "name": "grpcio",
+   "downloads": 446417323
+  },
+  {
+   "name": "textual",
+   "downloads": 443589157
+  },
+  {
+   "name": "huggingface-hub",
+   "downloads": 442399796
+  },
+  {
+   "name": "regex",
+   "downloads": 437721689
+  },
+  {
+   "name": "pyarrow",
+   "downloads": 432924469
+  },
+  {
+   "name": "beautifulsoup4",
+   "downloads": 432133462
+  },
+  {
+   "name": "colorama",
+   "downloads": 431035221
+  },
+  {
+   "name": "tenacity",
+   "downloads": 429288446
+  },
+  {
+   "name": "soupsieve",
+   "downloads": 428611663
+  },
+  {
+   "name": "sqlalchemy",
+   "downloads": 422737345
+  },
+  {
+   "name": "distro",
+   "downloads": 417850387
+  },
+  {
+   "name": "lxml",
+   "downloads": 416832024
+  },
+  {
+   "name": "pyparsing",
+   "downloads": 412671524
+  },
+  {
+   "name": "python-multipart",
+   "downloads": 412398676
+  },
+  {
+   "name": "opentelemetry-exporter-otlp-proto-http",
+   "downloads": 409911230
+  },
+  {
+   "name": "opentelemetry-proto",
+   "downloads": 406288842
+  },
+  {
+   "name": "openai",
+   "downloads": 398217507
+  },
+  {
+   "name": "tomli",
+   "downloads": 398040232
+  },
+  {
+   "name": "opentelemetry-instrumentation",
+   "downloads": 393536009
+  },
+  {
+   "name": "jiter",
+   "downloads": 393239763
+  },
+  {
+   "name": "psutil",
+   "downloads": 387578492
+  },
+  {
+   "name": "shellingham",
+   "downloads": 382454724
+  },
+  {
+   "name": "requests-oauthlib",
+   "downloads": 369796716
+  },
+  {
+   "name": "typer",
+   "downloads": 369277837
+  },
+  {
+   "name": "watchfiles",
+   "downloads": 356540119
+  },
+  {
+   "name": "more-itertools",
+   "downloads": 351130981
+  },
+  {
+   "name": "openpyxl",
+   "downloads": 350917515
+  },
+  {
+   "name": "editables",
+   "downloads": 350389743
+  },
+  {
+   "name": "cachetools",
+   "downloads": 345317933
+  },
+  {
+   "name": "proto-plus",
+   "downloads": 343786347
+  },
+  {
+   "name": "et-xmlfile",
+   "downloads": 343296429
+  },
+  {
+   "name": "opentelemetry-exporter-otlp-proto-common",
+   "downloads": 341358351
+  },
+  {
+   "name": "awscli",
+   "downloads": 339630578
+  },
+  {
+   "name": "tomlkit",
+   "downloads": 338023114
+  },
+  {
+   "name": "coverage",
+   "downloads": 335774033
+  },
+  {
+   "name": "oauthlib",
+   "downloads": 332548810
+  },
+  {
+   "name": "exceptiongroup",
+   "downloads": 331427391
+  },
+  {
+   "name": "dnspython",
+   "downloads": 326564406
+  },
+  {
+   "name": "distlib",
+   "downloads": 323330233
+  },
+  {
+   "name": "mcp",
+   "downloads": 319271720
+  },
+  {
+   "name": "mypy-extensions",
+   "downloads": 317045593
+  },
+  {
+   "name": "ruff",
+   "downloads": 316068296
+  },
+  {
+   "name": "langchain",
+   "downloads": 315426291
+  },
+  {
+   "name": "opentelemetry-exporter-otlp-proto-grpc",
+   "downloads": 313262720
+  },
+  {
+   "name": "sse-starlette",
+   "downloads": 306536742
+  },
+  {
+   "name": "wcwidth",
+   "downloads": 306492416
+  },
+  {
+   "name": "requests-toolbelt",
+   "downloads": 299705307
+  },
+  {
+   "name": "rsa",
+   "downloads": 299583903
+  },
+  {
+   "name": "google-genai",
+   "downloads": 298050427
+  },
+  {
+   "name": "pyopenssl",
+   "downloads": 294217086
+  },
+  {
+   "name": "networkx",
+   "downloads": 290866406
+  },
+  {
+   "name": "python-discovery",
+   "downloads": 289858660
+  },
+  {
+   "name": "msgpack",
+   "downloads": 286646957
+  },
+  {
+   "name": "sortedcontainers",
+   "downloads": 278364983
+  },
+  {
+   "name": "grpcio-tools",
+   "downloads": 278223378
+  },
+  {
+   "name": "pytest-asyncio",
+   "downloads": 275917521
+  },
+  {
+   "name": "docstring-parser",
+   "downloads": 274897544
+  },
+  {
+   "name": "pytest-json-ctrf",
+   "downloads": 273013127
+  },
+  {
+   "name": "psycopg2-binary",
+   "downloads": 271618065
+  },
+  {
+   "name": "redis",
+   "downloads": 268312026
+  },
+  {
+   "name": "werkzeug",
+   "downloads": 268056372
+  },
+  {
+   "name": "gitpython",
+   "downloads": 265087322
+  },
+  {
+   "name": "google-cloud-storage",
+   "downloads": 264166221
+  },
+  {
+   "name": "hf-xet",
+   "downloads": 258362687
+  },
+  {
+   "name": "uvloop",
+   "downloads": 257903364
+  },
+  {
+   "name": "google-cloud-bigquery",
+   "downloads": 254119339
+  },
+  {
+   "name": "httptools",
+   "downloads": 250228975
+  },
+  {
+   "name": "smmap",
+   "downloads": 249781606
+  },
+  {
+   "name": "azure-core",
+   "downloads": 247770599
+  },
+  {
+   "name": "azure-identity",
+   "downloads": 247165055
+  },
+  {
+   "name": "pynacl",
+   "downloads": 246596488
+  },
+  {
+   "name": "keyring",
+   "downloads": 242060555
+  },
+  {
+   "name": "defusedxml",
+   "downloads": 241198654
+  },
+  {
+   "name": "decorator",
+   "downloads": 241108642
+  },
+  {
+   "name": "tabulate",
+   "downloads": 240141925
+  },
+  {
+   "name": "httpx-sse",
+   "downloads": 238443164
+  },
+  {
+   "name": "email-validator",
+   "downloads": 235975688
+  },
+  {
+   "name": "fonttools",
+   "downloads": 235943843
+  },
+  {
+   "name": "pytest-cov",
+   "downloads": 235924037
+  },
+  {
+   "name": "prompt-toolkit",
+   "downloads": 235750388
+  },
+  {
+   "name": "scikit-learn",
+   "downloads": 235451583
+  },
+  {
+   "name": "tiktoken",
+   "downloads": 233042766
+  },
+  {
+   "name": "matplotlib",
+   "downloads": 232353625
+  },
+  {
+   "name": "isodate",
+   "downloads": 232242287
+  },
+  {
+   "name": "websocket-client",
+   "downloads": 232092465
+  },
+  {
+   "name": "jaraco-classes",
+   "downloads": 231672874
+  },
+  {
+   "name": "jaraco-functools",
+   "downloads": 231017365
+  },
+  {
+   "name": "jeepney",
+   "downloads": 228580206
+  },
+  {
+   "name": "opentelemetry-instrumentation-requests",
+   "downloads": 228495327
+  },
+  {
+   "name": "ghapi",
+   "downloads": 227728369
+  },
+  {
+   "name": "gitdb",
+   "downloads": 227664880
+  },
+  {
+   "name": "secretstorage",
+   "downloads": 226889415
+  },
+  {
+   "name": "docutils",
+   "downloads": 225584924
+  },
+  {
+   "name": "tzlocal",
+   "downloads": 225531993
+  },
+  {
+   "name": "msal",
+   "downloads": 223049387
+  },
+  {
+   "name": "tokenizers",
+   "downloads": 222890981
+  },
+  {
+   "name": "orjson",
+   "downloads": 222600397
+  },
+  {
+   "name": "itsdangerous",
+   "downloads": 222165177
+  },
+  {
+   "name": "opentelemetry-util-http",
+   "downloads": 217662067
+  },
+  {
+   "name": "jaraco-context",
+   "downloads": 215370078
+  },
+  {
+   "name": "alembic",
+   "downloads": 215238109
+  },
+  {
+   "name": "google-cloud-core",
+   "downloads": 213351490
+  },
+  {
+   "name": "weaviate-client",
+   "downloads": 213203009
+  },
+  {
+   "name": "bcrypt",
+   "downloads": 212710127
+  },
+  {
+   "name": "flask",
+   "downloads": 211412737
+  },
+  {
+   "name": "joblib",
+   "downloads": 210885850
+  },
+  {
+   "name": "ydb",
+   "downloads": 209984972
+  },
+  {
+   "name": "dill",
+   "downloads": 208130232
+  },
+  {
+   "name": "kiwisolver",
+   "downloads": 205513810
+  },
+  {
+   "name": "ptyprocess",
+   "downloads": 205236250
+  },
+  {
+   "name": "threadpoolctl",
+   "downloads": 204185238
+  },
+  {
+   "name": "multiprocess",
+   "downloads": 202659401
+  },
+  {
+   "name": "mako",
+   "downloads": 201667326
+  },
+  {
+   "name": "ruamel-yaml",
+   "downloads": 201323121
+  },
+  {
+   "name": "nodeenv",
+   "downloads": 201203345
+  },
+  {
+   "name": "pexpect",
+   "downloads": 200755644
+  },
+  {
+   "name": "mypy",
+   "downloads": 199878532
+  },
+  {
+   "name": "chardet",
+   "downloads": 199045239
+  },
+  {
+   "name": "sympy",
+   "downloads": 196415976
+  },
+  {
+   "name": "google-crc32c",
+   "downloads": 193906765
+  },
+  {
+   "name": "zstandard",
+   "downloads": 193840002
+  },
+  {
+   "name": "snowflake-connector-python",
+   "downloads": 193645891
+  },
+  {
+   "name": "google-resumable-media",
+   "downloads": 192571539
+  },
+  {
+   "name": "blinker",
+   "downloads": 192139559
+  },
+  {
+   "name": "google-api-python-client",
+   "downloads": 191572173
+  },
+  {
+   "name": "contourpy",
+   "downloads": 191236325
+  },
+  {
+   "name": "deprecated",
+   "downloads": 189603486
+  },
+  {
+   "name": "opentelemetry-exporter-otlp",
+   "downloads": 188157889
+  },
+  {
+   "name": "uv",
+   "downloads": 187422698
+  },
+  {
+   "name": "transformers",
+   "downloads": 186611834
+  },
+  {
+   "name": "jsonpointer",
+   "downloads": 186338850
+  },
+  {
+   "name": "identify",
+   "downloads": 185751370
+  },
+  {
+   "name": "uritemplate",
+   "downloads": 185307638
+  },
+  {
+   "name": "anthropic",
+   "downloads": 185027807
+  },
+  {
+   "name": "rapidfuzz",
+   "downloads": 184194377
+  },
+  {
+   "name": "docker",
+   "downloads": 182793672
+  },
+  {
+   "name": "httplib2",
+   "downloads": 180751343
+  },
+  {
+   "name": "black",
+   "downloads": 179909313
+  },
+  {
+   "name": "pre-commit",
+   "downloads": 179908032
+  },
+  {
+   "name": "hpack",
+   "downloads": 179537813
+  },
+  {
+   "name": "google-auth-httplib2",
+   "downloads": 178751323
+  },
+  {
+   "name": "cfgv",
+   "downloads": 178635376
+  },
+  {
+   "name": "prometheus-client",
+   "downloads": 178320226
+  },
+  {
+   "name": "google-cloud-secret-manager",
+   "downloads": 177625752
+  },
+  {
+   "name": "xxhash",
+   "downloads": 177383915
+  },
+  {
+   "name": "pytest-xdist",
+   "downloads": 177097162
+  },
+  {
+   "name": "cycler",
+   "downloads": 176918933
+  },
+  {
+   "name": "toml",
+   "downloads": 176194404
+  },
+  {
+   "name": "langchain-core",
+   "downloads": 176017959
+  },
+  {
+   "name": "google-auth-oauthlib",
+   "downloads": 175046031
+  },
+  {
+   "name": "h2",
+   "downloads": 174940172
+  },
+  {
+   "name": "opentelemetry-instrumentation-threading",
+   "downloads": 174866667
+  },
+  {
+   "name": "google-cloud-aiplatform",
+   "downloads": 174186530
+  },
+  {
+   "name": "asn1crypto",
+   "downloads": 173559719
+  },
+  {
+   "name": "poetry-core",
+   "downloads": 173313489
+  },
+  {
+   "name": "ipython",
+   "downloads": 172926443
+  },
+  {
+   "name": "pyproject-hooks",
+   "downloads": 172601250
+  },
+  {
+   "name": "execnet",
+   "downloads": 172094304
+  },
+  {
+   "name": "hyperframe",
+   "downloads": 170669258
+  },
+  {
+   "name": "sentry-sdk",
+   "downloads": 168154875
+  },
+  {
+   "name": "msal-extensions",
+   "downloads": 166408976
+  },
+  {
+   "name": "mpmath",
+   "downloads": 165187511
+  },
+  {
+   "name": "backoff",
+   "downloads": 162755837
+  },
+  {
+   "name": "async-timeout",
+   "downloads": 162671640
+  },
+  {
+   "name": "aiofiles",
+   "downloads": 162003375
+  },
+  {
+   "name": "google-cloud-batch",
+   "downloads": 161014684
+  },
+  {
+   "name": "paramiko",
+   "downloads": 159875224
+  },
+  {
+   "name": "build",
+   "downloads": 158054202
+  },
+  {
+   "name": "jsonpatch",
+   "downloads": 157482368
+  },
+  {
+   "name": "joserfc",
+   "downloads": 155523731
+  },
+  {
+   "name": "authlib",
+   "downloads": 155113336
+  },
+  {
+   "name": "pydantic-ai-slim",
+   "downloads": 154618422
+  },
+  {
+   "name": "fastjsonschema",
+   "downloads": 154525318
+  },
+  {
+   "name": "traitlets",
+   "downloads": 154200304
+  },
+  {
+   "name": "narwhals",
+   "downloads": 152552686
+  },
+  {
+   "name": "asgiref",
+   "downloads": 151569378
+  },
+  {
+   "name": "google-cloud-kms",
+   "downloads": 150610135
+  },
+  {
+   "name": "gcsfs",
+   "downloads": 149484372
+  },
+  {
+   "name": "google-analytics-admin",
+   "downloads": 149172369
+  },
+  {
+   "name": "sqlparse",
+   "downloads": 148904569
+  },
+  {
+   "name": "cloudpickle",
+   "downloads": 148360176
+  },
+  {
+   "name": "librt",
+   "downloads": 146820956
+  },
+  {
+   "name": "google-cloud-compute",
+   "downloads": 146386176
+  },
+  {
+   "name": "webencodings",
+   "downloads": 145195919
+  },
+  {
+   "name": "executing",
+   "downloads": 141816500
+  },
+  {
+   "name": "babel",
+   "downloads": 141619058
+  },
+  {
+   "name": "azure-storage-blob",
+   "downloads": 140007518
+  },
+  {
+   "name": "jedi",
+   "downloads": 138827225
+  },
+  {
+   "name": "datasets",
+   "downloads": 138759474
+  },
+  {
+   "name": "databricks-sdk",
+   "downloads": 136969643
+  },
+  {
+   "name": "gunicorn",
+   "downloads": 136458659
+  },
+  {
+   "name": "parso",
+   "downloads": 136154332
+  },
+  {
+   "name": "cython",
+   "downloads": 136120921
+  },
+  {
+   "name": "asttokens",
+   "downloads": 134816594
+  },
+  {
+   "name": "setuptools-scm",
+   "downloads": 134189099
+  },
+  {
+   "name": "isort",
+   "downloads": 133848740
+  },
+  {
+   "name": "grpc-google-iam-v1",
+   "downloads": 133019362
+  },
+  {
+   "name": "google-cloud-dlp",
+   "downloads": 132578900
+  },
+  {
+   "name": "matplotlib-inline",
+   "downloads": 130518030
+  },
+  {
+   "name": "tornado",
+   "downloads": 130349391
+  },
+  {
+   "name": "types-requests",
+   "downloads": 129861978
+  },
+  {
+   "name": "pypdf",
+   "downloads": 129364007
+  },
+  {
+   "name": "cachecontrol",
+   "downloads": 128663251
+  },
+  {
+   "name": "google-cloud-texttospeech",
+   "downloads": 127459338
+  },
+  {
+   "name": "xmltodict",
+   "downloads": 127115154
+  },
+  {
+   "name": "marshmallow",
+   "downloads": 125436071
+  },
+  {
+   "name": "stack-data",
+   "downloads": 124339009
+  },
+  {
+   "name": "pure-eval",
+   "downloads": 124116100
+  },
+  {
+   "name": "vcs-versioning",
+   "downloads": 123571313
+  },
+  {
+   "name": "google-cloud-speech",
+   "downloads": 122581480
+  },
+  {
+   "name": "python-json-logger",
+   "downloads": 122072365
+  },
+  {
+   "name": "markdown",
+   "downloads": 121684358
+  },
+  {
+   "name": "dbt-adapters",
+   "downloads": 121337316
+  },
+  {
+   "name": "databricks-sql-connector",
+   "downloads": 119486114
+  },
+  {
+   "name": "pymongo",
+   "downloads": 118959014
+  },
+  {
+   "name": "google-cloud-pubsub",
+   "downloads": 118553519
+  },
+  {
+   "name": "psycopg",
+   "downloads": 116967627
+  },
+  {
+   "name": "langsmith",
+   "downloads": 116925137
+  },
+  {
+   "name": "asyncpg",
+   "downloads": 115073622
+  },
+  {
+   "name": "pymupdf",
+   "downloads": 114904797
+  },
+  {
+   "name": "cfn-lint",
+   "downloads": 114893031
+  },
+  {
+   "name": "kubernetes",
+   "downloads": 114242045
+  },
+  {
+   "name": "dbt-core",
+   "downloads": 113685611
+  },
+  {
+   "name": "structlog",
+   "downloads": 113620670
+  },
+  {
+   "name": "python-docx",
+   "downloads": 113399633
+  },
+  {
+   "name": "xlsxwriter",
+   "downloads": 113270689
+  },
+  {
+   "name": "tinycss2",
+   "downloads": 113205802
+  },
+  {
+   "name": "watchdog",
+   "downloads": 112147750
+  },
+  {
+   "name": "py4j",
+   "downloads": 111317505
+  },
+  {
+   "name": "pydantic-graph",
+   "downloads": 110997194
+  },
+  {
+   "name": "psycopg-binary",
+   "downloads": 109644165
+  },
+  {
+   "name": "pyzmq",
+   "downloads": 109452815
+  },
+  {
+   "name": "pytokens",
+   "downloads": 108727382
+  },
+  {
+   "name": "pyperclip",
+   "downloads": 107879396
+  },
+  {
+   "name": "debugpy",
+   "downloads": 107550466
+  },
+  {
+   "name": "aioitertools",
+   "downloads": 106599820
+  },
+  {
+   "name": "safetensors",
+   "downloads": 105773531
+  },
+  {
+   "name": "termcolor",
+   "downloads": 105554813
+  },
+  {
+   "name": "pytest-mock",
+   "downloads": 105035819
+  },
+  {
+   "name": "slack-sdk",
+   "downloads": 105033359
+  },
+  {
+   "name": "lz4",
+   "downloads": 104845718
+  },
+  {
+   "name": "importlib-resources",
+   "downloads": 103538181
+  },
+  {
+   "name": "nest-asyncio",
+   "downloads": 103455115
+  },
+  {
+   "name": "pytest-timeout",
+   "downloads": 103142767
+  },
+  {
+   "name": "torch",
+   "downloads": 102480941
+  },
+  {
+   "name": "sglang",
+   "downloads": 102289382
+  },
+  {
+   "name": "pycryptodome",
+   "downloads": 102220607
+  },
+  {
+   "name": "jsonschema-path",
+   "downloads": 102204595
+  },
+  {
+   "name": "google-cloud-logging",
+   "downloads": 101727957
+  },
+  {
+   "name": "flatbuffers",
+   "downloads": 101427122
+  },
+  {
+   "name": "pandas-stubs",
+   "downloads": 101187201
+  },
+  {
+   "name": "google-cloud-tasks",
+   "downloads": 101175764
+  },
+  {
+   "name": "snowflake-snowpark-python",
+   "downloads": 100681113
+  },
+  {
+   "name": "jupyter-core",
+   "downloads": 100600082
+  },
+  {
+   "name": "typedload",
+   "downloads": 100335722
+  },
+  {
+   "name": "opentelemetry-exporter-prometheus",
+   "downloads": 99429563
+  },
+  {
+   "name": "deprecation",
+   "downloads": 99399347
+  },
+  {
+   "name": "dulwich",
+   "downloads": 99380025
+  },
+  {
+   "name": "beartype",
+   "downloads": 99103337
+  },
+  {
+   "name": "tomli-w",
+   "downloads": 99062021
+  },
+  {
+   "name": "griffelib",
+   "downloads": 98760537
+  },
+  {
+   "name": "google-cloud-monitoring",
+   "downloads": 97288234
+  },
+  {
+   "name": "cyclopts",
+   "downloads": 97141152
+  },
+  {
+   "name": "pathable",
+   "downloads": 96074071
+  },
+  {
+   "name": "pymysql",
+   "downloads": 95672299
+  },
+  {
+   "name": "jsonref",
+   "downloads": 95277791
+  },
+  {
+   "name": "jupyter-client",
+   "downloads": 94983499
+  },
+  {
+   "name": "fastuuid",
+   "downloads": 94946095
+  },
+  {
+   "name": "brotli",
+   "downloads": 94740431
+  },
+  {
+   "name": "llama-parse",
+   "downloads": 94374576
+  },
+  {
+   "name": "mdit-py-plugins",
+   "downloads": 94328231
+  },
+  {
+   "name": "opentelemetry-instrumentation-fastapi",
+   "downloads": 94203520
+  },
+  {
+   "name": "llama-cloud-services",
+   "downloads": 93936970
+  },
+  {
+   "name": "mccabe",
+   "downloads": 93922648
+  },
+  {
+   "name": "pkginfo",
+   "downloads": 93834699
+  },
+  {
+   "name": "installer",
+   "downloads": 92681417
+  },
+  {
+   "name": "playwright",
+   "downloads": 92535735
+  },
+  {
+   "name": "croniter",
+   "downloads": 91978994
+  },
+  {
+   "name": "sphinx",
+   "downloads": 91816399
+  },
+  {
+   "name": "rich-rst",
+   "downloads": 91027126
+  },
+  {
+   "name": "semver",
+   "downloads": 91007414
+  },
+  {
+   "name": "dbt-common",
+   "downloads": 90917492
+  },
+  {
+   "name": "opentelemetry-instrumentation-asgi",
+   "downloads": 90861061
+  },
+  {
+   "name": "py-key-value-aio",
+   "downloads": 90300577
+  },
+  {
+   "name": "xlrd",
+   "downloads": 89914888
+  },
+  {
+   "name": "onnxruntime",
+   "downloads": 89348090
+  },
+  {
+   "name": "google-cloud-bigtable",
+   "downloads": 89249220
+  },
+  {
+   "name": "python-slugify",
+   "downloads": 89240435
+  },
+  {
+   "name": "pycodestyle",
+   "downloads": 89218710
+  },
+  {
+   "name": "wsproto",
+   "downloads": 89034220
+  },
+  {
+   "name": "text-unidecode",
+   "downloads": 89031232
+  },
+  {
+   "name": "linkify-it-py",
+   "downloads": 89002028
+  },
+  {
+   "name": "rich-toolkit",
+   "downloads": 88814198
+  },
+  {
+   "name": "fastmcp",
+   "downloads": 88710190
+  },
+  {
+   "name": "markdownify",
+   "downloads": 88556136
+  },
+  {
+   "name": "typing-inspect",
+   "downloads": 88348693
+  },
+  {
+   "name": "awswrangler",
+   "downloads": 88078486
+  },
+  {
+   "name": "pyee",
+   "downloads": 87149660
+  },
+  {
+   "name": "truststore",
+   "downloads": 87096308
+  },
+  {
+   "name": "ruamel-yaml-clib",
+   "downloads": 86687388
+  },
+  {
+   "name": "google-cloud-vision",
+   "downloads": 86196382
+  },
+  {
+   "name": "invoke",
+   "downloads": 86146586
+  },
+  {
+   "name": "uc-micro-py",
+   "downloads": 86052562
+  },
+  {
+   "name": "numba",
+   "downloads": 86011939
+  },
+  {
+   "name": "shapely",
+   "downloads": 85768804
+  },
+  {
+   "name": "poetry-plugin-export",
+   "downloads": 85766131
+  },
+  {
+   "name": "poetry",
+   "downloads": 85290141
+  },
+  {
+   "name": "argcomplete",
+   "downloads": 84820908
+  },
+  {
+   "name": "graphql-core",
+   "downloads": 84509831
+  },
+  {
+   "name": "nbformat",
+   "downloads": 83736749
+  },
+  {
+   "name": "grpcio-health-checking",
+   "downloads": 83700338
+  },
+  {
+   "name": "sqlglot",
+   "downloads": 83483497
+  },
+  {
+   "name": "crashtest",
+   "downloads": 83271769
+  },
+  {
+   "name": "google-cloud-run",
+   "downloads": 83160237
+  },
+  {
+   "name": "msrest",
+   "downloads": 82458775
+  },
+  {
+   "name": "faker",
+   "downloads": 82257950
+  },
+  {
+   "name": "ast-serialize",
+   "downloads": 82214499
+  },
+  {
+   "name": "deepdiff",
+   "downloads": 82205561
+  },
+  {
+   "name": "fastmcp-slim",
+   "downloads": 81942649
+  },
+  {
+   "name": "pygithub",
+   "downloads": 81887980
+  },
+  {
+   "name": "loguru",
+   "downloads": 81864712
+  },
+  {
+   "name": "rfc3339-validator",
+   "downloads": 81842496
+  },
+  {
+   "name": "ipykernel",
+   "downloads": 81799814
+  },
+  {
+   "name": "google-cloud-videointelligence",
+   "downloads": 81689653
+  },
+  {
+   "name": "google-cloud-language",
+   "downloads": 81683829
+  },
+  {
+   "name": "google-cloud-workflows",
+   "downloads": 81013021
+  },
+  {
+   "name": "types-pyyaml",
+   "downloads": 80701250
+  },
+  {
+   "name": "arrow",
+   "downloads": 80661261
+  },
+  {
+   "name": "cleo",
+   "downloads": 80505852
+  },
+  {
+   "name": "uuid-utils",
+   "downloads": 80449982
+  },
+  {
+   "name": "mistune",
+   "downloads": 80266122
+  },
+  {
+   "name": "google-cloud-redis",
+   "downloads": 80011739
+  },
+  {
+   "name": "comm",
+   "downloads": 80003770
+  },
+  {
+   "name": "google-cloud-dataform",
+   "downloads": 79994340
+  },
+  {
+   "name": "sqlalchemy-bigquery",
+   "downloads": 79820407
+  },
+  {
+   "name": "lark",
+   "downloads": 79690057
+  },
+  {
+   "name": "snowflake-sqlalchemy",
+   "downloads": 79567809
+  },
+  {
+   "name": "google-cloud-os-login",
+   "downloads": 79422938
+  },
+  {
+   "name": "pytest-rerunfailures",
+   "downloads": 79126164
+  },
+  {
+   "name": "tree-sitter",
+   "downloads": 78950267
+  },
+  {
+   "name": "google-cloud-bigquery-datatransfer",
+   "downloads": 78786770
+  },
+  {
+   "name": "requests-file",
+   "downloads": 78637754
+  },
+  {
+   "name": "bleach",
+   "downloads": 78637646
+  },
+  {
+   "name": "durationpy",
+   "downloads": 78620724
+  },
+  {
+   "name": "ipython-pygments-lexers",
+   "downloads": 78556467
+  },
+  {
+   "name": "google-cloud-dataproc-metastore",
+   "downloads": 78065066
+  },
+  {
+   "name": "backports-zstd",
+   "downloads": 77835120
+  },
+  {
+   "name": "google-cloud-orchestration-airflow",
+   "downloads": 77700765
+  },
+  {
+   "name": "typeguard",
+   "downloads": 77468346
+  },
+  {
+   "name": "backports-tarfile",
+   "downloads": 77426997
+  },
+  {
+   "name": "google-cloud-memcache",
+   "downloads": 77406947
+  },
+  {
+   "name": "aiosqlite",
+   "downloads": 77088949
+  },
+  {
+   "name": "pypdfium2",
+   "downloads": 76887653
+  },
+  {
+   "name": "reportlab",
+   "downloads": 76880608
+  },
+  {
+   "name": "uncalled-for",
+   "downloads": 76554634
+  },
+  {
+   "name": "google-cloud-automl",
+   "downloads": 76019197
+  },
+  {
+   "name": "pycryptodomex",
+   "downloads": 75680428
+  },
+  {
+   "name": "aiofile",
+   "downloads": 75369476
+  },
+  {
+   "name": "pendulum",
+   "downloads": 75071771
+  },
+  {
+   "name": "fastapi-cli",
+   "downloads": 74715354
+  },
+  {
+   "name": "argon2-cffi",
+   "downloads": 74406319
+  },
+  {
+   "name": "plotly",
+   "downloads": 74220387
+  },
+  {
+   "name": "argon2-cffi-bindings",
+   "downloads": 74176984
+  },
+  {
+   "name": "nltk",
+   "downloads": 74083238
+  },
+  {
+   "name": "cattrs",
+   "downloads": 73830482
+  },
+  {
+   "name": "mmh3",
+   "downloads": 73307432
+  },
+  {
+   "name": "jsonpath-ng",
+   "downloads": 72852742
+  },
+  {
+   "name": "smart-open",
+   "downloads": 72785991
+  },
+  {
+   "name": "langgraph",
+   "downloads": 72703662
+  },
+  {
+   "name": "pdfminer-six",
+   "downloads": 72508554
+  },
+  {
+   "name": "caio",
+   "downloads": 72449673
+  },
+  {
+   "name": "triton",
+   "downloads": 72441274
+  },
+  {
+   "name": "humanize",
+   "downloads": 72423518
+  },
+  {
+   "name": "responses",
+   "downloads": 71526828
+  },
+  {
+   "name": "future",
+   "downloads": 71389919
+  },
+  {
+   "name": "polars",
+   "downloads": 70930564
+  },
+  {
+   "name": "google-cloud-dataflow-client",
+   "downloads": 70833451
+  },
+  {
+   "name": "datadog",
+   "downloads": 70796714
+  },
+  {
+   "name": "types-protobuf",
+   "downloads": 70687775
+  },
+  {
+   "name": "cbor2",
+   "downloads": 69771135
+  },
+  {
+   "name": "pydantic-extra-types",
+   "downloads": 69555564
+  },
+  {
+   "name": "langchain-openai",
+   "downloads": 69458995
+  },
+  {
+   "name": "llvmlite",
+   "downloads": 69292894
+  },
+  {
+   "name": "pysocks",
+   "downloads": 69215407
+  },
+  {
+   "name": "google-cloud-resource-manager",
+   "downloads": 69047612
+  },
+  {
+   "name": "pylint",
+   "downloads": 69022381
+  },
+  {
+   "name": "py",
+   "downloads": 68940837
+  },
+  {
+   "name": "types-toml",
+   "downloads": 68669896
+  },
+  {
+   "name": "nbconvert",
+   "downloads": 67755990
+  },
+  {
+   "name": "dataclasses-json",
+   "downloads": 67739139
+  },
+  {
+   "name": "python-pptx",
+   "downloads": 67208342
+  },
+  {
+   "name": "openapi-pydantic",
+   "downloads": 67133231
+  },
+  {
+   "name": "scramp",
+   "downloads": 66810516
+  },
+  {
+   "name": "zope-interface",
+   "downloads": 66356928
+  },
+  {
+   "name": "nbclient",
+   "downloads": 66296495
+  },
+  {
+   "name": "pyflakes",
+   "downloads": 65928949
+  },
+  {
+   "name": "colorlog",
+   "downloads": 65680082
+  },
+  {
+   "name": "azure-common",
+   "downloads": 65674942
+  },
+  {
+   "name": "portalocker",
+   "downloads": 65125508
+  },
+  {
+   "name": "pbs-installer",
+   "downloads": 64585431
+  },
+  {
+   "name": "opencv-python",
+   "downloads": 64334607
+  },
+  {
+   "name": "jupyterlab-pygments",
+   "downloads": 64106985
+  },
+  {
+   "name": "confluent-kafka",
+   "downloads": 63434267
+  },
+  {
+   "name": "ray",
+   "downloads": 63307310
+  },
+  {
+   "name": "pdfplumber",
+   "downloads": 62830652
+  },
+  {
+   "name": "toolz",
+   "downloads": 62699991
+  },
+  {
+   "name": "simplejson",
+   "downloads": 62249238
+  },
+  {
+   "name": "azure-keyvault-secrets",
+   "downloads": 60940459
+  },
+  {
+   "name": "pandocfilters",
+   "downloads": 60830168
+  },
+  {
+   "name": "freezegun",
+   "downloads": 60817178
+  },
+  {
+   "name": "ecdsa",
+   "downloads": 60610013
+  },
+  {
+   "name": "notebook",
+   "downloads": 60608419
+  },
+  {
+   "name": "types-certifi",
+   "downloads": 60494246
+  },
+  {
+   "name": "flask-cors",
+   "downloads": 60435146
+  },
+  {
+   "name": "click-plugins",
+   "downloads": 60251867
+  },
+  {
+   "name": "selenium",
+   "downloads": 60237482
+  },
+  {
+   "name": "grpclib",
+   "downloads": 59767909
+  },
+  {
+   "name": "orderly-set",
+   "downloads": 59657713
+  },
+  {
+   "name": "types-python-dateutil",
+   "downloads": 59270441
+  },
+  {
+   "name": "jupyter-server",
+   "downloads": 59222489
+  },
+  {
+   "name": "psycopg2",
+   "downloads": 59190867
+  },
+  {
+   "name": "kombu",
+   "downloads": 58934776
+  },
+  {
+   "name": "modal",
+   "downloads": 58661696
+  },
+  {
+   "name": "langgraph-prebuilt",
+   "downloads": 58540136
+  },
+  {
+   "name": "flake8",
+   "downloads": 58425368
+  },
+  {
+   "name": "celery",
+   "downloads": 58245954
+  },
+  {
+   "name": "types-awscrt",
+   "downloads": 57743216
+  },
+  {
+   "name": "absl-py",
+   "downloads": 57702145
+  },
+  {
+   "name": "fastapi-cloud-cli",
+   "downloads": 57467079
+  },
+  {
+   "name": "langgraph-sdk",
+   "downloads": 57249108
+  },
+  {
+   "name": "duckdb",
+   "downloads": 57186609
+  },
+  {
+   "name": "botocore-stubs",
+   "downloads": 57153647
+  },
+  {
+   "name": "findpython",
+   "downloads": 57147594
+  },
+  {
+   "name": "json5",
+   "downloads": 56835055
+  },
+  {
+   "name": "graphviz",
+   "downloads": 56765305
+  },
+  {
+   "name": "prettytable",
+   "downloads": 56600675
+  },
+  {
+   "name": "polars-runtime-32",
+   "downloads": 56523911
+  },
+  {
+   "name": "trio",
+   "downloads": 56068952
+  },
+  {
+   "name": "opentelemetry-instrumentation-httpx",
+   "downloads": 56038922
+  },
+  {
+   "name": "httpx2",
+   "downloads": 55998124
+  },
+  {
+   "name": "langchain-protocol",
+   "downloads": 55997982
+  },
+  {
+   "name": "jupyterlab",
+   "downloads": 55814597
+  },
+  {
+   "name": "elasticsearch",
+   "downloads": 55673594
+  },
+  {
+   "name": "opensearch-py",
+   "downloads": 55621394
+  },
+  {
+   "name": "redshift-connector",
+   "downloads": 55579978
+  },
+  {
+   "name": "django",
+   "downloads": 55426634
+  },
+  {
+   "name": "astroid",
+   "downloads": 55355505
+  },
+  {
+   "name": "httpcore2",
+   "downloads": 55327575
+  },
+  {
+   "name": "langgraph-checkpoint",
+   "downloads": 55119367
+  },
+  {
+   "name": "pymssql",
+   "downloads": 54853934
+  },
+  {
+   "name": "aws-sam-translator",
+   "downloads": 54775041
+  },
+  {
+   "name": "google-cloud-spanner",
+   "downloads": 54592845
+  },
+  {
+   "name": "altair",
+   "downloads": 54458936
+  },
+  {
+   "name": "humanfriendly",
+   "downloads": 54324771
+  },
+  {
+   "name": "nh3",
+   "downloads": 54059510
+  },
+  {
+   "name": "vine",
+   "downloads": 54038980
+  },
+  {
+   "name": "types-s3transfer",
+   "downloads": 53999713
+  },
+  {
+   "name": "amqp",
+   "downloads": 53922695
+  },
+  {
+   "name": "synchronicity",
+   "downloads": 53917432
+  },
+  {
+   "name": "billiard",
+   "downloads": 53634981
+  },
+  {
+   "name": "google-cloud-appengine-logging",
+   "downloads": 53469832
+  },
+  {
+   "name": "xgboost",
+   "downloads": 53370538
+  },
+  {
+   "name": "semantic-version",
+   "downloads": 53316760
+  },
+  {
+   "name": "ijson",
+   "downloads": 53309834
+  },
+  {
+   "name": "browser-use",
+   "downloads": 53079055
+  },
+  {
+   "name": "outcome",
+   "downloads": 52958339
+  },
+  {
+   "name": "ormsgpack",
+   "downloads": 52745996
+  },
+  {
+   "name": "cssselect2",
+   "downloads": 52710104
+  },
+  {
+   "name": "click-didyoumean",
+   "downloads": 52570106
+  },
+  {
+   "name": "nvidia-nccl-cu12",
+   "downloads": 52431980
+  },
+  {
+   "name": "click-repl",
+   "downloads": 52241755
+  },
+  {
+   "name": "gevent",
+   "downloads": 52193772
+  },
+  {
+   "name": "mypy-boto3-s3",
+   "downloads": 52058577
+  },
+  {
+   "name": "cuda-pathfinder",
+   "downloads": 52035930
+  },
+  {
+   "name": "antlr4-python3-runtime",
+   "downloads": 51984931
+  },
+  {
+   "name": "libcst",
+   "downloads": 51948301
+  },
+  {
+   "name": "peewee",
+   "downloads": 51713163
+  },
+  {
+   "name": "inflection",
+   "downloads": 51676158
+  },
+  {
+   "name": "webcolors",
+   "downloads": 51653224
+  },
+  {
+   "name": "pyspark",
+   "downloads": 51459453
+  },
+  {
+   "name": "apscheduler",
+   "downloads": 51359048
+  },
+  {
+   "name": "fakeredis",
+   "downloads": 50665879
+  },
+  {
+   "name": "setproctitle",
+   "downloads": 50652258
+  },
+  {
+   "name": "isoduration",
+   "downloads": 50649753
+  },
+  {
+   "name": "cuda-bindings",
+   "downloads": 50138807
+  },
+  {
+   "name": "opencv-python-headless",
+   "downloads": 50117128
+  },
+  {
+   "name": "boto3-stubs",
+   "downloads": 49870899
+  },
+  {
+   "name": "gcloud-aio-auth",
+   "downloads": 49744022
+  },
+  {
+   "name": "opentelemetry-instrumentation-urllib3",
+   "downloads": 49653715
+  },
+  {
+   "name": "mistralai",
+   "downloads": 49642470
+  },
+  {
+   "name": "mysql-connector-python",
+   "downloads": 49550032
+  },
+  {
+   "name": "opentelemetry-instrumentation-dbapi",
+   "downloads": 49463521
+  },
+  {
+   "name": "google-cloud-translate",
+   "downloads": 49447938
+  },
+  {
+   "name": "posthog",
+   "downloads": 49300844
+  },
+  {
+   "name": "azure-monitor-opentelemetry-exporter",
+   "downloads": 49299860
+  },
+  {
+   "name": "rich-click",
+   "downloads": 49242571
+  },
+  {
+   "name": "pywin32",
+   "downloads": 48831718
+  },
+  {
+   "name": "requests-aws4auth",
+   "downloads": 48636489
+  },
+  {
+   "name": "opentelemetry-instrumentation-wsgi",
+   "downloads": 48603783
+  },
+  {
+   "name": "langchain-text-splitters",
+   "downloads": 48406861
+  },
+  {
+   "name": "google-cloud-audit-log",
+   "downloads": 48382452
+  },
+  {
+   "name": "opentelemetry-instrumentation-django",
+   "downloads": 48381180
+  },
+  {
+   "name": "google-cloud-container",
+   "downloads": 48344854
+  },
+  {
+   "name": "opentelemetry-instrumentation-psycopg2",
+   "downloads": 48289711
+  },
+  {
+   "name": "hypothesis",
+   "downloads": 48260681
+  },
+  {
+   "name": "async-lru",
+   "downloads": 48158538
+  },
+  {
+   "name": "dateparser",
+   "downloads": 47784628
+  },
+  {
+   "name": "tableauserverclient",
+   "downloads": 47673713
+  },
+  {
+   "name": "langchain-community",
+   "downloads": 47388042
+  },
+  {
+   "name": "moto",
+   "downloads": 47377426
+  },
+  {
+   "name": "ddtrace",
+   "downloads": 47249864
+  },
+  {
+   "name": "google-cloud-datacatalog",
+   "downloads": 47190915
+  },
+  {
+   "name": "openapi-spec-validator",
+   "downloads": 47111997
+  },
+  {
+   "name": "fqdn",
+   "downloads": 47100243
+  },
+  {
+   "name": "db-dtypes",
+   "downloads": 47028806
+  },
+  {
+   "name": "gcloud-aio-storage",
+   "downloads": 46983440
+  },
+  {
+   "name": "uri-template",
+   "downloads": 46735284
+  },
+  {
+   "name": "fastcore",
+   "downloads": 46597030
+  },
+  {
+   "name": "opentelemetry-instrumentation-flask",
+   "downloads": 46428750
+  },
+  {
+   "name": "bracex",
+   "downloads": 46407663
+  },
+  {
+   "name": "gspread",
+   "downloads": 46264574
+  },
+  {
+   "name": "opentelemetry-instrumentation-urllib",
+   "downloads": 45892945
+  },
+  {
+   "name": "apache-airflow-providers-common-sql",
+   "downloads": 45861310
+  },
+  {
+   "name": "python-jose",
+   "downloads": 45854144
+  },
+  {
+   "name": "h5py",
+   "downloads": 45760485
+  },
+  {
+   "name": "fastavro",
+   "downloads": 45741179
+  },
+  {
+   "name": "statsmodels",
+   "downloads": 45723143
+  },
+  {
+   "name": "filetype",
+   "downloads": 45723141
+  },
+  {
+   "name": "limits",
+   "downloads": 45697217
+  },
+  {
+   "name": "seaborn",
+   "downloads": 45482103
+  },
+  {
+   "name": "send2trash",
+   "downloads": 45465590
+  },
+  {
+   "name": "rfc3986",
+   "downloads": 45139783
+  },
+  {
+   "name": "rfc3986-validator",
+   "downloads": 45059954
+  },
+  {
+   "name": "pg8000",
+   "downloads": 44916330
+  },
+  {
+   "name": "thrift",
+   "downloads": 44831557
+  },
+  {
+   "name": "opentelemetry-instrumentation-logging",
+   "downloads": 44745746
+  },
+  {
+   "name": "jupyterlab-server",
+   "downloads": 44712927
+  },
+  {
+   "name": "widgetsnbextension",
+   "downloads": 44628688
+  },
+  {
+   "name": "google-cloud-storage-transfer",
+   "downloads": 44620255
+  },
+  {
+   "name": "adal",
+   "downloads": 44549468
+  },
+  {
+   "name": "pinotdb",
+   "downloads": 44311633
+  },
+  {
+   "name": "msgspec",
+   "downloads": 44229194
+  },
+  {
+   "name": "wcmatch",
+   "downloads": 44156508
+  },
+  {
+   "name": "ply",
+   "downloads": 44096150
+  },
+  {
+   "name": "jupyterlab-widgets",
+   "downloads": 44077480
+  },
+  {
+   "name": "torchvision",
+   "downloads": 44025406
+  },
+  {
+   "name": "mlflow-skinny",
+   "downloads": 43993582
+  },
+  {
+   "name": "lazy-object-proxy",
+   "downloads": 43925043
+  },
+  {
+   "name": "imageio",
+   "downloads": 43906767
+  },
+  {
+   "name": "ipywidgets",
+   "downloads": 43682309
+  },
+  {
+   "name": "pyodbc",
+   "downloads": 43612249
+  },
+  {
+   "name": "nvidia-cublas",
+   "downloads": 43607703
+  },
+  {
+   "name": "stripe",
+   "downloads": 43297720
+  },
+  {
+   "name": "omegaconf",
+   "downloads": 43284788
+  },
+  {
+   "name": "nvidia-cuda-nvrtc",
+   "downloads": 43231966
+  },
+  {
+   "name": "nvidia-nvjitlink",
+   "downloads": 43189183
+  },
+  {
+   "name": "nvidia-cudnn-cu13",
+   "downloads": 43125763
+  },
+  {
+   "name": "jupyter-events",
+   "downloads": 43086624
+  },
+  {
+   "name": "nvidia-nccl-cu13",
+   "downloads": 43044472
+  },
+  {
+   "name": "python-telegram-bot",
+   "downloads": 43016646
+  },
+  {
+   "name": "zeep",
+   "downloads": 42981579
+  },
+  {
+   "name": "unidiff",
+   "downloads": 42832452
+  },
+  {
+   "name": "mlflow",
+   "downloads": 42724070
+  },
+  {
+   "name": "nvidia-cusparselt-cu13",
+   "downloads": 42690252
+  },
+  {
+   "name": "realtime",
+   "downloads": 42670971
+  },
+  {
+   "name": "terminado",
+   "downloads": 42582057
+  },
+  {
+   "name": "bytecode",
+   "downloads": 42538846
+  },
+  {
+   "name": "nvidia-nvshmem-cu13",
+   "downloads": 42207426
+  },
+  {
+   "name": "pyright",
+   "downloads": 42168725
+  },
+  {
+   "name": "overrides",
+   "downloads": 42137738
+  },
+  {
+   "name": "nvidia-cusparse",
+   "downloads": 42085601
+  },
+  {
+   "name": "jupyter-server-terminals",
+   "downloads": 41982861
+  },
+  {
+   "name": "rignore",
+   "downloads": 41971802
+  },
+  {
+   "name": "graphql-relay",
+   "downloads": 41969755
+  },
+  {
+   "name": "nest-asyncio2",
+   "downloads": 41911695
+  },
+  {
+   "name": "pyrsistent",
+   "downloads": 41840134
+  },
+  {
+   "name": "cuda-toolkit",
+   "downloads": 41769301
+  },
+  {
+   "name": "nvidia-cufft",
+   "downloads": 41694885
+  },
+  {
+   "name": "readme-renderer",
+   "downloads": 41655456
+  },
+  {
+   "name": "nvidia-cusolver",
+   "downloads": 41655450
+  },
+  {
+   "name": "graphene",
+   "downloads": 41575770
+  },
+  {
+   "name": "nvidia-curand",
+   "downloads": 41392726
+  },
+  {
+   "name": "pyarrow-hotfix",
+   "downloads": 41352095
+  },
+  {
+   "name": "google-cloud-firestore",
+   "downloads": 41232735
+  },
+  {
+   "name": "ordered-set",
+   "downloads": 41161286
+  },
+  {
+   "name": "trio-websocket",
+   "downloads": 41051413
+  },
+  {
+   "name": "google-ads",
+   "downloads": 40969208
+  },
+  {
+   "name": "aioboto3",
+   "downloads": 40863625
+  },
+  {
+   "name": "cohere",
+   "downloads": 40789011
+  },
+  {
+   "name": "google-cloud-bigquery-storage",
+   "downloads": 40553934
+  },
+  {
+   "name": "envier",
+   "downloads": 40534632
+  },
+  {
+   "name": "yamllint",
+   "downloads": 40372424
+  },
+  {
+   "name": "strenum",
+   "downloads": 40286862
+  },
+  {
+   "name": "diskcache",
+   "downloads": 40220254
+  },
+  {
+   "name": "pycountry",
+   "downloads": 40171416
+  },
+  {
+   "name": "nvidia-cuda-runtime",
+   "downloads": 40109653
+  },
+  {
+   "name": "appdirs",
+   "downloads": 40056552
+  },
+  {
+   "name": "types-pytz",
+   "downloads": 39749945
+  },
+  {
+   "name": "aenum",
+   "downloads": 39708100
+  },
+  {
+   "name": "passlib",
+   "downloads": 39687098
+  },
+  {
+   "name": "weasyprint",
+   "downloads": 39652273
+  },
+  {
+   "name": "fastar",
+   "downloads": 39599918
+  },
+  {
+   "name": "coloredlogs",
+   "downloads": 39574208
+  },
+  {
+   "name": "mashumaro",
+   "downloads": 39517094
+  },
+  {
+   "name": "nvidia-cuda-cupti",
+   "downloads": 39457829
+  },
+  {
+   "name": "ty",
+   "downloads": 39433122
+  },
+  {
+   "name": "boolean-py",
+   "downloads": 39424988
+  },
+  {
+   "name": "license-expression",
+   "downloads": 39385607
+  },
+  {
+   "name": "pyroaring",
+   "downloads": 39262205
+  },
+  {
+   "name": "azure-mgmt-core",
+   "downloads": 39207262
+  },
+  {
+   "name": "llama-index-llms-openai",
+   "downloads": 39166216
+  },
+  {
+   "name": "notebook-shim",
+   "downloads": 39008962
+  },
+  {
+   "name": "nvidia-cufile",
+   "downloads": 38976413
+  },
+  {
+   "name": "pyiceberg",
+   "downloads": 38941339
+  },
+  {
+   "name": "jupyter-lsp",
+   "downloads": 38916606
+  },
+  {
+   "name": "nvidia-nvtx",
+   "downloads": 38767974
+  },
+  {
+   "name": "phonenumbers",
+   "downloads": 38754338
+  },
+  {
+   "name": "patsy",
+   "downloads": 38737083
+  },
+  {
+   "name": "pyotp",
+   "downloads": 38726681
+  },
+  {
+   "name": "html5lib",
+   "downloads": 38714729
+  },
+  {
+   "name": "retrying",
+   "downloads": 38692760
+  },
+  {
+   "name": "llama-index-indices-managed-llama-cloud",
+   "downloads": 38689402
+  },
+  {
+   "name": "stevedore",
+   "downloads": 38594183
+  },
+  {
+   "name": "tldextract",
+   "downloads": 38532719
+  },
+  {
+   "name": "delta-spark",
+   "downloads": 38466157
+  },
+  {
+   "name": "json-repair",
+   "downloads": 38109958
+  },
+  {
+   "name": "elastic-transport",
+   "downloads": 37957069
+  },
+  {
+   "name": "entrypoints",
+   "downloads": 37929135
+  },
+  {
+   "name": "supabase",
+   "downloads": 37817760
+  },
+  {
+   "name": "retry",
+   "downloads": 37748285
+  },
+  {
+   "name": "databricks-sqlalchemy",
+   "downloads": 37744755
+  },
+  {
+   "name": "flit-core",
+   "downloads": 37722336
+  },
+  {
+   "name": "rfc3987-syntax",
+   "downloads": 37698453
+  },
+  {
+   "name": "curl-cffi",
+   "downloads": 37402186
+  },
+  {
+   "name": "azure-storage-queue",
+   "downloads": 37377358
+  },
+  {
+   "name": "oauth2client",
+   "downloads": 37346291
+  },
+  {
+   "name": "aiohttp-retry",
+   "downloads": 37263239
+  },
+  {
+   "name": "azure-storage-file-datalake",
+   "downloads": 37198883
+  },
+  {
+   "name": "storage3",
+   "downloads": 37103634
+  },
+  {
+   "name": "postgrest",
+   "downloads": 36967811
+  },
+  {
+   "name": "tox",
+   "downloads": 36933262
+  },
+  {
+   "name": "eval-type-backport",
+   "downloads": 36627057
+  },
+  {
+   "name": "zopfli",
+   "downloads": 36363196
+  },
+  {
+   "name": "twine",
+   "downloads": 36352430
+  },
+  {
+   "name": "strands-agents",
+   "downloads": 36172755
+  },
+  {
+   "name": "lmnr",
+   "downloads": 36118188
+  },
+  {
+   "name": "ml-dtypes",
+   "downloads": 36116003
+  },
+  {
+   "name": "snowballstemmer",
+   "downloads": 36101076
+  },
+  {
+   "name": "pybreaker",
+   "downloads": 36034984
+  },
+  {
+   "name": "langchain-google-vertexai",
+   "downloads": 35934348
+  },
+  {
+   "name": "scikit-image",
+   "downloads": 35835544
+  },
+  {
+   "name": "cyclonedx-python-lib",
+   "downloads": 35721532
+  },
+  {
+   "name": "pgvector",
+   "downloads": 35593280
+  },
+  {
+   "name": "sentencepiece",
+   "downloads": 35582256
+  },
+  {
+   "name": "pyphen",
+   "downloads": 35518377
+  },
+  {
+   "name": "semgrep",
+   "downloads": 35516275
+  },
+  {
+   "name": "mergedeep",
+   "downloads": 35417165
+  },
+  {
+   "name": "pytest-metadata",
+   "downloads": 35249000
+  },
+  {
+   "name": "packageurl-python",
+   "downloads": 35215310
+  },
+  {
+   "name": "openai-agents",
+   "downloads": 35205039
+  },
+  {
+   "name": "parsedatetime",
+   "downloads": 35034666
+  },
+  {
+   "name": "agate",
+   "downloads": 34985061
+  },
+  {
+   "name": "universal-pathlib",
+   "downloads": 34977368
+  },
+  {
+   "name": "ujson",
+   "downloads": 34789130
+  },
+  {
+   "name": "hyperlink",
+   "downloads": 34782084
+  },
+  {
+   "name": "cramjam",
+   "downloads": 34689918
+  },
+  {
+   "name": "agent-client-protocol",
+   "downloads": 34506071
+  },
+  {
+   "name": "pandas-gbq",
+   "downloads": 34473624
+  },
+  {
+   "name": "id",
+   "downloads": 34431432
+  },
+  {
+   "name": "py-serializable",
+   "downloads": 34429527
+  },
+  {
+   "name": "pytimeparse",
+   "downloads": 34236438
+  },
+  {
+   "name": "types-setuptools",
+   "downloads": 34170583
+  },
+  {
+   "name": "crc32c",
+   "downloads": 34113164
+  },
+  {
+   "name": "supabase-auth",
+   "downloads": 33939429
+  },
+  {
+   "name": "supabase-functions",
+   "downloads": 33907675
+  },
+  {
+   "name": "zope-event",
+   "downloads": 33538693
+  },
+  {
+   "name": "events",
+   "downloads": 33319270
+  },
+  {
+   "name": "lockfile",
+   "downloads": 33168445
+  },
+  {
+   "name": "simple-salesforce",
+   "downloads": 33021838
+  },
+  {
+   "name": "mock",
+   "downloads": 32892422
+  },
+  {
+   "name": "tblib",
+   "downloads": 32800766
+  },
+  {
+   "name": "unidecode",
+   "downloads": 32788142
+  },
+  {
+   "name": "psycopg-pool",
+   "downloads": 32651920
+  },
+  {
+   "name": "griffe",
+   "downloads": 32433880
+  },
+  {
+   "name": "testcontainers",
+   "downloads": 32406683
+  },
+  {
+   "name": "uv-build",
+   "downloads": 32246245
+  },
+  {
+   "name": "hvac",
+   "downloads": 32231023
+  },
+  {
+   "name": "av",
+   "downloads": 32230082
+  },
+  {
+   "name": "pydyf",
+   "downloads": 32210957
+  },
+  {
+   "name": "dbt-protos",
+   "downloads": 32143765
+  },
+  {
+   "name": "lazy-loader",
+   "downloads": 32093369
+  },
+  {
+   "name": "imagesize",
+   "downloads": 31730124
+  },
+  {
+   "name": "pip-requirements-parser",
+   "downloads": 31716922
+  },
+  {
+   "name": "validators",
+   "downloads": 31710317
+  },
+  {
+   "name": "inflect",
+   "downloads": 31561361
+  },
+  {
+   "name": "strictyaml",
+   "downloads": 31485597
+  },
+  {
+   "name": "flask-sqlalchemy",
+   "downloads": 31412966
+  },
+  {
+   "name": "clickhouse-connect",
+   "downloads": 31374110
+  },
+  {
+   "name": "lupa",
+   "downloads": 31324856
+  },
+  {
+   "name": "tree-sitter-languages",
+   "downloads": 31162222
+  },
+  {
+   "name": "ninja",
+   "downloads": 31077459
+  },
+  {
+   "name": "click-option-group",
+   "downloads": 30823118
+  },
+  {
+   "name": "python-magic",
+   "downloads": 30749529
+  },
+  {
+   "name": "pbr",
+   "downloads": 30666742
+  },
+  {
+   "name": "holidays",
+   "downloads": 30660848
+  },
+  {
+   "name": "google-cloud-dataplex",
+   "downloads": 30630482
+  },
+  {
+   "name": "msrestazure",
+   "downloads": 30628049
+  },
+  {
+   "name": "sentence-transformers",
+   "downloads": 30596728
+  },
+  {
+   "name": "sphinxcontrib-serializinghtml",
+   "downloads": 30533299
+  },
+  {
+   "name": "google-cloud-alloydb",
+   "downloads": 30438482
+  },
+  {
+   "name": "temporalio",
+   "downloads": 30412282
+  },
+  {
+   "name": "alabaster",
+   "downloads": 30396617
+  },
+  {
+   "name": "dask",
+   "downloads": 30340726
+  },
+  {
+   "name": "claude-agent-sdk",
+   "downloads": 30203813
+  },
+  {
+   "name": "google-pasta",
+   "downloads": 30193723
+  },
+  {
+   "name": "youtube-transcript-api",
+   "downloads": 30122342
+  },
+  {
+   "name": "soundfile",
+   "downloads": 29968697
+  },
+  {
+   "name": "bidict",
+   "downloads": 29879393
+  },
+  {
+   "name": "einops",
+   "downloads": 29768450
+  },
+  {
+   "name": "pybind11",
+   "downloads": 29672883
+  },
+  {
+   "name": "streamlit",
+   "downloads": 29672055
+  },
+  {
+   "name": "tifffile",
+   "downloads": 29553745
+  },
+  {
+   "name": "deltalake",
+   "downloads": 29502842
+  },
+  {
+   "name": "hiredis",
+   "downloads": 29422261
+  },
+  {
+   "name": "lightgbm",
+   "downloads": 29396241
+  },
+  {
+   "name": "socksio",
+   "downloads": 29395198
+  },
+  {
+   "name": "opentelemetry-instrumentation-sqlalchemy",
+   "downloads": 29388766
+  },
+  {
+   "name": "tinyhtml5",
+   "downloads": 29381392
+  },
+  {
+   "name": "sqlalchemy-utils",
+   "downloads": 29307657
+  },
+  {
+   "name": "python-http-client",
+   "downloads": 29298536
+  },
+  {
+   "name": "swebench",
+   "downloads": 29298212
+  },
+  {
+   "name": "llama-cloud",
+   "downloads": 29274720
+  },
+  {
+   "name": "yfinance",
+   "downloads": 29190204
+  },
+  {
+   "name": "pydata-google-auth",
+   "downloads": 29031519
+  },
+  {
+   "name": "tensorboard",
+   "downloads": 29027769
+  },
+  {
+   "name": "bandit",
+   "downloads": 29001887
+  },
+  {
+   "name": "leather",
+   "downloads": 28729891
+  },
+  {
+   "name": "opentelemetry-distro",
+   "downloads": 28698053
+  },
+  {
+   "name": "sshtunnel",
+   "downloads": 28696904
+  },
+  {
+   "name": "requests-mock",
+   "downloads": 28678227
+  },
+  {
+   "name": "python-engineio",
+   "downloads": 28662792
+  },
+  {
+   "name": "python-socketio",
+   "downloads": 28644374
+  },
+  {
+   "name": "kafka-python",
+   "downloads": 28585530
+  },
+  {
+   "name": "schema",
+   "downloads": 28552508
+  },
+  {
+   "name": "djangorestframework",
+   "downloads": 28399095
+  },
+  {
+   "name": "dbt-extractor",
+   "downloads": 28371326
+  },
+  {
+   "name": "sendgrid",
+   "downloads": 28330843
+  },
+  {
+   "name": "pip-audit",
+   "downloads": 28288779
+  },
+  {
+   "name": "openapi-schema-validator",
+   "downloads": 28129313
+  },
+  {
+   "name": "simple-websocket",
+   "downloads": 28063819
+  },
+  {
+   "name": "azure-batch",
+   "downloads": 28054691
+  },
+  {
+   "name": "pyproj",
+   "downloads": 28043896
+  },
+  {
+   "name": "accelerate",
+   "downloads": 28010594
+  },
+  {
+   "name": "flask-login",
+   "downloads": 27907450
+  },
+  {
+   "name": "apache-airflow-providers-fab",
+   "downloads": 27898878
+  },
+  {
+   "name": "nexus-rpc",
+   "downloads": 27795261
+  },
+  {
+   "name": "spacy",
+   "downloads": 27781179
+  },
+  {
+   "name": "py-cpuinfo",
+   "downloads": 27770464
+  },
+  {
+   "name": "pip-api",
+   "downloads": 27746275
+  },
+  {
+   "name": "qrcode",
+   "downloads": 27727013
+  },
+  {
+   "name": "great-expectations",
+   "downloads": 27681262
+  },
+  {
+   "name": "sphinxcontrib-htmlhelp",
+   "downloads": 27665575
+  },
+  {
+   "name": "sphinxcontrib-qthelp",
+   "downloads": 27648827
+  },
+  {
+   "name": "sphinxcontrib-applehelp",
+   "downloads": 27620169
+  },
+  {
+   "name": "sphinxcontrib-devhelp",
+   "downloads": 27601779
+  },
+  {
+   "name": "nvidia-cublas-cu12",
+   "downloads": 27569652
+  },
+  {
+   "name": "groq",
+   "downloads": 27568012
+  },
+  {
+   "name": "google-cloud-dataproc",
+   "downloads": 27559983
+  },
+  {
+   "name": "userpath",
+   "downloads": 27451531
+  },
+  {
+   "name": "ua-parser",
+   "downloads": 27440250
+  },
+  {
+   "name": "pipenv",
+   "downloads": 27293367
+  },
+  {
+   "name": "pydeck",
+   "downloads": 27284479
+  },
+  {
+   "name": "nvidia-cuda-nvrtc-cu12",
+   "downloads": 27268429
+  },
+  {
+   "name": "gcloud-aio-bigquery",
+   "downloads": 27232853
+  },
+  {
+   "name": "asyncio",
+   "downloads": 27178514
+  },
+  {
+   "name": "vcrpy",
+   "downloads": 27148203
+  },
+  {
+   "name": "oracledb",
+   "downloads": 27127849
+  },
+  {
+   "name": "jsonpath-python",
+   "downloads": 27098778
+  },
+  {
+   "name": "nvidia-cusparse-cu12",
+   "downloads": 26883888
+  },
+  {
+   "name": "nvidia-cudnn-cu12",
+   "downloads": 26880886
+  },
+  {
+   "name": "logfire-api",
+   "downloads": 26858631
+  },
+  {
+   "name": "jpype1",
+   "downloads": 26758166
+  },
+  {
+   "name": "nvidia-nvjitlink-cu12",
+   "downloads": 26736623
+  },
+  {
+   "name": "types-paramiko",
+   "downloads": 26654844
+  },
+  {
+   "name": "pytest-runner",
+   "downloads": 26625278
+  },
+  {
+   "name": "sphinxcontrib-jsmath",
+   "downloads": 26617556
+  },
+  {
+   "name": "openlineage-python",
+   "downloads": 26556250
+  },
+  {
+   "name": "nvidia-cufft-cu12",
+   "downloads": 26552961
+  },
+  {
+   "name": "pypdf2",
+   "downloads": 26518980
+  },
+  {
+   "name": "azure-cosmos",
+   "downloads": 26514210
+  },
+  {
+   "name": "genai-prices",
+   "downloads": 26502872
+  },
+  {
+   "name": "wandb",
+   "downloads": 26350683
+  },
+  {
+   "name": "dbt-semantic-interfaces",
+   "downloads": 26339550
+  },
+  {
+   "name": "logfire",
+   "downloads": 26316054
+  },
+  {
+   "name": "prek",
+   "downloads": 26308103
+  },
+  {
+   "name": "pymdown-extensions",
+   "downloads": 26277036
+  },
+  {
+   "name": "opentelemetry-instrumentation-aiohttp-client",
+   "downloads": 26276049
+  },
+  {
+   "name": "boltons",
+   "downloads": 26164252
+  },
+  {
+   "name": "grpc-interceptor",
+   "downloads": 26131695
+  },
+  {
+   "name": "tree-sitter-bash",
+   "downloads": 26104748
+  },
+  {
+   "name": "watchtower",
+   "downloads": 26060904
+  },
+  {
+   "name": "datadog-api-client",
+   "downloads": 26049728
+  },
+  {
+   "name": "olefile",
+   "downloads": 26018738
+  },
+  {
+   "name": "nvidia-cusolver-cu12",
+   "downloads": 26003308
+  },
+  {
+   "name": "nvidia-cuda-cupti-cu12",
+   "downloads": 26001832
+  },
+  {
+   "name": "aws-requests-auth",
+   "downloads": 25978592
+  },
+  {
+   "name": "nvidia-curand-cu12",
+   "downloads": 25971643
+  },
+  {
+   "name": "natsort",
+   "downloads": 25952714
+  },
+  {
+   "name": "pydot",
+   "downloads": 25895333
+  },
+  {
+   "name": "azure-keyvault-keys",
+   "downloads": 25830046
+  },
+  {
+   "name": "nvidia-cuda-runtime-cu12",
+   "downloads": 25629615
+  },
+  {
+   "name": "py-spy",
+   "downloads": 25506961
+  },
+  {
+   "name": "langfuse",
+   "downloads": 25407481
+  },
+  {
+   "name": "opt-einsum",
+   "downloads": 25245905
+  },
+  {
+   "name": "gql",
+   "downloads": 25202541
+  },
+  {
+   "name": "texttable",
+   "downloads": 25130778
+  },
+  {
+   "name": "sounddevice",
+   "downloads": 25110713
+  },
+  {
+   "name": "daff",
+   "downloads": 25050238
+  },
+  {
+   "name": "cron-descriptor",
+   "downloads": 25017791
+  },
+  {
+   "name": "rich-argparse",
+   "downloads": 24893909
+  },
+  {
+   "name": "jira",
+   "downloads": 24805684
+  },
+  {
+   "name": "geopandas",
+   "downloads": 24795060
+  },
+  {
+   "name": "ua-parser-builtins",
+   "downloads": 24739258
+  },
+  {
+   "name": "hatch",
+   "downloads": 24724689
+  },
+  {
+   "name": "pytesseract",
+   "downloads": 24688706
+  },
+  {
+   "name": "diff-cover",
+   "downloads": 24633287
+  },
+  {
+   "name": "cloudpathlib",
+   "downloads": 24519111
+  },
+  {
+   "name": "pyathena",
+   "downloads": 24458508
+  },
+  {
+   "name": "types-cachetools",
+   "downloads": 24412225
+  },
+  {
+   "name": "questionary",
+   "downloads": 24319914
+  },
+  {
+   "name": "giturlparse",
+   "downloads": 24316035
+  },
+  {
+   "name": "nvidia-nvtx-cu12",
+   "downloads": 24233663
+  },
+  {
+   "name": "catalogue",
+   "downloads": 24184951
+  },
+  {
+   "name": "types-urllib3",
+   "downloads": 24183245
+  },
+  {
+   "name": "jupyter-builder",
+   "downloads": 24139359
+  },
+  {
+   "name": "shortuuid",
+   "downloads": 24122699
+  },
+  {
+   "name": "cssselect",
+   "downloads": 24049380
+  },
+  {
+   "name": "pytest-env",
+   "downloads": 24043458
+  },
+  {
+   "name": "opencensus",
+   "downloads": 23992088
+  },
+  {
+   "name": "binaryornot",
+   "downloads": 23972593
+  },
+  {
+   "name": "opencensus-context",
+   "downloads": 23886790
+  },
+  {
+   "name": "thinc",
+   "downloads": 23856133
+  },
+  {
+   "name": "bitarray",
+   "downloads": 23845867
+  },
+  {
+   "name": "opentelemetry-instrumentation-redis",
+   "downloads": 23820772
+  },
+  {
+   "name": "dacite",
+   "downloads": 23712751
+  },
+  {
+   "name": "face",
+   "downloads": 23620893
+  },
+  {
+   "name": "trino",
+   "downloads": 23592785
+  },
+  {
+   "name": "protego",
+   "downloads": 23559448
+  },
+  {
+   "name": "glom",
+   "downloads": 23557049
+  },
+  {
+   "name": "langchain-anthropic",
+   "downloads": 23551909
+  },
+  {
+   "name": "immutabledict",
+   "downloads": 23544354
+  },
+  {
+   "name": "jax",
+   "downloads": 23495676
+  },
+  {
+   "name": "pymupdf4llm",
+   "downloads": 23462774
+  },
+  {
+   "name": "apache-airflow-providers-snowflake",
+   "downloads": 23456567
+  },
+  {
+   "name": "time-machine",
+   "downloads": 23451487
+  },
+  {
+   "name": "emoji",
+   "downloads": 23367012
+  },
+  {
+   "name": "pymupdf-layout",
+   "downloads": 23361308
+  },
+  {
+   "name": "weasel",
+   "downloads": 23354862
+  },
+  {
+   "name": "flask-limiter",
+   "downloads": 23352777
+  },
+  {
+   "name": "azure-servicebus",
+   "downloads": 23333818
+  },
+  {
+   "name": "pdf2image",
+   "downloads": 23330481
+  },
+  {
+   "name": "apache-airflow-providers-databricks",
+   "downloads": 23282118
+  },
+  {
+   "name": "aws-xray-sdk",
+   "downloads": 23274554
+  },
+  {
+   "name": "mlflow-tracing",
+   "downloads": 23168516
+  },
+  {
+   "name": "cached-property",
+   "downloads": 23160794
+  },
+  {
+   "name": "pyspnego",
+   "downloads": 23143044
+  },
+  {
+   "name": "oscrypto",
+   "downloads": 23068177
+  },
+  {
+   "name": "multitasking",
+   "downloads": 23060727
+  },
+  {
+   "name": "azure-datalake-store",
+   "downloads": 23057159
+  },
+  {
+   "name": "apache-airflow-providers-http",
+   "downloads": 22959444
+  },
+  {
+   "name": "azure-mgmt-resource",
+   "downloads": 22957013
+  },
+  {
+   "name": "snowplow-tracker",
+   "downloads": 22944462
+  },
+  {
+   "name": "factory-boy",
+   "downloads": 22937878
+  },
+  {
+   "name": "pytest-httpx",
+   "downloads": 22873380
+  },
+  {
+   "name": "google-cloud-build",
+   "downloads": 22824246
+  },
+  {
+   "name": "backports-asyncio-runner",
+   "downloads": 22657496
+  },
+  {
+   "name": "partd",
+   "downloads": 22621136
+  },
+  {
+   "name": "locket",
+   "downloads": 22539665
+  },
+  {
+   "name": "jwcrypto",
+   "downloads": 22530730
+  },
+  {
+   "name": "apache-airflow",
+   "downloads": 22510247
+  },
+  {
+   "name": "argparse",
+   "downloads": 22424127
+  },
+  {
+   "name": "url-normalize",
+   "downloads": 22421877
+  },
+  {
+   "name": "aws-lambda-powertools",
+   "downloads": 22405528
+  },
+  {
+   "name": "apache-airflow-providers-google",
+   "downloads": 22379335
+  },
+  {
+   "name": "qdrant-client",
+   "downloads": 22371363
+  },
+  {
+   "name": "resolvelib",
+   "downloads": 22346464
+  },
+  {
+   "name": "murmurhash",
+   "downloads": 22304956
+  },
+  {
+   "name": "levenshtein",
+   "downloads": 22279949
+  },
+  {
+   "name": "bs4",
+   "downloads": 22265397
+  },
+  {
+   "name": "hatch-vcs",
+   "downloads": 22261246
+  },
+  {
+   "name": "opentelemetry-semantic-conventions-ai",
+   "downloads": 22238058
+  },
+  {
+   "name": "respx",
+   "downloads": 22221967
+  },
+  {
+   "name": "firebase-admin",
+   "downloads": 22172866
+  },
+  {
+   "name": "hydra-core",
+   "downloads": 22144063
+  },
+  {
+   "name": "pybase64",
+   "downloads": 22067015
+  },
+  {
+   "name": "langchain-classic",
+   "downloads": 22006060
+  },
+  {
+   "name": "rdflib",
+   "downloads": 21995534
+  },
+  {
+   "name": "configargparse",
+   "downloads": 21983774
+  },
+  {
+   "name": "blis",
+   "downloads": 21857473
+  },
+  {
+   "name": "types-redis",
+   "downloads": 21824406
+  },
+  {
+   "name": "pytest-html",
+   "downloads": 21783628
+  },
+  {
+   "name": "django-cors-headers",
+   "downloads": 21723504
+  },
+  {
+   "name": "preshed",
+   "downloads": 21706952
+  },
+  {
+   "name": "srsly",
+   "downloads": 21618409
+  },
+  {
+   "name": "slowapi",
+   "downloads": 21589624
+  },
+  {
+   "name": "pathlib-abc",
+   "downloads": 21589369
+  },
+  {
+   "name": "databricks-labs-blueprint",
+   "downloads": 21585877
+  },
+  {
+   "name": "mysqlclient",
+   "downloads": 21563983
+  },
+  {
+   "name": "pytest-django",
+   "downloads": 21555994
+  },
+  {
+   "name": "pkgutil-resolve-name",
+   "downloads": 21528413
+  },
+  {
+   "name": "cymem",
+   "downloads": 21449015
+  },
+  {
+   "name": "kubernetes-asyncio",
+   "downloads": 21434572
+  },
+  {
+   "name": "pycares",
+   "downloads": 21344113
+  },
+  {
+   "name": "tensorboard-data-server",
+   "downloads": 21308324
+  },
+  {
+   "name": "types-deprecated",
+   "downloads": 21264593
+  },
+  {
+   "name": "fire",
+   "downloads": 21233843
+  },
+  {
+   "name": "maxminddb",
+   "downloads": 21223146
+  },
+  {
+   "name": "checkov",
+   "downloads": 21179540
+  },
+  {
+   "name": "pytzdata",
+   "downloads": 21148065
+  },
+  {
+   "name": "parameterized",
+   "downloads": 21140902
+  },
+  {
+   "name": "python-daemon",
+   "downloads": 21136028
+  },
+  {
+   "name": "typer-slim",
+   "downloads": 21082081
+  },
+  {
+   "name": "huey",
+   "downloads": 21048581
+  },
+  {
+   "name": "wasabi",
+   "downloads": 21045789
+  },
+  {
+   "name": "nvidia-ml-py",
+   "downloads": 21045134
+  },
+  {
+   "name": "pydub",
+   "downloads": 21038345
+  },
+  {
+   "name": "sqlmodel",
+   "downloads": 21035871
+  },
+  {
+   "name": "python-gitlab",
+   "downloads": 21035573
+  },
+  {
+   "name": "requests-cache",
+   "downloads": 21000366
+  },
+  {
+   "name": "pytest-split",
+   "downloads": 20969797
+  },
+  {
+   "name": "blake3",
+   "downloads": 20934450
+  },
+  {
+   "name": "sagemaker",
+   "downloads": 20923205
+  },
+  {
+   "name": "azure-monitor-opentelemetry",
+   "downloads": 20906017
+  },
+  {
+   "name": "py-partiql-parser",
+   "downloads": 20887317
+  },
+  {
+   "name": "jsonpickle",
+   "downloads": 20874719
+  },
+  {
+   "name": "tensorflow",
+   "downloads": 20761191
+  },
+  {
+   "name": "xarray",
+   "downloads": 20745538
+  },
+  {
+   "name": "types-cffi",
+   "downloads": 20698785
+  },
+  {
+   "name": "cairosvg",
+   "downloads": 20670714
+  },
+  {
+   "name": "spacy-legacy",
+   "downloads": 20659206
+  },
+  {
+   "name": "spacy-loggers",
+   "downloads": 20619567
+  },
+  {
+   "name": "pathvalidate",
+   "downloads": 20577101
+  },
+  {
+   "name": "confection",
+   "downloads": 20544828
+  },
+  {
+   "name": "aiodns",
+   "downloads": 20518305
+  },
+  {
+   "name": "onnx",
+   "downloads": 20484447
+  },
+  {
+   "name": "lxml-html-clean",
+   "downloads": 20471755
+  },
+  {
+   "name": "apache-airflow-providers-common-compat",
+   "downloads": 20468163
+  },
+  {
+   "name": "pywin32-ctypes",
+   "downloads": 20456049
+  },
+  {
+   "name": "twilio",
+   "downloads": 20413006
+  },
+  {
+   "name": "azure-kusto-data",
+   "downloads": 20373143
+  },
+  {
+   "name": "feedparser",
+   "downloads": 20308065
+  },
+  {
+   "name": "python-utils",
+   "downloads": 20241585
+  },
+  {
+   "name": "flask-wtf",
+   "downloads": 20213009
+  },
+  {
+   "name": "gast",
+   "downloads": 20135601
+  },
+  {
+   "name": "looker-sdk",
+   "downloads": 20086773
+  },
+  {
+   "name": "yt-dlp",
+   "downloads": 20041303
+  },
+  {
+   "name": "astor",
+   "downloads": 20035933
+  },
+  {
+   "name": "nvidia-cusparselt-cu12",
+   "downloads": 19995332
+  },
+  {
+   "name": "skops",
+   "downloads": 19962838
+  },
+  {
+   "name": "azure-mgmt-compute",
+   "downloads": 19953480
+  },
+  {
+   "name": "keyrings-google-artifactregistry-auth",
+   "downloads": 19888242
+  },
+  {
+   "name": "ollama",
+   "downloads": 19885974
+  },
+  {
+   "name": "instructor",
+   "downloads": 19880373
+  },
+  {
+   "name": "shap",
+   "downloads": 19814213
+  },
+  {
+   "name": "awscrt",
+   "downloads": 19738690
+  },
+  {
+   "name": "sqlalchemy-spanner",
+   "downloads": 19731216
+  },
+  {
+   "name": "types-pyopenssl",
+   "downloads": 19720794
+  },
+  {
+   "name": "arxiv",
+   "downloads": 19631249
+  },
+  {
+   "name": "aiosmtplib",
+   "downloads": 19588512
+  },
+  {
+   "name": "python-frontmatter",
+   "downloads": 19580081
+  },
+  {
+   "name": "keras",
+   "downloads": 19542671
+  },
+  {
+   "name": "amazon-ion",
+   "downloads": 19541701
+  },
+  {
+   "name": "ansible-core",
+   "downloads": 19538017
+  },
+  {
+   "name": "wtforms",
+   "downloads": 19408722
+  },
+  {
+   "name": "azure-storage-file-share",
+   "downloads": 19395613
+  },
+  {
+   "name": "asyncssh",
+   "downloads": 19391101
+  },
+  {
+   "name": "maturin",
+   "downloads": 19379125
+  },
+  {
+   "name": "genson",
+   "downloads": 19370440
+  },
+  {
+   "name": "progressbar2",
+   "downloads": 19344398
+  },
+  {
+   "name": "cachelib",
+   "downloads": 19272987
+  },
+  {
+   "name": "sagemaker-studio",
+   "downloads": 19258461
+  },
+  {
+   "name": "aiohttp-cors",
+   "downloads": 19173377
+  },
+  {
+   "name": "wikipedia-api",
+   "downloads": 19140409
+  },
+  {
+   "name": "fpdf2",
+   "downloads": 19110259
+  },
+  {
+   "name": "geopy",
+   "downloads": 19001861
+  },
+  {
+   "name": "ldap3",
+   "downloads": 18857053
+  },
+  {
+   "name": "opentelemetry-instrumentation-grpc",
+   "downloads": 18823398
+  },
+  {
+   "name": "jaxlib",
+   "downloads": 18816096
+  },
+  {
+   "name": "google-adk",
+   "downloads": 18780267
+  },
+  {
+   "name": "docopt",
+   "downloads": 18662111
+  },
+  {
+   "name": "pathos",
+   "downloads": 18527579
+  },
+  {
+   "name": "opentelemetry-resourcedetector-gcp",
+   "downloads": 18513309
+  },
+  {
+   "name": "pyproject-api",
+   "downloads": 18508227
+  },
+  {
+   "name": "gradio",
+   "downloads": 18428509
+  },
+  {
+   "name": "ipdb",
+   "downloads": 18366954
+  },
+  {
+   "name": "geographiclib",
+   "downloads": 18097854
+  },
+  {
+   "name": "pox",
+   "downloads": 18041870
+  },
+  {
+   "name": "parse",
+   "downloads": 18038649
+  },
+  {
+   "name": "geoip2",
+   "downloads": 18029953
+  },
+  {
+   "name": "uuid6",
+   "downloads": 18014267
+  },
+  {
+   "name": "colorful",
+   "downloads": 17997435
+  },
+  {
+   "name": "docling",
+   "downloads": 17994695
+  },
+  {
+   "name": "statsd",
+   "downloads": 17993050
+  },
+  {
+   "name": "jupyter",
+   "downloads": 17992959
+  },
+  {
+   "name": "cmake",
+   "downloads": 17981211
+  },
+  {
+   "name": "meson",
+   "downloads": 17979399
+  },
+  {
+   "name": "ppft",
+   "downloads": 17937089
+  },
+  {
+   "name": "mkdocs-material",
+   "downloads": 17914336
+  },
+  {
+   "name": "gremlinpython",
+   "downloads": 17877594
+  },
+  {
+   "name": "google-cloud-storage-control",
+   "downloads": 17869745
+  },
+  {
+   "name": "makefun",
+   "downloads": 17855731
+  },
+  {
+   "name": "jupyter-console",
+   "downloads": 17840150
+  },
+  {
+   "name": "requirements-parser",
+   "downloads": 17822865
+  },
+  {
+   "name": "incremental",
+   "downloads": 17767401
+  },
+  {
+   "name": "types-markdown",
+   "downloads": 17723404
+  },
+  {
+   "name": "langchain-google-genai",
+   "downloads": 17653268
+  },
+  {
+   "name": "python-gnupg",
+   "downloads": 17637239
+  },
+  {
+   "name": "frozendict",
+   "downloads": 17608249
+  },
+  {
+   "name": "azure-mgmt-storage",
+   "downloads": 17608022
+  },
+  {
+   "name": "mkdocs",
+   "downloads": 17568796
+  },
+  {
+   "name": "xattr",
+   "downloads": 17560946
+  },
+  {
+   "name": "jaydebeapi",
+   "downloads": 17560588
+  },
+  {
+   "name": "datamodel-code-generator",
+   "downloads": 17555589
+  },
+  {
+   "name": "fastapi-mcp",
+   "downloads": 17508920
+  },
+  {
+   "name": "aliyun-trace",
+   "downloads": 17508739
+  },
+  {
+   "name": "aliyun-semantic-conventions",
+   "downloads": 17508514
+  },
+  {
+   "name": "smdebug-rulesconfig",
+   "downloads": 17506491
+  },
+  {
+   "name": "pydantic-evals",
+   "downloads": 17486604
+  },
+  {
+   "name": "pyvespa",
+   "downloads": 17444074
+  },
+  {
+   "name": "types-aiofiles",
+   "downloads": 17405533
+  },
+  {
+   "name": "optuna",
+   "downloads": 17394263
+  },
+  {
+   "name": "pip-tools",
+   "downloads": 17372047
+  },
+  {
+   "name": "pyserial",
+   "downloads": 17367090
+  },
+  {
+   "name": "office365-rest-python-client",
+   "downloads": 17285720
+  },
+  {
+   "name": "django-filter",
+   "downloads": 17280685
+  },
+  {
+   "name": "ghp-import",
+   "downloads": 17246991
+  },
+  {
+   "name": "pyogrio",
+   "downloads": 17198986
+  },
+  {
+   "name": "flit",
+   "downloads": 17196538
+  },
+  {
+   "name": "pydocket",
+   "downloads": 17178652
+  },
+  {
+   "name": "cadwyn",
+   "downloads": 17155419
+  },
+  {
+   "name": "pyyaml-env-tag",
+   "downloads": 17155159
+  },
+  {
+   "name": "cairocffi",
+   "downloads": 17149133
+  },
+  {
+   "name": "restructuredtext-lint",
+   "downloads": 17086205
+  },
+  {
+   "name": "pooch",
+   "downloads": 16960613
+  },
+  {
+   "name": "inputimeout",
+   "downloads": 16909239
+  },
+  {
+   "name": "clickhouse-driver",
+   "downloads": 16838476
+  },
+  {
+   "name": "numexpr",
+   "downloads": 16838156
+  },
+  {
+   "name": "imbalanced-learn",
+   "downloads": 16822922
+  },
+  {
+   "name": "grpcio-gcp",
+   "downloads": 16817887
+  },
+  {
+   "name": "aiomysql",
+   "downloads": 16758493
+  },
+  {
+   "name": "faiss-cpu",
+   "downloads": 16708083
+  },
+  {
+   "name": "datetime",
+   "downloads": 16702528
+  },
+  {
+   "name": "whitenoise",
+   "downloads": 16674728
+  },
+  {
+   "name": "griffecli",
+   "downloads": 16666450
+  },
+  {
+   "name": "avro",
+   "downloads": 16641331
+  },
+  {
+   "name": "boostedblob",
+   "downloads": 16598375
+  },
+  {
+   "name": "pfzy",
+   "downloads": 16565697
+  },
+  {
+   "name": "pydeequ",
+   "downloads": 16519526
+  },
+  {
+   "name": "pydantic-ai",
+   "downloads": 16502433
+  },
+  {
+   "name": "bashlex",
+   "downloads": 16475266
+  },
+  {
+   "name": "service-identity",
+   "downloads": 16467631
+  },
+  {
+   "name": "google-generativeai",
+   "downloads": 16418743
+  },
+  {
+   "name": "apache-airflow-providers-ssh",
+   "downloads": 16410294
+  },
+  {
+   "name": "llama-index-core",
+   "downloads": 16404018
+  },
+  {
+   "name": "inquirerpy",
+   "downloads": 16385473
+  },
+  {
+   "name": "kfp",
+   "downloads": 16374224
+  },
+  {
+   "name": "azure-core-tracing-opentelemetry",
+   "downloads": 16254043
+  },
+  {
+   "name": "mkdocs-get-deps",
+   "downloads": 16185016
+  },
+  {
+   "name": "segment-analytics-python",
+   "downloads": 16131056
+  },
+  {
+   "name": "memray",
+   "downloads": 16122500
+  },
+  {
+   "name": "google-re2",
+   "downloads": 16109027
+  },
+  {
+   "name": "prometheus-fastapi-instrumentator",
+   "downloads": 16089530
+  },
+  {
+   "name": "mammoth",
+   "downloads": 16076406
+  },
+  {
+   "name": "twisted",
+   "downloads": 16041245
+  },
+  {
+   "name": "pyelftools",
+   "downloads": 16037769
+  },
+  {
+   "name": "opentelemetry-resource-detector-azure",
+   "downloads": 16032000
+  },
+  {
+   "name": "atlassian-python-api",
+   "downloads": 15993384
+  },
+  {
+   "name": "textual-speedups",
+   "downloads": 15986420
+  },
+  {
+   "name": "types-tabulate",
+   "downloads": 15972507
+  },
+  {
+   "name": "adlfs",
+   "downloads": 15918404
+  },
+  {
+   "name": "tld",
+   "downloads": 15866317
+  },
+  {
+   "name": "readchar",
+   "downloads": 15794533
+  },
+  {
+   "name": "google-ai-generativelanguage",
+   "downloads": 15788569
+  },
+  {
+   "name": "fuzzywuzzy",
+   "downloads": 15776985
+  },
+  {
+   "name": "apache-airflow-providers-mysql",
+   "downloads": 15741276
+  },
+  {
+   "name": "jsonlines",
+   "downloads": 15689783
+  },
+  {
+   "name": "python-snappy",
+   "downloads": 15632404
+  },
+  {
+   "name": "cobble",
+   "downloads": 15618177
+  },
+  {
+   "name": "flask-babel",
+   "downloads": 15609483
+  },
+  {
+   "name": "types-croniter",
+   "downloads": 15563904
+  },
+  {
+   "name": "fasteners",
+   "downloads": 15536221
+  },
+  {
+   "name": "pyrfc3339",
+   "downloads": 15529723
+  },
+  {
+   "name": "pytest-repeat",
+   "downloads": 15509841
+  },
+  {
+   "name": "mini-swe-agent",
+   "downloads": 15501428
+  },
+  {
+   "name": "dunamai",
+   "downloads": 15496339
+  },
+  {
+   "name": "yandexcloud",
+   "downloads": 15480148
+  },
+  {
+   "name": "requests-ntlm",
+   "downloads": 15442318
+  },
+  {
+   "name": "papermill",
+   "downloads": 15388058
+  },
+  {
+   "name": "timm",
+   "downloads": 15367053
+  },
+  {
+   "name": "meson-python",
+   "downloads": 15272549
+  },
+  {
+   "name": "pywavelets",
+   "downloads": 15254016
+  },
+  {
+   "name": "fastparquet",
+   "downloads": 15251519
+  },
+  {
+   "name": "microsoft-kiota-http",
+   "downloads": 15241842
+  },
+  {
+   "name": "pickleshare",
+   "downloads": 15209634
+  },
+  {
+   "name": "flask-session",
+   "downloads": 15174209
+  },
+  {
+   "name": "magika",
+   "downloads": 15165486
+  },
+  {
+   "name": "html2text",
+   "downloads": 15159925
+  },
+  {
+   "name": "tree-sitter-javascript",
+   "downloads": 15159131
+  },
+  {
+   "name": "apispec",
+   "downloads": 15080134
+  },
+  {
+   "name": "slack-bolt",
+   "downloads": 15072103
+  },
+  {
+   "name": "mutagen",
+   "downloads": 15032857
+  },
+  {
+   "name": "pytest-json-report",
+   "downloads": 15022199
+  },
+  {
+   "name": "chevron",
+   "downloads": 15017857
+  },
+  {
+   "name": "flask-appbuilder",
+   "downloads": 15012479
+  },
+  {
+   "name": "scp",
+   "downloads": 15011039
+  },
+  {
+   "name": "simpleeval",
+   "downloads": 15002011
+  },
+  {
+   "name": "nodejs-wheel-binaries",
+   "downloads": 14963716
+  },
+  {
+   "name": "fastf1",
+   "downloads": 14954097
+  },
+  {
+   "name": "apache-airflow-providers-imap",
+   "downloads": 14950653
+  },
+  {
+   "name": "htmldate",
+   "downloads": 14949222
+  },
+  {
+   "name": "neo4j",
+   "downloads": 14903559
+  },
+  {
+   "name": "mkdocs-material-extensions",
+   "downloads": 14901709
+  },
+  {
+   "name": "sphinx-rtd-theme",
+   "downloads": 14892270
+  },
+  {
+   "name": "slicer",
+   "downloads": 14860793
+  },
+  {
+   "name": "microsoft-kiota-authentication-azure",
+   "downloads": 14859099
+  },
+  {
+   "name": "backcall",
+   "downloads": 14815737
+  },
+  {
+   "name": "tyro",
+   "downloads": 14734015
+  },
+  {
+   "name": "databricks-cli",
+   "downloads": 14675631
+  },
+  {
+   "name": "cronsim",
+   "downloads": 14674924
+  },
+  {
+   "name": "oss2",
+   "downloads": 14673043
+  },
+  {
+   "name": "std-uritemplate",
+   "downloads": 14641175
+  },
+  {
+   "name": "apache-airflow-providers-ftp",
+   "downloads": 14621522
+  },
+  {
+   "name": "uuid7",
+   "downloads": 14610259
+  },
+  {
+   "name": "blessed",
+   "downloads": 14582716
+  },
+  {
+   "name": "cachebox",
+   "downloads": 14576959
+  },
+  {
+   "name": "opensearch-protobufs",
+   "downloads": 14515211
+  },
+  {
+   "name": "nvidia-cufile-cu12",
+   "downloads": 14508752
+  },
+  {
+   "name": "ftfy",
+   "downloads": 14452490
+  },
+  {
+   "name": "biopython",
+   "downloads": 14442412
+  },
+  {
+   "name": "azure-data-tables",
+   "downloads": 14434698
+  },
+  {
+   "name": "tritonclient",
+   "downloads": 14363804
+  },
+  {
+   "name": "microsoft-kiota-serialization-json",
+   "downloads": 14344883
+  },
+  {
+   "name": "markitdown",
+   "downloads": 14344064
+  },
+  {
+   "name": "azure-mgmt-containerregistry",
+   "downloads": 14330863
+  },
+  {
+   "name": "paginate",
+   "downloads": 14325648
+  },
+  {
+   "name": "imageio-ffmpeg",
+   "downloads": 14321387
+  },
+  {
+   "name": "grimp",
+   "downloads": 14311547
+  },
+  {
+   "name": "microsoft-kiota-serialization-text",
+   "downloads": 14297976
+  },
+  {
+   "name": "automat",
+   "downloads": 14296962
+  },
+  {
+   "name": "django-extensions",
+   "downloads": 14242834
+  },
+  {
+   "name": "azure-mgmt-cosmosdb",
+   "downloads": 14239128
+  },
+  {
+   "name": "apache-airflow-providers-sqlite",
+   "downloads": 14237017
+  },
+  {
+   "name": "pytest-benchmark",
+   "downloads": 14224897
+  },
+  {
+   "name": "constantly",
+   "downloads": 14174793
+  },
+  {
+   "name": "junitparser",
+   "downloads": 14143836
+  },
+  {
+   "name": "libclang",
+   "downloads": 14104820
+  },
+  {
+   "name": "jsonconversion",
+   "downloads": 14088461
+  },
+  {
+   "name": "python-levenshtein",
+   "downloads": 14084844
+  },
+  {
+   "name": "pyproject-metadata",
+   "downloads": 14063548
+  },
+  {
+   "name": "locust",
+   "downloads": 14055255
+  },
+  {
+   "name": "astunparse",
+   "downloads": 14034836
+  },
+  {
+   "name": "monotonic",
+   "downloads": 14028069
+  },
+  {
+   "name": "codeowners",
+   "downloads": 14020596
+  },
+  {
+   "name": "pytablewriter",
+   "downloads": 14010462
+  },
+  {
+   "name": "azure-keyvault-certificates",
+   "downloads": 14008812
+  },
+  {
+   "name": "netaddr",
+   "downloads": 13958594
+  },
+  {
+   "name": "azure-eventhub",
+   "downloads": 13938646
+  },
+  {
+   "name": "drf-spectacular",
+   "downloads": 13905521
+  },
+  {
+   "name": "microsoft-kiota-abstractions",
+   "downloads": 13898288
+  },
+  {
+   "name": "pytest-socket",
+   "downloads": 13881633
+  },
+  {
+   "name": "pygtrie",
+   "downloads": 13875383
+  },
+  {
+   "name": "google-cloud-managedkafka",
+   "downloads": 13854244
+  },
+  {
+   "name": "pika",
+   "downloads": 13782804
+  },
+  {
+   "name": "patchelf",
+   "downloads": 13780922
+  },
+  {
+   "name": "msgraph-core",
+   "downloads": 13779426
+  },
+  {
+   "name": "apache-airflow-providers-smtp",
+   "downloads": 13752016
+  },
+  {
+   "name": "fabric",
+   "downloads": 13714378
+  },
+  {
+   "name": "resend",
+   "downloads": 13707507
+  },
+  {
+   "name": "pypika",
+   "downloads": 13706088
+  },
+  {
+   "name": "flask-jwt-extended",
+   "downloads": 13637572
+  },
+  {
+   "name": "sseclient-py",
+   "downloads": 13620340
+  },
+  {
+   "name": "dataproperty",
+   "downloads": 13610310
+  },
+  {
+   "name": "flower",
+   "downloads": 13562935
+  },
+  {
+   "name": "librosa",
+   "downloads": 13551389
+  },
+  {
+   "name": "oldest-supported-numpy",
+   "downloads": 13547387
+  },
+  {
+   "name": "backrefs",
+   "downloads": 13528784
+  },
+  {
+   "name": "mypy-boto3-sqs",
+   "downloads": 13517179
+  },
+  {
+   "name": "ansible",
+   "downloads": 13510146
+  },
+  {
+   "name": "import-linter",
+   "downloads": 13487925
+  },
+  {
+   "name": "apache-airflow-providers-cncf-kubernetes",
+   "downloads": 13484376
+  },
+  {
+   "name": "langchain-aws",
+   "downloads": 13452869
+  },
+  {
+   "name": "detect-installer",
+   "downloads": 13405742
+  },
+  {
+   "name": "types-pymysql",
+   "downloads": 13403278
+  },
+  {
+   "name": "trafilatura",
+   "downloads": 13364051
+  },
+  {
+   "name": "syrupy",
+   "downloads": 13351369
+  },
+  {
+   "name": "scantree",
+   "downloads": 13323146
+  },
+  {
+   "name": "dirhash",
+   "downloads": 13319927
+  },
+  {
+   "name": "opentelemetry-instrumentation-botocore",
+   "downloads": 13315583
+  },
+  {
+   "name": "azure-mgmt-datafactory",
+   "downloads": 13290909
+  },
+  {
+   "name": "chromadb",
+   "downloads": 13265337
+  },
+  {
+   "name": "pillow-heif",
+   "downloads": 13249037
+  },
+  {
+   "name": "courlan",
+   "downloads": 13207347
+  },
+  {
+   "name": "supervisor",
+   "downloads": 13194638
+  },
+  {
+   "name": "libtmux",
+   "downloads": 13140422
+  },
+  {
+   "name": "pprintpp",
+   "downloads": 13061467
+  },
+  {
+   "name": "opentelemetry-instrumentation-system-metrics",
+   "downloads": 13029312
+  },
+  {
+   "name": "toposort",
+   "downloads": 13017745
+  },
+  {
+   "name": "mypy-boto3-rds",
+   "downloads": 13011601
+  },
+  {
+   "name": "edge-tts",
+   "downloads": 13002561
+  },
+  {
+   "name": "types-docutils",
+   "downloads": 12966958
+  },
+  {
+   "name": "django-storages",
+   "downloads": 12928583
+  },
+  {
+   "name": "minio",
+   "downloads": 12925957
+  },
+  {
+   "name": "python-on-whales",
+   "downloads": 12831777
+  },
+  {
+   "name": "ansicolors",
+   "downloads": 12803460
+  },
+  {
+   "name": "junit-xml",
+   "downloads": 12784944
+  },
+  {
+   "name": "trimesh",
+   "downloads": 12763403
+  },
+  {
+   "name": "ratelimit",
+   "downloads": 12749177
+  },
+  {
+   "name": "azure-mgmt-containerinstance",
+   "downloads": 12742640
+  },
+  {
+   "name": "screeninfo",
+   "downloads": 12716034
+  },
+  {
+   "name": "roman-numerals",
+   "downloads": 12692071
+  },
+  {
+   "name": "iso8601",
+   "downloads": 12689190
+  },
+  {
+   "name": "django-redis",
+   "downloads": 12685319
+  },
+  {
+   "name": "pdm",
+   "downloads": 12682384
+  },
+  {
+   "name": "langcodes",
+   "downloads": 12534804
+  },
+  {
+   "name": "smbprotocol",
+   "downloads": 12507553
+  },
+  {
+   "name": "aiolimiter",
+   "downloads": 12500767
+  },
+  {
+   "name": "oci",
+   "downloads": 12485129
+  },
+  {
+   "name": "uritools",
+   "downloads": 12452872
+  },
+  {
+   "name": "arro3-core",
+   "downloads": 12449771
+  },
+  {
+   "name": "prefect",
+   "downloads": 12445508
+  },
+  {
+   "name": "rq",
+   "downloads": 12382716
+  },
+  {
+   "name": "msoffcrypto-tool",
+   "downloads": 12374350
+  },
+  {
+   "name": "a2a-sdk",
+   "downloads": 12367877
+  },
+  {
+   "name": "crewai",
+   "downloads": 12349909
+  },
+  {
+   "name": "torchaudio",
+   "downloads": 12339584
+  },
+  {
+   "name": "altgraph",
+   "downloads": 12333630
+  },
+  {
+   "name": "harbor",
+   "downloads": 12315550
+  },
+  {
+   "name": "google-cloud-trace",
+   "downloads": 12269201
+  },
+  {
+   "name": "apprise",
+   "downloads": 12265715
+  },
+  {
+   "name": "contextlib2",
+   "downloads": 12264081
+  },
+  {
+   "name": "torchmetrics",
+   "downloads": 12257228
+  },
+  {
+   "name": "databricks-connect",
+   "downloads": 12249777
+  },
+  {
+   "name": "a2wsgi",
+   "downloads": 12244758
+  },
+  {
+   "name": "sh",
+   "downloads": 12232375
+  },
+  {
+   "name": "llama-index-workflows",
+   "downloads": 12207324
+  },
+  {
+   "name": "openhands-sdk",
+   "downloads": 12200524
+  },
+  {
+   "name": "marshmallow-sqlalchemy",
+   "downloads": 12176068
+  },
+  {
+   "name": "lmnr-claude-code-proxy",
+   "downloads": 12163196
+  },
+  {
+   "name": "django-stubs-ext",
+   "downloads": 12136688
+  },
+  {
+   "name": "bokeh",
+   "downloads": 12119700
+  },
+  {
+   "name": "burner-redis",
+   "downloads": 12114036
+  },
+  {
+   "name": "inspect-ai",
+   "downloads": 12105306
+  },
+  {
+   "name": "geventhttpclient",
+   "downloads": 12101220
+  },
+  {
+   "name": "mkdocstrings-python",
+   "downloads": 12088218
+  },
+  {
+   "name": "xlwt",
+   "downloads": 12072900
+  },
+  {
+   "name": "pyinstaller",
+   "downloads": 12067723
+  },
+  {
+   "name": "h3",
+   "downloads": 12058587
+  },
+  {
+   "name": "launchdarkly-eventsource",
+   "downloads": 12014706
+  },
+  {
+   "name": "jellyfish",
+   "downloads": 12012744
+  },
+  {
+   "name": "xmlsec",
+   "downloads": 11978017
+  },
+  {
+   "name": "opentelemetry-propagator-aws-xray",
+   "downloads": 11953783
+  },
+  {
+   "name": "dep-logic",
+   "downloads": 11917040
+  },
+  {
+   "name": "unearth",
+   "downloads": 11913763
+  },
+  {
+   "name": "google-cloud-iam",
+   "downloads": 11890115
+  },
+  {
+   "name": "browser-use-sdk",
+   "downloads": 11889119
+  },
+  {
+   "name": "avro-python3",
+   "downloads": 11855901
+  },
+  {
+   "name": "opentelemetry-exporter-gcp-trace",
+   "downloads": 11854941
+  },
+  {
+   "name": "azure-mgmt-datalake-store",
+   "downloads": 11843030
+  },
+  {
+   "name": "configparser",
+   "downloads": 11842775
+  },
+  {
+   "name": "sphinxcontrib-jquery",
+   "downloads": 11810267
+  },
+  {
+   "name": "pyclipper",
+   "downloads": 11792148
+  },
+  {
+   "name": "ciso8601",
+   "downloads": 11792032
+  },
+  {
+   "name": "icalendar",
+   "downloads": 11774939
+  },
+  {
+   "name": "impyla",
+   "downloads": 11763967
+  },
+  {
+   "name": "habluetooth",
+   "downloads": 11758161
+  },
+  {
+   "name": "launchdarkly-server-sdk",
+   "downloads": 11752131
+  },
+  {
+   "name": "speechrecognition",
+   "downloads": 11744922
+  },
+  {
+   "name": "justext",
+   "downloads": 11719151
+  },
+  {
+   "name": "pyroscope-io",
+   "downloads": 11704674
+  },
+  {
+   "name": "dagster-postgres",
+   "downloads": 11677987
+  },
+  {
+   "name": "mypy-boto3-dynamodb",
+   "downloads": 11675817
+  },
+  {
+   "name": "mcp-types",
+   "downloads": 11666612
+  },
+  {
+   "name": "primp",
+   "downloads": 11654279
+  },
+  {
+   "name": "user-agents",
+   "downloads": 11641606
+  },
+  {
+   "name": "dockerfile-parse",
+   "downloads": 11634782
+  },
+  {
+   "name": "thrift-sasl",
+   "downloads": 11626242
+  },
+  {
+   "name": "webdriver-manager",
+   "downloads": 11626213
+  },
+  {
+   "name": "peft",
+   "downloads": 11618527
+  },
+  {
+   "name": "dirtyjson",
+   "downloads": 11617464
+  },
+  {
+   "name": "jsondiff",
+   "downloads": 11617310
+  },
+  {
+   "name": "azure-nspkg",
+   "downloads": 11616729
+  },
+  {
+   "name": "pysftp",
+   "downloads": 11608958
+  },
+  {
+   "name": "pyinstaller-hooks-contrib",
+   "downloads": 11545181
+  },
+  {
+   "name": "kaleido",
+   "downloads": 11538259
+  },
+  {
+   "name": "docker-pycreds",
+   "downloads": 11538192
+  },
+  {
+   "name": "types-jsonschema",
+   "downloads": 11523610
+  },
+  {
+   "name": "sqlfluff",
+   "downloads": 11521310
+  },
+  {
+   "name": "azure-ai-projects",
+   "downloads": 11517912
+  },
+  {
+   "name": "motor",
+   "downloads": 11494607
+  },
+  {
+   "name": "langchain-google-community",
+   "downloads": 11490819
+  },
+  {
+   "name": "rdkit",
+   "downloads": 11469327
+  },
+  {
+   "name": "pyxlsb",
+   "downloads": 11464755
+  },
+  {
+   "name": "gradio-client",
+   "downloads": 11463168
+  },
+  {
+   "name": "crewai-tools",
+   "downloads": 11459852
+  },
+  {
+   "name": "lightning-utilities",
+   "downloads": 11451044
+  },
+  {
+   "name": "dash",
+   "downloads": 11414321
+  },
+  {
+   "name": "dpath",
+   "downloads": 11340497
+  },
+  {
+   "name": "httpx-ws",
+   "downloads": 11327645
+  },
+  {
+   "name": "line-bot-sdk",
+   "downloads": 11317145
+  },
+  {
+   "name": "azure-storage-common",
+   "downloads": 11309516
+  },
+  {
+   "name": "polyfactory",
+   "downloads": 11299823
+  },
+  {
+   "name": "python-bidi",
+   "downloads": 11274418
+  },
+  {
+   "name": "bottle",
+   "downloads": 11271242
+  },
+  {
+   "name": "scikit-build-core",
+   "downloads": 11249544
+  },
+  {
+   "name": "cloudevents",
+   "downloads": 11244857
+  },
+  {
+   "name": "pytorch-lightning",
+   "downloads": 11232102
+  },
+  {
+   "name": "soxr",
+   "downloads": 11225603
+  },
+  {
+   "name": "granian",
+   "downloads": 11217288
+  },
+  {
+   "name": "bubus",
+   "downloads": 11213399
+  },
+  {
+   "name": "vulture",
+   "downloads": 11204416
+  },
+  {
+   "name": "asynctest",
+   "downloads": 11182646
+  },
+  {
+   "name": "methodtools",
+   "downloads": 11178756
+  },
+  {
+   "name": "wirerope",
+   "downloads": 11167059
+  },
+  {
+   "name": "django-stubs",
+   "downloads": 11148392
+  },
+  {
+   "name": "cdp-use",
+   "downloads": 11122119
+  },
+  {
+   "name": "aws-cdk-asset-awscli-v1",
+   "downloads": 11104828
+  },
+  {
+   "name": "langdetect",
+   "downloads": 11081342
+  },
+  {
+   "name": "lance-namespace",
+   "downloads": 11080260
+  },
+  {
+   "name": "opencensus-ext-azure",
+   "downloads": 11066198
+  },
+  {
+   "name": "mypy-boto3-lambda",
+   "downloads": 11024586
+  },
+  {
+   "name": "pytest-unordered",
+   "downloads": 10998579
+  },
+  {
+   "name": "dask-expr",
+   "downloads": 10958153
+  },
+  {
+   "name": "tree-sitter-c",
+   "downloads": 10957610
+  },
+  {
+   "name": "mypy-boto3-ec2",
+   "downloads": 10938911
+  },
+  {
+   "name": "pyinstrument",
+   "downloads": 10935462
+  },
+  {
+   "name": "lance-namespace-urllib3-client",
+   "downloads": 10933415
+  },
+  {
+   "name": "fake-useragent",
+   "downloads": 10932845
+  },
+  {
+   "name": "bottleneck",
+   "downloads": 10889451
+  },
+  {
+   "name": "expiringdict",
+   "downloads": 10875172
+  },
+  {
+   "name": "opentelemetry-instrumentation-celery",
+   "downloads": 10866605
+  },
+  {
+   "name": "hypercorn",
+   "downloads": 10847681
+  },
+  {
+   "name": "tree-sitter-java",
+   "downloads": 10836915
+  },
+  {
+   "name": "circuitbreaker",
+   "downloads": 10803044
+  },
+  {
+   "name": "azure-synapse-artifacts",
+   "downloads": 10771960
+  },
+  {
+   "name": "dotenv",
+   "downloads": 10768924
+  },
+  {
+   "name": "azure-mgmt-containerservice",
+   "downloads": 10762051
+  },
+  {
+   "name": "quack-kernels",
+   "downloads": 10757208
+  },
+  {
+   "name": "mypy-boto3-sts",
+   "downloads": 10754807
+  },
+  {
+   "name": "tree-sitter-c-sharp",
+   "downloads": 10740479
+  },
+  {
+   "name": "ctranslate2",
+   "downloads": 10724102
+  },
+  {
+   "name": "asciinema",
+   "downloads": 10660052
+  },
+  {
+   "name": "azure-monitor-query",
+   "downloads": 10626279
+  },
+  {
+   "name": "autopep8",
+   "downloads": 10612203
+  },
+  {
+   "name": "connexion",
+   "downloads": 10584452
+  },
+  {
+   "name": "apache-airflow-providers-slack",
+   "downloads": 10576884
+  },
+  {
+   "name": "aiokafka",
+   "downloads": 10535919
+  },
+  {
+   "name": "obstore",
+   "downloads": 10520170
+  },
+  {
+   "name": "asgi-lifespan",
+   "downloads": 10518789
+  },
+  {
+   "name": "basedpyright",
+   "downloads": 10488410
+  },
+  {
+   "name": "anytree",
+   "downloads": 10482845
+  },
+  {
+   "name": "pydash",
+   "downloads": 10469398
+  },
+  {
+   "name": "cookiecutter",
+   "downloads": 10448794
+  },
+  {
+   "name": "elevenlabs",
+   "downloads": 10436657
+  },
+  {
+   "name": "teradatasql",
+   "downloads": 10430380
+  },
+  {
+   "name": "azure-kusto-ingest",
+   "downloads": 10407169
+  },
+  {
+   "name": "openhands-tools",
+   "downloads": 10358435
+  },
+  {
+   "name": "sphinx-design",
+   "downloads": 10349900
+  },
+  {
+   "name": "icdiff",
+   "downloads": 10340806
+  },
+  {
+   "name": "reactivex",
+   "downloads": 10335977
+  },
+  {
+   "name": "types-boto3",
+   "downloads": 10326710
+  },
+  {
+   "name": "azure-synapse-spark",
+   "downloads": 10308416
+  },
+  {
+   "name": "tree-sitter-rust",
+   "downloads": 10299257
+  },
+  {
+   "name": "pikepdf",
+   "downloads": 10269759
+  },
+  {
+   "name": "swifter",
+   "downloads": 10262816
+  },
+  {
+   "name": "fastspec",
+   "downloads": 10253945
+  },
+  {
+   "name": "zarr",
+   "downloads": 10223946
+  },
+  {
+   "name": "pyyaml-ft",
+   "downloads": 10219784
+  },
+  {
+   "name": "dbt-snowflake",
+   "downloads": 10215431
+  },
+  {
+   "name": "types-aiobotocore",
+   "downloads": 10205136
+  },
+  {
+   "name": "types-aiobotocore-s3",
+   "downloads": 10194760
+  },
+  {
+   "name": "optree",
+   "downloads": 10193965
+  },
+  {
+   "name": "types-html5lib",
+   "downloads": 10191646
+  },
+  {
+   "name": "pytest-base-url",
+   "downloads": 10189946
+  },
+  {
+   "name": "curlify",
+   "downloads": 10173871
+  },
+  {
+   "name": "xyzservices",
+   "downloads": 10172772
+  },
+  {
+   "name": "svix",
+   "downloads": 10142431
+  },
+  {
+   "name": "python-ulid",
+   "downloads": 10132513
+  },
+  {
+   "name": "cuda-python",
+   "downloads": 10132165
+  },
+  {
+   "name": "amplitude-analytics",
+   "downloads": 10127905
+  },
+  {
+   "name": "cloudflare",
+   "downloads": 10122213
+  },
+  {
+   "name": "prison",
+   "downloads": 10090260
+  },
+  {
+   "name": "sgmllib3k",
+   "downloads": 10088849
+  },
+  {
+   "name": "ffmpeg-python",
+   "downloads": 10087968
+  },
+  {
+   "name": "tree-sitter-go",
+   "downloads": 10085579
+  },
+  {
+   "name": "fiona",
+   "downloads": 10076248
+  },
+  {
+   "name": "azure-ai-documentintelligence",
+   "downloads": 10073052
+  },
+  {
+   "name": "thefuzz",
+   "downloads": 10064935
+  },
+  {
+   "name": "tensorflow-estimator",
+   "downloads": 10050776
+  },
+  {
+   "name": "flask-caching",
+   "downloads": 10050421
+  },
+  {
+   "name": "apache-airflow-providers-common-io",
+   "downloads": 10050165
+  },
+  {
+   "name": "pytest-randomly",
+   "downloads": 10021263
+  },
+  {
+   "name": "azure-keyvault",
+   "downloads": 9999287
+  },
+  {
+   "name": "nose",
+   "downloads": 9973825
+  },
+  {
+   "name": "applicationinsights",
+   "downloads": 9957039
+  },
+  {
+   "name": "grpcio-reflection",
+   "downloads": 9918529
+  },
+  {
+   "name": "opentelemetry-instrumentation-asyncpg",
+   "downloads": 9877194
+  },
+  {
+   "name": "rtree",
+   "downloads": 9823017
+  },
+  {
+   "name": "deepmerge",
+   "downloads": 9811870
+  },
+  {
+   "name": "langgraph-api",
+   "downloads": 9811182
+  },
+  {
+   "name": "appnope",
+   "downloads": 9808896
+  },
+  {
+   "name": "pyhcl",
+   "downloads": 9784913
+  },
+  {
+   "name": "azure-mgmt-authorization",
+   "downloads": 9768852
+  },
+  {
+   "name": "azure-mgmt-keyvault",
+   "downloads": 9755819
+  },
+  {
+   "name": "audioread",
+   "downloads": 9702304
+  },
+  {
+   "name": "markdown2",
+   "downloads": 9696686
+  },
+  {
+   "name": "astronomer-cosmos",
+   "downloads": 9680418
+  },
+  {
+   "name": "dataclasses",
+   "downloads": 9670338
+  },
+  {
+   "name": "dagster",
+   "downloads": 9669960
+  },
+  {
+   "name": "apache-airflow-core",
+   "downloads": 9668710
+  },
+  {
+   "name": "typepy",
+   "downloads": 9663651
+  },
+  {
+   "name": "exa-py",
+   "downloads": 9661073
+  },
+  {
+   "name": "pytest-icdiff",
+   "downloads": 9655067
+  },
+  {
+   "name": "rasterio",
+   "downloads": 9654386
+  },
+  {
+   "name": "blobfile",
+   "downloads": 9649170
+  },
+  {
+   "name": "tree-sitter-python",
+   "downloads": 9640716
+  },
+  {
+   "name": "pytest-playwright",
+   "downloads": 9625460
+  },
+  {
+   "name": "schedule",
+   "downloads": 9614282
+  },
+  {
+   "name": "numcodecs",
+   "downloads": 9611399
+  },
+  {
+   "name": "py7zr",
+   "downloads": 9610773
+  },
+  {
+   "name": "greenback",
+   "downloads": 9609038
+  },
+  {
+   "name": "cligj",
+   "downloads": 9598146
+  },
+  {
+   "name": "apache-airflow-providers-amazon",
+   "downloads": 9596449
+  },
+  {
+   "name": "parse-type",
+   "downloads": 9574100
+  },
+  {
+   "name": "addict",
+   "downloads": 9569743
+  },
+  {
+   "name": "etils",
+   "downloads": 9560316
+  },
+  {
+   "name": "uvicorn-worker",
+   "downloads": 9551656
+  },
+  {
+   "name": "pi-heif",
+   "downloads": 9550183
+  },
+  {
+   "name": "pyppmd",
+   "downloads": 9524186
+  },
+  {
+   "name": "python-crontab",
+   "downloads": 9512734
+  },
+  {
+   "name": "sphinx-autodoc-typehints",
+   "downloads": 9483648
+  },
+  {
+   "name": "num2words",
+   "downloads": 9461923
+  },
+  {
+   "name": "zstd",
+   "downloads": 9461676
+  },
+  {
+   "name": "cssutils",
+   "downloads": 9443090
+  },
+  {
+   "name": "python3-saml",
+   "downloads": 9429292
+  },
+  {
+   "name": "pytest-homeassistant-custom-component",
+   "downloads": 9409116
+  },
+  {
+   "name": "kgb",
+   "downloads": 9403872
+  },
+  {
+   "name": "constructs",
+   "downloads": 9392594
+  },
+  {
+   "name": "dagster-pipes",
+   "downloads": 9387238
+  },
+  {
+   "name": "mypy-protobuf",
+   "downloads": 9374790
+  },
+  {
+   "name": "microsoft-kiota-serialization-multipart",
+   "downloads": 9368675
+  },
+  {
+   "name": "microsoft-kiota-serialization-form",
+   "downloads": 9366855
+  },
+  {
+   "name": "pep517",
+   "downloads": 9358627
+  },
+  {
+   "name": "aniso8601",
+   "downloads": 9335643
+  },
+  {
+   "name": "pyzipper",
+   "downloads": 9323147
+  },
+  {
+   "name": "audioop-lts",
+   "downloads": 9319723
+  },
+  {
+   "name": "aioresponses",
+   "downloads": 9319461
+  },
+  {
+   "name": "enum34",
+   "downloads": 9312551
+  },
+  {
+   "name": "opencv-contrib-python",
+   "downloads": 9312352
+  },
+  {
+   "name": "dictdiffer",
+   "downloads": 9288516
+  },
+  {
+   "name": "pybcj",
+   "downloads": 9283758
+  },
+  {
+   "name": "w3lib",
+   "downloads": 9275745
+  },
+  {
+   "name": "types-python-slugify",
+   "downloads": 9233188
+  },
+  {
+   "name": "pandera",
+   "downloads": 9225733
+  },
+  {
+   "name": "dbt-databricks",
+   "downloads": 9200485
+  },
+  {
+   "name": "tom-swe",
+   "downloads": 9189321
+  },
+  {
+   "name": "llama-index-readers-llama-parse",
+   "downloads": 9186515
+  },
+  {
+   "name": "yapf",
+   "downloads": 9155087
+  },
+  {
+   "name": "namex",
+   "downloads": 9138463
+  },
+  {
+   "name": "waitress",
+   "downloads": 9137073
+  },
+  {
+   "name": "cytoolz",
+   "downloads": 9126805
+  },
+  {
+   "name": "multivolumefile",
+   "downloads": 9105181
+  },
+  {
+   "name": "colorclass",
+   "downloads": 9103576
+  },
+  {
+   "name": "inflate64",
+   "downloads": 9073414
+  },
+  {
+   "name": "mypy-boto3-cloudformation",
+   "downloads": 9065213
+  },
+  {
+   "name": "azure-appconfiguration",
+   "downloads": 9058512
+  },
+  {
+   "name": "mypy-boto3-secretsmanager",
+   "downloads": 9015523
+  },
+  {
+   "name": "pyhanko",
+   "downloads": 9006390
+  },
+  {
+   "name": "django-debug-toolbar",
+   "downloads": 9003980
+  },
+  {
+   "name": "jsii",
+   "downloads": 9003259
+  },
+  {
+   "name": "openlineage-sql",
+   "downloads": 9002642
+  },
+  {
+   "name": "ultralytics",
+   "downloads": 8965875
+  },
+  {
+   "name": "faster-whisper",
+   "downloads": 8952579
+  },
+  {
+   "name": "mistral-common",
+   "downloads": 8944595
+  },
+  {
+   "name": "allure-python-commons",
+   "downloads": 8935381
+  },
+  {
+   "name": "elasticsearch-dsl",
+   "downloads": 8934840
+  },
+  {
+   "name": "elementpath",
+   "downloads": 8932722
+  },
+  {
+   "name": "daytona",
+   "downloads": 8920138
+  },
+  {
+   "name": "rank-bm25",
+   "downloads": 8915190
+  },
+  {
+   "name": "pytest-dependency",
+   "downloads": 8908309
+  },
+  {
+   "name": "daytona-api-client",
+   "downloads": 8898272
+  },
+  {
+   "name": "unstructured-client",
+   "downloads": 8893676
+  },
+  {
+   "name": "gensim",
+   "downloads": 8879365
+  },
+  {
+   "name": "daytona-api-client-async",
+   "downloads": 8879154
+  },
+  {
+   "name": "restrictedpython",
+   "downloads": 8872727
+  },
+  {
+   "name": "geomet",
+   "downloads": 8871331
+  },
+  {
+   "name": "coolname",
+   "downloads": 8858402
+  },
+  {
+   "name": "aiocache",
+   "downloads": 8847386
+  },
+  {
+   "name": "uipath-langchain",
+   "downloads": 8846909
+  },
+  {
+   "name": "pipdeptree",
+   "downloads": 8843679
+  },
+  {
+   "name": "deptry",
+   "downloads": 8838663
+  },
+  {
+   "name": "azure-mgmt-monitor",
+   "downloads": 8837394
+  },
+  {
+   "name": "django-timezone-field",
+   "downloads": 8827989
+  },
+  {
+   "name": "daytona-toolbox-api-client-async",
+   "downloads": 8806462
+  },
+  {
+   "name": "pypandoc",
+   "downloads": 8787688
+  },
+  {
+   "name": "cassandra-driver",
+   "downloads": 8784794
+  },
+  {
+   "name": "python-decouple",
+   "downloads": 8769852
+  },
+  {
+   "name": "daytona-toolbox-api-client",
+   "downloads": 8766802
+  },
+  {
+   "name": "python-jenkins",
+   "downloads": 8732372
+  },
+  {
+   "name": "pypng",
+   "downloads": 8671088
+  },
+  {
+   "name": "simple-gcp-object-downloader",
+   "downloads": 8657066
+  },
+  {
+   "name": "uv-dynamic-versioning",
+   "downloads": 8631606
+  },
+  {
+   "name": "ip3country",
+   "downloads": 8613615
+  },
+  {
+   "name": "fastembed",
+   "downloads": 8608559
+  },
+  {
+   "name": "docx2txt",
+   "downloads": 8581646
+  },
+  {
+   "name": "types-psycopg2",
+   "downloads": 8579609
+  },
+  {
+   "name": "django-environ",
+   "downloads": 8557519
+  },
+  {
+   "name": "facebook-business",
+   "downloads": 8541559
+  },
+  {
+   "name": "atpublic",
+   "downloads": 8535644
+  },
+  {
+   "name": "paho-mqtt",
+   "downloads": 8532451
+  },
+  {
+   "name": "openinference-semantic-conventions",
+   "downloads": 8531636
+  },
+  {
+   "name": "gluonts",
+   "downloads": 8522129
+  },
+  {
+   "name": "pyzstd",
+   "downloads": 8519496
+  },
+  {
+   "name": "pycrypto",
+   "downloads": 8514383
+  },
+  {
+   "name": "openlineage-integration-common",
+   "downloads": 8512435
+  },
+  {
+   "name": "singer-sdk",
+   "downloads": 8511986
+  },
+  {
+   "name": "pdbr",
+   "downloads": 8511126
+  },
+  {
+   "name": "dj-database-url",
+   "downloads": 8506063
+  },
+  {
+   "name": "xmlschema",
+   "downloads": 8481770
+  },
+  {
+   "name": "dagster-shared",
+   "downloads": 8471520
+  },
+  {
+   "name": "azure-mgmt-redis",
+   "downloads": 8468352
+  },
+  {
+   "name": "kaitaistruct",
+   "downloads": 8459843
+  },
+  {
+   "name": "pulumi",
+   "downloads": 8459267
+  },
+  {
+   "name": "cchardet",
+   "downloads": 8435620
+  },
+  {
+   "name": "unittest-xml-reporting",
+   "downloads": 8416842
+  },
+  {
+   "name": "distributed",
+   "downloads": 8413098
+  },
+  {
+   "name": "backports-strenum",
+   "downloads": 8402027
+  },
+  {
+   "name": "mkdocstrings",
+   "downloads": 8397112
+  },
+  {
+   "name": "dependency-injector",
+   "downloads": 8389683
+  },
+  {
+   "name": "pefile",
+   "downloads": 8372690
+  },
+  {
+   "name": "pyshp",
+   "downloads": 8371394
+  },
+  {
+   "name": "banks",
+   "downloads": 8360654
+  },
+  {
+   "name": "gymnasium",
+   "downloads": 8352518
+  },
+  {
+   "name": "sagemaker-core",
+   "downloads": 8323113
+  },
+  {
+   "name": "python3-openid",
+   "downloads": 8320129
+  },
+  {
+   "name": "djangorestframework-simplejwt",
+   "downloads": 8316327
+  },
+  {
+   "name": "openinference-instrumentation",
+   "downloads": 8310434
+  },
+  {
+   "name": "azure-mgmt-nspkg",
+   "downloads": 8299377
+  },
+  {
+   "name": "bedrock-agentcore",
+   "downloads": 8295897
+  },
+  {
+   "name": "publication",
+   "downloads": 8276943
+  },
+  {
+   "name": "asyncer",
+   "downloads": 8262619
+  },
+  {
+   "name": "llama-index-instrumentation",
+   "downloads": 8253813
+  },
+  {
+   "name": "myst-parser",
+   "downloads": 8253083
+  },
+  {
+   "name": "memory-profiler",
+   "downloads": 8236074
+  },
+  {
+   "name": "azure-mgmt-web",
+   "downloads": 8232147
+  },
+  {
+   "name": "tabledata",
+   "downloads": 8217747
+  },
+  {
+   "name": "google-cloud-bigquery-biglake",
+   "downloads": 8216325
+  },
+  {
+   "name": "opentelemetry-instrumentation-lancedb",
+   "downloads": 8215016
+  },
+  {
+   "name": "databricks-agents",
+   "downloads": 8213510
+  },
+  {
+   "name": "crcmod",
+   "downloads": 8213276
+  },
+  {
+   "name": "statsig",
+   "downloads": 8212836
+  },
+  {
+   "name": "llama-index-embeddings-openai",
+   "downloads": 8211894
+  },
+  {
+   "name": "dlt",
+   "downloads": 8210929
+  },
+  {
+   "name": "pytest-sugar",
+   "downloads": 8196404
+  },
+  {
+   "name": "moviepy",
+   "downloads": 8186009
+  },
+  {
+   "name": "lancedb",
+   "downloads": 8183108
+  },
+  {
+   "name": "starkbank-ecdsa",
+   "downloads": 8177955
+  },
+  {
+   "name": "influxdb-client",
+   "downloads": 8174633
+  },
+  {
+   "name": "tox-uv",
+   "downloads": 8171513
+  },
+  {
+   "name": "mkdocs-autorefs",
+   "downloads": 8138045
+  },
+  {
+   "name": "allure-pytest",
+   "downloads": 8136290
+  },
+  {
+   "name": "azure-mgmt-datalake-nspkg",
+   "downloads": 8123310
+  },
+  {
+   "name": "click-default-group",
+   "downloads": 8120702
+  },
+  {
+   "name": "msgraph-sdk",
+   "downloads": 8118879
+  },
+  {
+   "name": "pinecone",
+   "downloads": 8098825
+  },
+  {
+   "name": "opentelemetry-instrumentation-haystack",
+   "downloads": 8096588
+  },
+  {
+   "name": "azure-mgmt-sql",
+   "downloads": 8095534
+  },
+  {
+   "name": "diffusers",
+   "downloads": 8094836
+  },
+  {
+   "name": "azure-mgmt-cognitiveservices",
+   "downloads": 8071838
+  },
+  {
+   "name": "farama-notifications",
+   "downloads": 8056639
+  },
+  {
+   "name": "protobuf3-to-dict",
+   "downloads": 8034136
+  },
+  {
+   "name": "alibabacloud-credentials",
+   "downloads": 8027926
+  },
+  {
+   "name": "sentinels",
+   "downloads": 8015144
+  },
+  {
+   "name": "langchain-mcp-adapters",
+   "downloads": 7996429
+  },
+  {
+   "name": "py-key-value-shared",
+   "downloads": 7983492
+  },
+  {
+   "name": "dagster-webserver",
+   "downloads": 7979177
+  },
+  {
+   "name": "rustworkx",
+   "downloads": 7974860
+  },
+  {
+   "name": "cloud-sql-python-connector",
+   "downloads": 7971363
+  },
+  {
+   "name": "functions-framework",
+   "downloads": 7965513
+  },
+  {
+   "name": "mixpanel",
+   "downloads": 7956832
+  },
+  {
+   "name": "mongomock",
+   "downloads": 7923784
+  },
+  {
+   "name": "azure-mgmt-msi",
+   "downloads": 7919289
+  },
+  {
+   "name": "langgraph-checkpoint-postgres",
+   "downloads": 7916243
+  },
+  {
+   "name": "pyrate-limiter",
+   "downloads": 7896876
+  },
+  {
+   "name": "toons",
+   "downloads": 7894093
+  },
+  {
+   "name": "types-psutil",
+   "downloads": 7860145
+  },
+  {
+   "name": "enum-compat",
+   "downloads": 7856661
+  },
+  {
+   "name": "python-keycloak",
+   "downloads": 7856130
+  },
+  {
+   "name": "pytest-custom-exit-code",
+   "downloads": 7855803
+  },
+  {
+   "name": "apache-tvm-ffi",
+   "downloads": 7843396
+  },
+  {
+   "name": "pgpy",
+   "downloads": 7832441
+  },
+  {
+   "name": "parver",
+   "downloads": 7815628
+  },
+  {
+   "name": "tree-sitter-typescript",
+   "downloads": 7804794
+  },
+  {
+   "name": "easygui",
+   "downloads": 7798829
+  },
+  {
+   "name": "pure-sasl",
+   "downloads": 7797919
+  },
+  {
+   "name": "braintrust",
+   "downloads": 7783477
+  },
+  {
+   "name": "pdfkit",
+   "downloads": 7782391
+  },
+  {
+   "name": "sphinx-copybutton",
+   "downloads": 7777753
+  },
+  {
+   "name": "dagster-graphql",
+   "downloads": 7758551
+  },
+  {
+   "name": "tokenize-rt",
+   "downloads": 7740890
+  },
+  {
+   "name": "harbor-rewardkit",
+   "downloads": 7739787
+  },
+  {
+   "name": "strawberry-graphql",
+   "downloads": 7728614
+  },
+  {
+   "name": "opentelemetry-exporter-gcp-logging",
+   "downloads": 7726410
+  },
+  {
+   "name": "azure-mgmt-servicebus",
+   "downloads": 7725144
+  },
+  {
+   "name": "azure-mgmt-rdbms",
+   "downloads": 7713376
+  },
+  {
+   "name": "apache-airflow-task-sdk",
+   "downloads": 7712210
+  },
+  {
+   "name": "azure-mgmt-loganalytics",
+   "downloads": 7704407
+  },
+  {
+   "name": "slackclient",
+   "downloads": 7699515
+  },
+  {
+   "name": "oletools",
+   "downloads": 7684690
+  },
+  {
+   "name": "pyreadline3",
+   "downloads": 7680186
+  },
+  {
+   "name": "pcodedmp",
+   "downloads": 7645131
+  },
+  {
+   "name": "hatch-fancy-pypi-readme",
+   "downloads": 7632891
+  },
+  {
+   "name": "pyaml",
+   "downloads": 7624214
+  },
+  {
+   "name": "django-celery-beat",
+   "downloads": 7624123
+  },
+  {
+   "name": "pymsteams",
+   "downloads": 7614634
+  },
+  {
+   "name": "nvidia-nvshmem-cu12",
+   "downloads": 7604088
+  },
+  {
+   "name": "azure-ai-agents",
+   "downloads": 7601444
+  },
+  {
+   "name": "textblob",
+   "downloads": 7600176
+  },
+  {
+   "name": "publicsuffix2",
+   "downloads": 7588428
+  },
+  {
+   "name": "func-timeout",
+   "downloads": 7584368
+  },
+  {
+   "name": "azure-mgmt-applicationinsights",
+   "downloads": 7578471
+  },
+  {
+   "name": "aws-cdk-lib",
+   "downloads": 7577580
+  },
+  {
+   "name": "azure-mgmt-eventhub",
+   "downloads": 7574090
+  },
+  {
+   "name": "striprtf",
+   "downloads": 7543370
+  },
+  {
+   "name": "pastel",
+   "downloads": 7539811
+  },
+  {
+   "name": "puremagic",
+   "downloads": 7537817
+  },
+  {
+   "name": "types-retry",
+   "downloads": 7530381
+  },
+  {
+   "name": "opentelemetry-instrumentation-pinecone",
+   "downloads": 7522100
+  },
+  {
+   "name": "xgrammar",
+   "downloads": 7518191
+  },
+  {
+   "name": "eventlet",
+   "downloads": 7514505
+  },
+  {
+   "name": "stringcase",
+   "downloads": 7510074
+  },
+  {
+   "name": "google-cloud-discoveryengine",
+   "downloads": 7507587
+  },
+  {
+   "name": "opentelemetry-instrumentation-milvus",
+   "downloads": 7505827
+  },
+  {
+   "name": "diagrams",
+   "downloads": 7503612
+  },
+  {
+   "name": "opentelemetry-instrumentation-vertexai",
+   "downloads": 7497712
+  },
+  {
+   "name": "databricks-labs-dqx",
+   "downloads": 7497459
+  },
+  {
+   "name": "umap-learn",
+   "downloads": 7491195
+  },
+  {
+   "name": "ebcdic",
+   "downloads": 7488818
+  },
+  {
+   "name": "knack",
+   "downloads": 7443659
+  },
+  {
+   "name": "mbstrdecoder",
+   "downloads": 7436273
+  },
+  {
+   "name": "azure-mgmt-recoveryservices",
+   "downloads": 7430514
+  },
+  {
+   "name": "svcs",
+   "downloads": 7427821
+  },
+  {
+   "name": "priority",
+   "downloads": 7420516
+  },
+  {
+   "name": "json-rpc",
+   "downloads": 7417404
+  },
+  {
+   "name": "ag-ui-protocol",
+   "downloads": 7407094
+  },
+  {
+   "name": "azure-mgmt-recoveryservicesbackup",
+   "downloads": 7406229
+  },
+  {
+   "name": "port-for",
+   "downloads": 7385441
+  },
+  {
+   "name": "llama-index",
+   "downloads": 7378605
+  },
+  {
+   "name": "detect-secrets",
+   "downloads": 7376210
+  },
+  {
+   "name": "marshmallow-enum",
+   "downloads": 7366975
+  },
+  {
+   "name": "azure-mgmt-cdn",
+   "downloads": 7349803
+  },
+  {
+   "name": "mistral-vibe",
+   "downloads": 7338049
+  },
+  {
+   "name": "firecrawl-py",
+   "downloads": 7323775
+  },
+  {
+   "name": "compressed-tensors",
+   "downloads": 7323086
+  },
+  {
+   "name": "azure-mgmt-managementgroups",
+   "downloads": 7321791
+  },
+  {
+   "name": "tree-sitter-php",
+   "downloads": 7316065
+  },
+  {
+   "name": "boto",
+   "downloads": 7313071
+  },
+  {
+   "name": "azure-mgmt-search",
+   "downloads": 7288964
+  },
+  {
+   "name": "pytest-instafail",
+   "downloads": 7280646
+  },
+  {
+   "name": "eth-account",
+   "downloads": 7271790
+  },
+  {
+   "name": "azure-mgmt-batch",
+   "downloads": 7270287
+  },
+  {
+   "name": "pytest-forked",
+   "downloads": 7263193
+  },
+  {
+   "name": "python-box",
+   "downloads": 7253207
+  },
+  {
+   "name": "asana",
+   "downloads": 7251330
+  },
+  {
+   "name": "openai-harmony",
+   "downloads": 7237088
+  },
+  {
+   "name": "exchange-calendars",
+   "downloads": 7230240
+  },
+  {
+   "name": "ibm-cloud-sdk-core",
+   "downloads": 7229926
+  },
+  {
+   "name": "azure-mgmt-eventgrid",
+   "downloads": 7213149
+  },
+  {
+   "name": "construct",
+   "downloads": 7211974
+  },
+  {
+   "name": "pipx",
+   "downloads": 7206702
+  },
+  {
+   "name": "python-arango",
+   "downloads": 7195189
+  },
+  {
+   "name": "funcy",
+   "downloads": 7191194
+  },
+  {
+   "name": "dynaconf",
+   "downloads": 7190562
+  },
+  {
+   "name": "folium",
+   "downloads": 7186642
+  },
+  {
+   "name": "extract-msg",
+   "downloads": 7184387
+  },
+  {
+   "name": "jinxed",
+   "downloads": 7179877
+  },
+  {
+   "name": "jsbeautifier",
+   "downloads": 7177550
+  },
+  {
+   "name": "aliyun-python-sdk-core",
+   "downloads": 7168163
+  },
+  {
+   "name": "configobj",
+   "downloads": 7158377
+  },
+  {
+   "name": "jaxtyping",
+   "downloads": 7153117
+  },
+  {
+   "name": "azure-mgmt-iothub",
+   "downloads": 7151186
+  },
+  {
+   "name": "tavily-python",
+   "downloads": 7128214
+  },
+  {
+   "name": "auth0-python",
+   "downloads": 7126676
+  },
+  {
+   "name": "autobahn",
+   "downloads": 7114678
+  },
+  {
+   "name": "opentelemetry-instrumentation-bedrock",
+   "downloads": 7113843
+  },
+  {
+   "name": "eth-utils",
+   "downloads": 7113146
+  },
+  {
+   "name": "tree-sitter-ruby",
+   "downloads": 7105410
+  },
+  {
+   "name": "pyhumps",
+   "downloads": 7095085
+  },
+  {
+   "name": "azure-mgmt-trafficmanager",
+   "downloads": 7089867
+  },
+  {
+   "name": "proglog",
+   "downloads": 7084385
+  },
+  {
+   "name": "dbt-postgres",
+   "downloads": 7080609
+  },
+  {
+   "name": "browser-harness",
+   "downloads": 7072341
+  },
+  {
+   "name": "azure-mgmt-marketplaceordering",
+   "downloads": 7041237
+  },
+  {
+   "name": "pulp",
+   "downloads": 7037804
+  },
+  {
+   "name": "prophet",
+   "downloads": 7034911
+  },
+  {
+   "name": "polib",
+   "downloads": 7027525
+  },
+  {
+   "name": "fastapi-sso",
+   "downloads": 7026830
+  },
+  {
+   "name": "ansible-compat",
+   "downloads": 7022955
+  },
+  {
+   "name": "jq",
+   "downloads": 7021577
+  },
+  {
+   "name": "opentelemetry-instrumentation-cohere",
+   "downloads": 7007751
+  },
+  {
+   "name": "cmdstanpy",
+   "downloads": 6992043
+  },
+  {
+   "name": "webauthn",
+   "downloads": 6984854
+  },
+  {
+   "name": "azure-mgmt-advisor",
+   "downloads": 6982174
+  },
+  {
+   "name": "types-webencodings",
+   "downloads": 6965605
+  },
+  {
+   "name": "pynndescent",
+   "downloads": 6964792
+  },
+  {
+   "name": "tinydb",
+   "downloads": 6942135
+  },
+  {
+   "name": "pywinrm",
+   "downloads": 6938328
+  },
+  {
+   "name": "parsimonious",
+   "downloads": 6931760
+  },
+  {
+   "name": "opentelemetry-instrumentation-llamaindex",
+   "downloads": 6928352
+  },
+  {
+   "name": "setuptools-rust",
+   "downloads": 6925523
+  },
+  {
+   "name": "c7n-org",
+   "downloads": 6922072
+  },
+  {
+   "name": "azure-mgmt-network",
+   "downloads": 6916363
+  },
+  {
+   "name": "pyhive",
+   "downloads": 6915720
+  },
+  {
+   "name": "ipython-genutils",
+   "downloads": 6913793
+  },
+  {
+   "name": "dependency-groups",
+   "downloads": 6909457
+  },
+  {
+   "name": "azure-mgmt-policyinsights",
+   "downloads": 6908048
+  },
+  {
+   "name": "gguf",
+   "downloads": 6907816
+  },
+  {
+   "name": "azure-cli-core",
+   "downloads": 6894521
+  },
+  {
+   "name": "asgi-correlation-id",
+   "downloads": 6892349
+  },
+  {
+   "name": "azure-cli",
+   "downloads": 6891572
+  },
+  {
+   "name": "voluptuous",
+   "downloads": 6890471
+  },
+  {
+   "name": "hexbytes",
+   "downloads": 6887566
+  },
+  {
+   "name": "opentelemetry-instrumentation-alephalpha",
+   "downloads": 6886464
+  },
+  {
+   "name": "opentelemetry-instrumentation-qdrant",
+   "downloads": 6879902
+  },
+  {
+   "name": "datasketch",
+   "downloads": 6879885
+  },
+  {
+   "name": "opentelemetry-instrumentation-ollama",
+   "downloads": 6879570
+  },
+  {
+   "name": "whenever",
+   "downloads": 6877731
+  },
+  {
+   "name": "eth-abi",
+   "downloads": 6874834
+  },
+  {
+   "name": "opentelemetry-instrumentation-chromadb",
+   "downloads": 6873685
+  },
+  {
+   "name": "azure-mgmt-servicefabric",
+   "downloads": 6865764
+  },
+  {
+   "name": "azure-mgmt-signalr",
+   "downloads": 6863887
+  },
+  {
+   "name": "opentelemetry-instrumentation-crewai",
+   "downloads": 6857958
+  },
+  {
+   "name": "opentelemetry-instrumentation-watsonx",
+   "downloads": 6850044
+  },
+  {
+   "name": "opentelemetry-instrumentation-replicate",
+   "downloads": 6849634
+  },
+  {
+   "name": "pdm-backend",
+   "downloads": 6849532
+  },
+  {
+   "name": "opentelemetry-instrumentation-transformers",
+   "downloads": 6847828
+  },
+  {
+   "name": "eth-hash",
+   "downloads": 6844184
+  },
+  {
+   "name": "discord-py",
+   "downloads": 6842167
+  },
+  {
+   "name": "opentelemetry-instrumentation-mistralai",
+   "downloads": 6833585
+  },
+  {
+   "name": "urwid",
+   "downloads": 6828798
+  },
+  {
+   "name": "opentelemetry-instrumentation-together",
+   "downloads": 6824743
+  },
+  {
+   "name": "eth-typing",
+   "downloads": 6823633
+  },
+  {
+   "name": "txaio",
+   "downloads": 6822988
+  },
+  {
+   "name": "opentelemetry-instrumentation-weaviate",
+   "downloads": 6815561
+  },
+  {
+   "name": "certbot-dns-cloudflare",
+   "downloads": 6803297
+  },
+  {
+   "name": "sql-metadata",
+   "downloads": 6799628
+  },
+  {
+   "name": "pyiceberg-core",
+   "downloads": 6795716
+  },
+  {
+   "name": "opentelemetry-instrumentation-sagemaker",
+   "downloads": 6795401
+  },
+  {
+   "name": "opentelemetry-instrumentation-marqo",
+   "downloads": 6794113
+  },
+  {
+   "name": "google-analytics-data",
+   "downloads": 6781790
+  },
+  {
+   "name": "azure-mgmt-billing",
+   "downloads": 6778302
+  },
+  {
+   "name": "sqlparams",
+   "downloads": 6777211
+  },
+  {
+   "name": "presidio-analyzer",
+   "downloads": 6771284
+  },
+  {
+   "name": "azure-mgmt-media",
+   "downloads": 6762353
+  },
+  {
+   "name": "azure-mgmt-maps",
+   "downloads": 6762137
+  },
+  {
+   "name": "azure-mgmt-iothubprovisioningservices",
+   "downloads": 6755101
+  },
+  {
+   "name": "azure-mgmt-datamigration",
+   "downloads": 6751978
+  },
+  {
+   "name": "ifaddr",
+   "downloads": 6751617
+  },
+  {
+   "name": "mangum",
+   "downloads": 6749932
+  },
+  {
+   "name": "azure-mgmt-iotcentral",
+   "downloads": 6745768
+  },
+  {
+   "name": "azure-mgmt-batchai",
+   "downloads": 6741171
+  },
+  {
+   "name": "backports-zoneinfo",
+   "downloads": 6737721
+  },
+  {
+   "name": "schemathesis",
+   "downloads": 6734183
+  },
+  {
+   "name": "ddgs",
+   "downloads": 6719978
+  },
+  {
+   "name": "fetch-use",
+   "downloads": 6717596
+  },
+  {
+   "name": "opentelemetry-instrumentation-mcp",
+   "downloads": 6716888
+  },
+  {
+   "name": "compressed-rtf",
+   "downloads": 6711619
+  },
+  {
+   "name": "cel-python",
+   "downloads": 6706378
+  },
+  {
+   "name": "janus",
+   "downloads": 6702225
+  },
+  {
+   "name": "korean-lunar-calendar",
+   "downloads": 6701951
+  },
+  {
+   "name": "cerberus",
+   "downloads": 6700879
+  },
+  {
+   "name": "pyfiglet",
+   "downloads": 6697248
+  },
+  {
+   "name": "mypy-boto3-glue",
+   "downloads": 6690087
+  },
+  {
+   "name": "azure-search-documents",
+   "downloads": 6675459
+  },
+  {
+   "name": "aws-cdk-cloud-assembly-schema",
+   "downloads": 6674011
+  },
+  {
+   "name": "pkgconfig",
+   "downloads": 6648684
+  },
+  {
+   "name": "pytest-postgresql",
+   "downloads": 6639491
+  },
+  {
+   "name": "marshmallow-oneofschema",
+   "downloads": 6637373
+  },
+  {
+   "name": "github3-py",
+   "downloads": 6636264
+  },
+  {
+   "name": "ortools",
+   "downloads": 6632679
+  },
+  {
+   "name": "gepa",
+   "downloads": 6628234
+  },
+  {
+   "name": "pyrefly",
+   "downloads": 6610816
+  },
+  {
+   "name": "litellm-proxy-extras",
+   "downloads": 6602624
+  },
+  {
+   "name": "aws-cdk-asset-node-proxy-agent-v6",
+   "downloads": 6592710
+  },
+  {
+   "name": "apache-airflow-providers-standard",
+   "downloads": 6584714
+  },
+  {
+   "name": "pex",
+   "downloads": 6582503
+  },
+  {
+   "name": "rtfde",
+   "downloads": 6577070
+  },
+  {
+   "name": "django-phonenumber-field",
+   "downloads": 6563551
+  },
+  {
+   "name": "opentelemetry-instrumentation-langchain",
+   "downloads": 6562609
+  },
+  {
+   "name": "alibabacloud-tea-openapi",
+   "downloads": 6553680
+  },
+  {
+   "name": "plumbum",
+   "downloads": 6547051
+  },
+  {
+   "name": "dbt-spark",
+   "downloads": 6546930
+  },
+  {
+   "name": "opentelemetry-exporter-gcp-monitoring",
+   "downloads": 6535227
+  },
+  {
+   "name": "uipath",
+   "downloads": 6521798
+  },
+  {
+   "name": "ndg-httpsclient",
+   "downloads": 6518039
+  },
+  {
+   "name": "eth-rlp",
+   "downloads": 6512565
+  },
+  {
+   "name": "pathlib",
+   "downloads": 6510315
+  },
+  {
+   "name": "opentelemetry-instrumentation-asyncio",
+   "downloads": 6506234
+  },
+  {
+   "name": "deepagents",
+   "downloads": 6498907
+  },
+  {
+   "name": "nbclassic",
+   "downloads": 6497028
+  },
+  {
+   "name": "autoflake",
+   "downloads": 6494194
+  },
+  {
+   "name": "pamqp",
+   "downloads": 6493682
+  },
+  {
+   "name": "nanoid",
+   "downloads": 6492585
+  },
+  {
+   "name": "apache-airflow-microsoft-fabric-plugin",
+   "downloads": 6482313
+  },
+  {
+   "name": "tensorflow-io-gcs-filesystem",
+   "downloads": 6480961
+  },
+  {
+   "name": "python-socks",
+   "downloads": 6467477
+  },
+  {
+   "name": "deepeval",
+   "downloads": 6466639
+  },
+  {
+   "name": "ultralytics-thop",
+   "downloads": 6458146
+  },
+  {
+   "name": "tables",
+   "downloads": 6451690
+  },
+  {
+   "name": "dspy",
+   "downloads": 6445272
+  },
+  {
+   "name": "marko",
+   "downloads": 6438890
+  },
+  {
+   "name": "alibabacloud-adb20211201",
+   "downloads": 6434514
+  },
+  {
+   "name": "litellm-enterprise",
+   "downloads": 6428712
+  },
+  {
+   "name": "webob",
+   "downloads": 6426596
+  },
+  {
+   "name": "choreographer",
+   "downloads": 6420920
+  },
+  {
+   "name": "timezonefinder",
+   "downloads": 6413680
+  },
+  {
+   "name": "pyhamcrest",
+   "downloads": 6393524
+  },
+  {
+   "name": "acme",
+   "downloads": 6392096
+  },
+  {
+   "name": "sphinxcontrib-mermaid",
+   "downloads": 6384596
+  },
+  {
+   "name": "lightning",
+   "downloads": 6376248
+  },
+  {
+   "name": "partial-json-parser",
+   "downloads": 6367402
+  },
+  {
+   "name": "jinja2-humanize-extension",
+   "downloads": 6365322
+  },
+  {
+   "name": "aiormq",
+   "downloads": 6362625
+  },
+  {
+   "name": "ckzg",
+   "downloads": 6353243
+  },
+  {
+   "name": "codespell",
+   "downloads": 6346962
+  },
+  {
+   "name": "pycomposefile",
+   "downloads": 6344811
+  },
+  {
+   "name": "djangorestframework-stubs",
+   "downloads": 6340396
+  },
+  {
+   "name": "python-crfsuite",
+   "downloads": 6340213
+  },
+  {
+   "name": "docling-core",
+   "downloads": 6339614
+  },
+  {
+   "name": "python-hcl2",
+   "downloads": 6339437
+  },
+  {
+   "name": "google",
+   "downloads": 6333981
+  },
+  {
+   "name": "opsgenie-sdk",
+   "downloads": 6323013
+  },
+  {
+   "name": "aliyun-python-sdk-kms",
+   "downloads": 6317753
+  },
+  {
+   "name": "types-aioboto3",
+   "downloads": 6305395
+  },
+  {
+   "name": "apache-beam",
+   "downloads": 6301370
+  },
+  {
+   "name": "marshmallow-dataclass",
+   "downloads": 6297557
+  },
+  {
+   "name": "nox",
+   "downloads": 6297471
+  },
+  {
+   "name": "pyhanko-certvalidator",
+   "downloads": 6294287
+  },
+  {
+   "name": "unicodecsv",
+   "downloads": 6289635
+  },
+  {
+   "name": "channels",
+   "downloads": 6288306
+  },
+  {
+   "name": "python-calamine",
+   "downloads": 6279339
+  },
+  {
+   "name": "clickclick",
+   "downloads": 6278087
+  },
+  {
+   "name": "intervaltree",
+   "downloads": 6271448
+  },
+  {
+   "name": "win32-setctime",
+   "downloads": 6270976
+  },
+  {
+   "name": "nvidia-cutlass-dsl-libs-base",
+   "downloads": 6269249
+  },
+  {
+   "name": "asteval",
+   "downloads": 6261626
+  },
+  {
+   "name": "mitmproxy",
+   "downloads": 6250329
+  },
+  {
+   "name": "yaspin",
+   "downloads": 6249241
+  },
+  {
+   "name": "pympler",
+   "downloads": 6244156
+  },
+  {
+   "name": "terminaltables",
+   "downloads": 6241262
+  },
+  {
+   "name": "gprof2dot",
+   "downloads": 6240383
+  },
+  {
+   "name": "jsonschema-rs",
+   "downloads": 6228579
+  },
+  {
+   "name": "catboost",
+   "downloads": 6227476
+  },
+  {
+   "name": "types-openpyxl",
+   "downloads": 6227004
+  },
+  {
+   "name": "social-auth-core",
+   "downloads": 6220120
+  },
+  {
+   "name": "hdfs",
+   "downloads": 6220079
+  },
+  {
+   "name": "opentelemetry-sdk-extension-aws",
+   "downloads": 6219298
+  },
+  {
+   "name": "py-vapid",
+   "downloads": 6216733
+  },
+  {
+   "name": "types-tqdm",
+   "downloads": 6209152
+  },
+  {
+   "name": "prance",
+   "downloads": 6194071
+  },
+  {
+   "name": "legacy-cgi",
+   "downloads": 6193550
+  },
+  {
+   "name": "python-stdnum",
+   "downloads": 6192662
+  },
+  {
+   "name": "azure-functions",
+   "downloads": 6157774
+  },
+  {
+   "name": "poethepoet",
+   "downloads": 6153515
+  },
+  {
+   "name": "ipaddress",
+   "downloads": 6142720
+  },
+  {
+   "name": "pint",
+   "downloads": 6136479
+  },
+  {
+   "name": "pytest-recording",
+   "downloads": 6134948
+  },
+  {
+   "name": "configupdater",
+   "downloads": 6127072
+  },
+  {
+   "name": "kazoo",
+   "downloads": 6117261
+  },
+  {
+   "name": "nvidia-cutlass-dsl",
+   "downloads": 6110289
+  },
+  {
+   "name": "tree-sitter-yaml",
+   "downloads": 6107352
+  },
+  {
+   "name": "z3-solver",
+   "downloads": 6097257
+  },
+  {
+   "name": "editorconfig",
+   "downloads": 6093752
+  },
+  {
+   "name": "pytest-order",
+   "downloads": 6082883
+  },
+  {
+   "name": "safehttpx",
+   "downloads": 6067160
+  },
+  {
+   "name": "aio-pika",
+   "downloads": 6065468
+  },
+  {
+   "name": "selectolax",
+   "downloads": 6064384
+  },
+  {
+   "name": "daphne",
+   "downloads": 6048311
+  },
+  {
+   "name": "imagehash",
+   "downloads": 6039544
+  },
+  {
+   "name": "pytest-aiohttp",
+   "downloads": 6033878
+  },
+  {
+   "name": "rarfile",
+   "downloads": 6033515
+  },
+  {
+   "name": "async-property",
+   "downloads": 6032066
+  },
+  {
+   "name": "sqlalchemy-jsonfield",
+   "downloads": 6024426
+  },
+  {
+   "name": "asyncstdlib",
+   "downloads": 6014943
+  },
+  {
+   "name": "rlp",
+   "downloads": 6009921
+  },
+  {
+   "name": "furl",
+   "downloads": 6009882
+  },
+  {
+   "name": "orderedmultidict",
+   "downloads": 6009079
+  },
+  {
+   "name": "strands-agents-tools",
+   "downloads": 6008690
+  },
+  {
+   "name": "roboflow",
+   "downloads": 6003713
+  },
+  {
+   "name": "eth-keys",
+   "downloads": 6000576
+  },
+  {
+   "name": "subprocess-tee",
+   "downloads": 5999958
+  },
+  {
+   "name": "stanio",
+   "downloads": 5998007
+  },
+  {
+   "name": "commonmark",
+   "downloads": 5997233
+  },
+  {
+   "name": "pinecone-plugin-interface",
+   "downloads": 5993404
+  },
+  {
+   "name": "evaluate",
+   "downloads": 5989632
+  },
+  {
+   "name": "dbt-bigquery",
+   "downloads": 5989402
+  },
+  {
+   "name": "donfig",
+   "downloads": 5985314
+  },
+  {
+   "name": "pyahocorasick",
+   "downloads": 5979577
+  },
+  {
+   "name": "tensorboardx",
+   "downloads": 5972785
+  },
+  {
+   "name": "python-chess",
+   "downloads": 5969961
+  },
+  {
+   "name": "azure-eventgrid",
+   "downloads": 5969310
+  }
+ ]
+}

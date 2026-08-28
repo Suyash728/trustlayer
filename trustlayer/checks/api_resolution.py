@@ -60,6 +60,20 @@ class ModuleClaim:
 
 
 @dataclass(frozen=True)
+class CallClaim:
+    """A call site, with only what can be counted statically."""
+
+    module: str
+    attribute: str
+    file: str
+    line: int
+    positional: int
+    keywords: tuple[str, ...]
+    star_args: bool  # *a at the call site: the real count is unknowable
+    star_kwargs: bool  # **kw at the call site: any keyword may be present
+
+
+@dataclass(frozen=True)
 class AttributeClaim:
     module: str
     attribute: str
@@ -106,7 +120,7 @@ def check_python_apis(root: Path, *, pypi_lookup=None, interpreter: Path | None 
             ),
         )
 
-    module_claims, attribute_claims = collect_python_claims(root, sources)
+    module_claims, attribute_claims, call_claims = collect_python_claims(root, sources)
     external = {
         claim.module
         for claim in module_claims
@@ -116,7 +130,7 @@ def check_python_apis(root: Path, *, pypi_lookup=None, interpreter: Path | None 
         return CheckResult(check)
 
     wanted: dict[str, list[str]] = {module: [] for module in external}
-    for claim in attribute_claims:
+    for claim in (*attribute_claims, *call_claims):
         if claim.module in wanted and claim.attribute not in wanted[claim.module]:
             wanted[claim.module].append(claim.attribute)
 
@@ -126,6 +140,7 @@ def check_python_apis(root: Path, *, pypi_lookup=None, interpreter: Path | None 
 
     findings = _module_findings(module_claims, resolved, root, interpreter, origin, lookup)
     findings += _attribute_findings(attribute_claims, resolved, external)
+    findings += _signature_findings(call_claims, resolved, external)
     return CheckResult(check, sort_findings(findings))
 
 
@@ -237,11 +252,119 @@ def _attribute_findings(
     return findings
 
 
+POSITIONAL_KINDS = ("POSITIONAL_ONLY", "POSITIONAL_OR_KEYWORD")
+NAMEABLE_KINDS = ("POSITIONAL_OR_KEYWORD", "KEYWORD_ONLY")
+
+
+def _signature_findings(
+    call_claims: list[CallClaim], resolved: dict[str, dict], external: set[str]
+) -> list[Finding]:
+    """Check call sites against the real signature, and stay silent whenever unsure.
+
+    The guards are the check. Everything below is a reason to say nothing:
+
+    - the callable is absent from `signatures` - the probe already refused it, because it is
+      not a plain Python function, has no introspectable signature, or is @overload-ed
+    - `*args` in the signature, or `*a` at the call site: arity is unbounded or uncountable
+    - `**kwargs` in the signature, or `**kw` at the call site: any keyword may be legitimate
+
+    Arity is only judged on a call with **no keywords at all**. A mixed call like
+    `get(url, timeout=5)` is sound to check for an unknown *keyword* - the name is either in
+    the signature or it is not, and the positional arguments cannot change that - but working
+    out whether the positional count satisfies the required parameters once keywords are also
+    filling slots is where an off-by-one becomes a false accusation. That is a v1 limitation,
+    not a permanent one.
+    """
+    findings: list[Finding] = []
+
+    for claim in call_claims:
+        if claim.module not in external:
+            continue
+        info = resolved.get(claim.module)
+        if not info or not info.get("found"):
+            continue
+        described = (info.get("signatures") or {}).get(claim.attribute)
+        if not described:
+            continue  # the probe declined to describe it, so nothing is claimed
+
+        parameters = described.get("parameters") or []
+        kinds = {parameter.get("kind") for parameter in parameters}
+        text = described.get("text") or claim.attribute
+        location = f"{info.get('distribution') or claim.module} {info.get('version') or ''}".strip()
+
+        if not claim.star_kwargs and "VAR_KEYWORD" not in kinds:
+            unknown = [
+                keyword
+                for keyword in claim.keywords
+                if keyword not in {p["name"] for p in parameters if p.get("kind") in NAMEABLE_KINDS}
+            ]
+            if unknown:
+                findings.append(
+                    _signature_finding(
+                        claim,
+                        "unknown-keyword",
+                        f"{claim.module}.{claim.attribute}({', '.join(f'{k}=' for k in unknown)})",
+                        [
+                            f"real signature: {text}",
+                            f"resolved from {location}" if location else "",
+                            f"no parameter named {', '.join(repr(k) for k in unknown)}",
+                        ],
+                    )
+                )
+
+        arity = _arity_finding(claim, parameters, kinds, text, location)
+        if arity is not None:
+            findings.append(arity)
+
+    return findings
+
+
+def _arity_finding(claim, parameters, kinds, text, location) -> Finding | None:
+    if claim.star_args or claim.keywords or claim.star_kwargs:
+        return None  # only a purely positional call is counted in v1
+    if "VAR_POSITIONAL" in kinds:
+        return None  # unbounded arity
+
+    slots = [p for p in parameters if p.get("kind") in POSITIONAL_KINDS]
+    required = [p for p in slots if not p.get("has_default")]
+    required += [
+        p for p in parameters if p.get("kind") == "KEYWORD_ONLY" and not p.get("has_default")
+    ]
+
+    if claim.positional > len(slots):
+        detail = f"takes at most {len(slots)} positional argument(s), called with {claim.positional}"
+    elif claim.positional < len(required):
+        missing = [p["name"] for p in required[claim.positional :]]
+        detail = f"requires {', '.join(missing)}, called with {claim.positional} argument(s)"
+    else:
+        return None
+
+    return _signature_finding(
+        claim,
+        "wrong-arity",
+        f"{claim.module}.{claim.attribute}() with {claim.positional} positional argument(s)",
+        [f"real signature: {text}", f"resolved from {location}" if location else "", detail],
+    )
+
+
+def _signature_finding(claim: CallClaim, verdict: str, summary: str, evidence: list[str]) -> Finding:
+    return Finding(
+        severity=Severity.HIGH,
+        check=f"{CHECK_NAME}:python",
+        file=claim.file,
+        line=claim.line,
+        claim=summary,
+        verdict=verdict,
+        evidence=[line for line in evidence if line],
+    )
+
+
 def collect_python_claims(
     root: Path, sources: list[Path]
-) -> tuple[list[ModuleClaim], list[AttributeClaim]]:
+) -> tuple[list[ModuleClaim], list[AttributeClaim], list[CallClaim]]:
     modules: list[ModuleClaim] = []
     attributes: list[AttributeClaim] = []
+    calls: list[CallClaim] = []
 
     for path in sources:
         source = read_source(path)
@@ -255,8 +378,9 @@ def collect_python_claims(
         collector.visit(tree)
         modules.extend(collector.modules)
         attributes.extend(collector.attributes)
+        calls.extend(collector.calls)
 
-    return modules, attributes
+    return modules, attributes, calls
 
 
 class _ClaimCollector(ast.NodeVisitor):
@@ -266,7 +390,9 @@ class _ClaimCollector(ast.NodeVisitor):
         self.file = file
         self.modules: list[ModuleClaim] = []
         self.attributes: list[AttributeClaim] = []
+        self.calls: list[CallClaim] = []
         self.aliases: dict[str, str] = {}  # local name -> module it refers to
+        self.imported: dict[str, tuple[str, str]] = {}  # local name -> (module, attribute)
         self._called_attribute_ids: set[int] = set()
 
     def visit(self, node: ast.AST) -> None:
@@ -282,6 +408,8 @@ class _ClaimCollector(ast.NodeVisitor):
         for child in ast.walk(node):
             if isinstance(child, ast.Attribute):
                 self._visit_attribute(child)
+            elif isinstance(child, ast.Call):
+                self._visit_call(child)
 
     def _visit_import(self, node: ast.Import) -> None:
         for alias in node.names:
@@ -298,9 +426,41 @@ class _ClaimCollector(ast.NodeVisitor):
         for alias in node.names:
             if alias.name == "*":
                 continue
+            self.imported[alias.asname or alias.name] = (node.module, alias.name)
             self.attributes.append(
                 AttributeClaim(node.module, alias.name, self.file, node.lineno, called=False)
             )
+
+    def _visit_call(self, node: ast.Call) -> None:
+        """Record `mod.func(...)` and `from mod import func; func(...)`.
+
+        A receiver that is not a plain name - `factory().go()`, `table["k"].go()` - is not
+        recorded at all: the object is unknown, so nothing about its parameters is knowable.
+        """
+        if isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name):
+            module = self.aliases.get(node.func.value.id)
+            target = (module, node.func.attr) if module else None
+        elif isinstance(node.func, ast.Name):
+            target = self.imported.get(node.func.id)
+        else:
+            target = None
+
+        if target is None:
+            return
+
+        module, attribute = target
+        self.calls.append(
+            CallClaim(
+                module=module,
+                attribute=attribute,
+                file=self.file,
+                line=node.lineno,
+                positional=sum(1 for arg in node.args if not isinstance(arg, ast.Starred)),
+                keywords=tuple(kw.arg for kw in node.keywords if kw.arg is not None),
+                star_args=any(isinstance(arg, ast.Starred) for arg in node.args),
+                star_kwargs=any(kw.arg is None for kw in node.keywords),
+            )
+        )
 
     def _visit_attribute(self, node: ast.Attribute) -> None:
         if not isinstance(node.value, ast.Name):
