@@ -17,9 +17,10 @@ harmless. That is the only kind of wrong an LLM is allowed to be in this codebas
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from pathlib import Path
 
-from trustlayer.agent.runtime import run_agent
+from trustlayer.agent.runtime import resolve_backend, run_agent
 from trustlayer.checks.slopsquat import ScanResult
 
 
@@ -44,12 +45,38 @@ INSTRUCTIONS = (
 )
 
 
-def explain_scan(result: ScanResult, root: Path) -> tuple[str, str | None]:
-    """Return (prose, error). Either may be empty; the caller treats a failure as cosmetic."""
-    reportable = result.reportable
-    if not reportable:
-        return "", None
+@dataclass(frozen=True)
+class Explanation:
+    """Prose plus the attribution that has to travel with it.
 
+    A paragraph a model wrote must say which model wrote it. A local run reports tokens and
+    wall-clock instead of a dollar cost, because its cost is always zero.
+    """
+
+    text: str
+    backend: str
+    model: str
+    input_tokens: int = 0
+    output_tokens: int = 0
+    duration_ms: int = 0
+
+    @property
+    def attribution(self) -> str:
+        who = f"{self.model or 'unknown model'} via {self.backend}"
+        if self.backend == "ollama":
+            tokens = f", {self.input_tokens}->{self.output_tokens} tokens"
+            return f"written by {who}{tokens}, {self.duration_ms / 1000:.1f}s - it changed no score"
+        return f"written by {who} from the scores above - it changed no score"
+
+
+def explain_scan(
+    result: ScanResult, root: Path, *, backend: str | None = None
+) -> tuple[Explanation | None, str | None]:
+    """Return (explanation, error). Both may be None; a failure is cosmetic, never a verdict."""
+    if not result.reportable:
+        return None, None
+
+    chosen = resolve_backend(backend)
     outcome = run_agent(
         _build_prompt(result, root),
         cwd=root,
@@ -58,12 +85,24 @@ def explain_scan(result: ScanResult, root: Path) -> tuple[str, str | None]:
         max_turns=EXPLAIN_MAX_TURNS,
         max_budget_usd=EXPLAIN_BUDGET_USD,
         system_prompt=SYSTEM_PROMPT,
+        backend=chosen,
     )
     if not outcome.ok:
-        return "", outcome.error or "the agent returned no result"
+        return None, outcome.error or "the agent returned no result"
     if not outcome.text.strip():
-        return "", "the agent returned no text"
-    return outcome.text.strip(), None
+        return None, "the agent returned no text"
+
+    return (
+        Explanation(
+            text=outcome.text.strip(),
+            backend=outcome.backend or chosen,
+            model=outcome.model or "",
+            input_tokens=outcome.input_tokens,
+            output_tokens=outcome.output_tokens,
+            duration_ms=outcome.duration_ms,
+        ),
+        None,
+    )
 
 
 def _build_prompt(result: ScanResult, root: Path) -> str:

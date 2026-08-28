@@ -199,8 +199,12 @@ def deps(
     ] = False,
     explain: Annotated[
         bool,
-        typer.Option("--explain", help="Add an LLM-written explanation. Costs money; changes no score."),
+        typer.Option("--explain", help="Add an LLM-written explanation. Changes no score."),
     ] = False,
+    backend: Annotated[
+        str | None,
+        typer.Option("--backend", help="Model backend for --explain: claude (default) or ollama."),
+    ] = None,
     no_color: Annotated[bool, typer.Option("--no-color", help="Disable colour. NO_COLOR is also honoured.")] = False,
 ) -> None:
     """Score declared dependencies against real registry state.
@@ -209,7 +213,8 @@ def deps(
     yet can still be scored. Exit codes match `audit` - 0 clean, 1 medium, 2 high, 3 error.
 
     Every score is mechanical. `--explain` asks a model to describe the scores in prose
-    after they are computed; it cannot alter a score, a severity, or a verdict.
+    after they are computed; it cannot alter a score, a severity, or a verdict. Use
+    `--backend ollama` to have a local model write it instead of Claude.
     """
     if not path.is_dir():
         raise _fail(f"{path} is not a directory")
@@ -222,11 +227,11 @@ def deps(
     if result.skip_reason:
         raise _fail(result.skip_reason)
 
-    explanation = ""
+    explanation = None
     if explain:
         from trustlayer.explain import explain_scan
 
-        explanation, failure = explain_scan(result, path)
+        explanation, failure = explain_scan(result, path, backend=backend)
         if failure:
             # Losing the prose must never change the verdict a hook branches on.
             Console(stderr=True).print(f"warning: could not generate an explanation: {failure}")

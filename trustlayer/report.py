@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     # Import-time only. At runtime this would close a cycle:
     # report -> checks.slopsquat -> registry -> store -> report.
     from trustlayer.checks.slopsquat import ScanResult
+    from trustlayer.explain import Explanation
 
 
 JSON_SCHEMA_VERSION = 1
@@ -275,7 +276,9 @@ def deps_exit_code(result: ScanResult) -> int:
     return EXIT_CLEAN
 
 
-def render_deps(result: ScanResult, root: Path, console: Console, explanation: str = "") -> None:
+def render_deps(
+    result: ScanResult, root: Path, console: Console, explanation: Explanation | None = None
+) -> None:
     """The ranked score table for `trustlayer deps`. Riskiest first."""
     console.print(Text(f"trustlayer deps  {root}"))
     console.print(Text(f"{len(result.scored)} package{'s' if len(result.scored) != 1 else ''} scored"))
@@ -303,15 +306,13 @@ def render_deps(result: ScanResult, root: Path, console: Console, explanation: s
             console.print(Text(f"{INDENT}{item.name:<{width}}  {detail}"))
         console.print()
 
-    if explanation:
+    if explanation is not None:
         console.print(Text("explanation"))
         width = max(console.width - len(INDENT), 20)
-        for paragraph in explanation.splitlines():
+        for paragraph in explanation.text.splitlines():
             for wrapped in textwrap.wrap(paragraph, width=width) or [""]:
                 console.print(Text(f"{INDENT}{wrapped}"))
-        console.print(
-            Text(f"{INDENT}(written by a model from the scores above; it changed none of them)")
-        )
+        console.print(Text(f"{INDENT}({explanation.attribution})"))
         console.print()
 
     _print_deps_summary(result, console)
@@ -350,7 +351,7 @@ def _print_deps_summary(result: ScanResult, console: Console) -> None:
     console.print(summary)
 
 
-def deps_to_dict(result: ScanResult, root: Path, explanation: str = "") -> dict:
+def deps_to_dict(result: ScanResult, root: Path, explanation: Explanation | None = None) -> dict:
     """The machine form of a dependency scan, including every factor and its points."""
     return {
         "version": JSON_SCHEMA_VERSION,
@@ -389,11 +390,24 @@ def deps_to_dict(result: ScanResult, root: Path, explanation: str = "") -> dict:
             for item in result.scored
         ],
         # Prose, never a verdict. The scores above are computed before this is requested.
-        "explanation": explanation or None,
+        "explanation": (
+            {
+                "text": explanation.text,
+                "backend": explanation.backend,
+                "model": explanation.model,
+                "input_tokens": explanation.input_tokens,
+                "output_tokens": explanation.output_tokens,
+                "duration_ms": explanation.duration_ms,
+            }
+            if explanation is not None
+            else None
+        ),
     }
 
 
-def render_deps_json(result: ScanResult, root: Path, explanation: str = "") -> str:
+def render_deps_json(
+    result: ScanResult, root: Path, explanation: Explanation | None = None
+) -> str:
     return json.dumps(deps_to_dict(result, root, explanation), indent=2)
 
 

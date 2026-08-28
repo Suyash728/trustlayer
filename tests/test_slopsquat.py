@@ -500,9 +500,11 @@ def test_the_explanation_cannot_change_any_score(monkeypatch):
     prose, error = explain.explain_scan(result, Path("/tmp/x"))
     after = deps_to_dict(result, Path("/tmp/x"), prose)
 
-    assert error is None and prose
+    assert error is None and prose is not None
     assert after["packages"] == before["packages"]
     assert after["exit_code"] == before["exit_code"] == 2
+    # The prose is attributed, and the attribution is not a verdict either.
+    assert "changed no score" in prose.attribution
 
 
 def test_nothing_to_report_asks_no_model(monkeypatch):
@@ -521,7 +523,7 @@ def test_nothing_to_report_asks_no_model(monkeypatch):
         today=TODAY,
     )
 
-    assert explain.explain_scan(clean, Path("/tmp/x")) == ("", None)
+    assert explain.explain_scan(clean, Path("/tmp/x")) == (None, None)
 
 
 def test_an_agent_failure_costs_the_prose_and_nothing_else(monkeypatch):
@@ -540,7 +542,7 @@ def test_an_agent_failure_costs_the_prose_and_nothing_else(monkeypatch):
 
     prose, error = explain.explain_scan(result, Path("/tmp/x"))
 
-    assert prose == ""
+    assert prose is None
     assert error == "claude CLI not found"
     assert deps_exit_code(result) == 2
 

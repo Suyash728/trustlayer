@@ -25,6 +25,7 @@ from __future__ import annotations
 
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
+import os
 from pathlib import Path
 import re
 import time
@@ -50,6 +51,13 @@ DEFAULT_TIMEOUT_SECONDS = 600
 DEFAULT_MAX_TURNS = 12
 DEFAULT_MAX_BUDGET_USD = 2.0
 DEFAULT_MODEL = "claude-opus-5"
+
+# Backends. "claude" stays the default; the local path is opt-in, per invocation or via
+# the environment, and never becomes the default by accident.
+CLAUDE_BACKEND = "claude"
+OLLAMA_BACKEND = "ollama"
+BACKENDS = (CLAUDE_BACKEND, OLLAMA_BACKEND)
+BACKEND_ENV = "TRUSTLAYER_BACKEND"
 
 # File tools the agent needs to read code and write tests, plus Bash for the test runner.
 FILE_TOOLS = ("Read", "Write", "Edit", "Glob", "Grep")
@@ -111,6 +119,12 @@ class AgentResult:
     stop_reason: str | None = None
     denied: list[Denial] = field(default_factory=list)
     error: str | None = None
+    # A local run costs nothing, so cost_usd stops being a usable comparison signal.
+    # Tokens and duration are what a local backend reports in its place.
+    backend: str = "claude"
+    model: str = ""
+    input_tokens: int = 0
+    output_tokens: int = 0
 
 
 class ToolGate:
@@ -202,23 +216,50 @@ class ToolGate:
         return None
 
 
+def resolve_backend(backend: str | None = None) -> str:
+    """Explicit argument wins, then TRUSTLAYER_BACKEND, then Claude.
+
+    An unrecognised name falls back to Claude rather than failing: a typo in an environment
+    variable must not silently route work to a different model.
+    """
+    chosen = (backend or os.environ.get(BACKEND_ENV) or CLAUDE_BACKEND).strip().lower()
+    return chosen if chosen in BACKENDS else CLAUDE_BACKEND
+
+
 def run_agent(
     prompt: str,
     cwd: Path | str,
     allowed_tools: tuple[str, ...] | list[str] = DEFAULT_ALLOWED_TOOLS,
     timeout: float = DEFAULT_TIMEOUT_SECONDS,
     *,
-    model: str = DEFAULT_MODEL,
+    model: str | None = None,
     max_turns: int = DEFAULT_MAX_TURNS,
     max_budget_usd: float = DEFAULT_MAX_BUDGET_USD,
     system_prompt: str | None = None,
+    backend: str | None = None,
 ) -> AgentResult:
     """Run one agent turn-set and return a normalized result.
 
     Never raises for agent-side failures: a timeout, a missing CLI, or a crash all come
     back as `ok=False` with `error` set, because the callers are loops that must keep
     their own accounting.
+
+    The backend changes which model runs, never what it is allowed to do: `ToolGate` is the
+    policy for both, so the denial matrix in `tests/test_agent.py` covers each of them.
     """
+    if resolve_backend(backend) == OLLAMA_BACKEND:
+        # Imported here so runtime.py stays importable without the local path, and so the
+        # two modules do not form a cycle - ollama.py imports AgentResult from here.
+        from trustlayer.agent.ollama import run_ollama
+
+        return run_ollama(
+            prompt,
+            model=model,
+            timeout=timeout,
+            system_prompt=system_prompt,
+            allowed_tools=allowed_tools,
+        )
+
     gate = ToolGate(allowed_tools, workspace=Path(cwd))
     return anyio.run(
         _run,
@@ -226,7 +267,7 @@ def run_agent(
         Path(cwd),
         list(allowed_tools),
         timeout,
-        model,
+        model or DEFAULT_MODEL,
         max_turns,
         max_budget_usd,
         system_prompt,
@@ -271,7 +312,7 @@ async def _run(
         setting_sources=None,  # ignore the user's own settings; this run is self-contained
     )
 
-    result = AgentResult(ok=False)
+    result = AgentResult(ok=False, backend=CLAUDE_BACKEND, model=model)
     chunks: list[str] = []
     started = time.monotonic()
 
