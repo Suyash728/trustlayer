@@ -169,12 +169,115 @@ def test_a_system_prompt_is_sent_as_its_own_message(monkeypatch):
 # ------------------------------------------------------------------ failure paths
 
 
-def test_tool_use_is_refused_clearly_rather_than_half_done(monkeypatch):
-    """The gate must be enforced identically for a local model; that is a later stage."""
-    result = ollama.run_ollama("go", allowed_tools=("Read", "Bash"))
+def scripted(turns, monkeypatch):
+    """Serve a fixed sequence of /api/chat responses, one per turn."""
+    remaining = list(turns)
+    sent = []
+
+    class _Response:
+        def __init__(self, payload):
+            self.payload = payload
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+        def read(self):
+            return json.dumps(self.payload).encode()
+
+    def serve(request, *args, **kwargs):
+        sent.append(json.loads(request.data))
+        return _Response(remaining.pop(0))
+
+    monkeypatch.setattr(ollama.urllib.request, "urlopen", serve)
+    return sent
+
+
+def tool_turn(name, arguments):
+    return {
+        "message": {"role": "assistant", "content": "", "tool_calls": [
+            {"id": "c1", "function": {"index": 0, "name": name, "arguments": arguments}}
+        ]},
+        "prompt_eval_count": 10,
+        "eval_count": 5,
+    }
+
+
+def test_the_tool_loop_runs_a_permitted_call_and_returns_the_final_answer(tmp_path, monkeypatch):
+    (tmp_path / "seed.txt").write_text("the contents")
+    sent = scripted(
+        [tool_turn("Read", {"file_path": "seed.txt"}), turn("I read it.")], monkeypatch
+    )
+
+    result = ollama.run_ollama(
+        "read seed.txt", allowed_tools=("Read",), workspace=tmp_path, model="gpt-oss-agent-64k"
+    )
+
+    assert result.ok is True
+    assert result.text == "I read it."
+    assert result.num_turns == 2
+    # The tool result was fed back as a tool-role message on the second request.
+    roles = [m["role"] for m in sent[1]["messages"]]
+    assert roles[-1] == "tool"
+    assert sent[1]["messages"][-1]["content"] == "the contents"
+
+
+def test_the_loop_offers_only_the_permitted_tools(tmp_path, monkeypatch):
+    sent = scripted([turn("done")], monkeypatch)
+
+    ollama.run_ollama("go", allowed_tools=("Read", "Bash"), workspace=tmp_path,
+                      model="gpt-oss-agent-64k")
+
+    offered = {t["function"]["name"] for t in sent[0]["tools"]}
+    assert offered == {"Read", "Bash"}
+
+
+def test_a_denied_call_is_fed_back_and_the_loop_continues(tmp_path, monkeypatch):
+    scripted(
+        [tool_turn("Bash", {"command": "git push"}), turn("understood, I will not.")], monkeypatch
+    )
+
+    result = ollama.run_ollama(
+        "push the code", allowed_tools=("Bash",), workspace=tmp_path, model="gpt-oss-agent-64k"
+    )
+
+    assert result.ok is True
+    assert len(result.denied) == 1
+    assert "only the test runner" in str(result.denied[0])
+
+
+def test_the_loop_stops_at_the_turn_limit_rather_than_spinning(tmp_path, monkeypatch):
+    (tmp_path / "seed.txt").write_text("x")
+    scripted([tool_turn("Read", {"file_path": "seed.txt"})] * 4, monkeypatch)
+
+    result = ollama.run_ollama(
+        "loop forever", allowed_tools=("Read",), workspace=tmp_path,
+        model="gpt-oss-agent-64k", max_turns=3,
+    )
 
     assert result.ok is False
-    assert "no tool loop yet" in (result.error or "")
+    assert "3-turn limit" in result.error
+
+
+def test_tokens_accumulate_across_turns(tmp_path, monkeypatch):
+    (tmp_path / "seed.txt").write_text("x")
+    scripted(
+        [
+            tool_turn("Read", {"file_path": "seed.txt"}),
+            {"message": {"role": "assistant", "content": "done"}, "prompt_eval_count": 40,
+             "eval_count": 7},
+        ],
+        monkeypatch,
+    )
+
+    result = ollama.run_ollama(
+        "go", allowed_tools=("Read",), workspace=tmp_path, model="gpt-oss-agent-64k"
+    )
+
+    assert result.input_tokens == 50  # 10 + 40
+    assert result.output_tokens == 12  # 5 + 7
 
 
 def test_a_model_without_tool_support_reports_what_the_server_said(monkeypatch):

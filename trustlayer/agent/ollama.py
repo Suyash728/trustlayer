@@ -26,16 +26,19 @@ from __future__ import annotations
 from http.client import HTTPException
 import json
 import os
+from pathlib import Path
 import time
 import urllib.error
 import urllib.request
 
-from trustlayer.agent.runtime import AgentResult
+from trustlayer.agent.localtools import execute, schemas_for
+from trustlayer.agent.runtime import AgentResult, ToolGate
 
 
 DEFAULT_HOST = "http://localhost:11434"
 DEFAULT_MODEL = "gpt-oss-agent-64k:latest"
 DEFAULT_TIMEOUT_SECONDS = 300
+DEFAULT_MAX_TURNS = 12
 
 HOST_ENV = "TRUSTLAYER_OLLAMA_HOST"
 MODEL_ENV = "TRUSTLAYER_OLLAMA_MODEL"
@@ -79,8 +82,10 @@ def run_ollama(
     timeout: float = DEFAULT_TIMEOUT_SECONDS,
     system_prompt: str | None = None,
     allowed_tools: tuple[str, ...] | list[str] = (),
+    workspace: Path | None = None,
+    max_turns: int = DEFAULT_MAX_TURNS,
 ) -> AgentResult:
-    """One local turn. Never raises: every failure comes back as `ok=False` with a reason."""
+    """One local turn-set. Never raises: every failure comes back as `ok=False` with a reason."""
     chosen = model or default_model()
 
     if allowed_tools and not supports_tools(chosen):
@@ -96,16 +101,14 @@ def run_ollama(
         )
 
     if allowed_tools:
-        # Staged deliberately. The gate must be enforced identically for a local model, and
-        # that is the tool-loop stage - not something to half-do here.
-        return AgentResult(
-            ok=False,
-            backend="ollama",
+        return _run_tool_loop(
+            prompt,
             model=chosen,
-            error=(
-                "the ollama backend has no tool loop yet; it currently serves the no-tool "
-                "path only (`deps --explain`)"
-            ),
+            timeout=timeout,
+            system_prompt=system_prompt,
+            allowed_tools=allowed_tools,
+            workspace=Path(workspace) if workspace else Path.cwd(),
+            max_turns=max_turns,
         )
 
     messages = []
@@ -146,9 +149,14 @@ def run_ollama(
     )
 
 
-def _chat(model: str, messages: list[dict], timeout: float) -> tuple[dict | None, str | None]:
+def _chat(
+    model: str, messages: list[dict], timeout: float, tools: list[dict] | None = None
+) -> tuple[dict | None, str | None]:
     """POST /api/chat. Returns (payload, error); exactly one is ever set."""
-    body = json.dumps({"model": model, "messages": messages, "stream": False}).encode()
+    request_body = {"model": model, "messages": messages, "stream": False}
+    if tools:
+        request_body["tools"] = tools
+    body = json.dumps(request_body).encode()
     request = urllib.request.Request(
         f"{host()}/api/chat", data=body, headers={"Content-Type": "application/json"}
     )
@@ -186,3 +194,118 @@ def _duration_ms(payload: dict, measured: int) -> int:
 
 def _as_int(value: object) -> int:
     return value if isinstance(value, int) else 0
+
+
+def _run_tool_loop(
+    prompt: str,
+    *,
+    model: str,
+    timeout: float,
+    system_prompt: str | None,
+    allowed_tools: tuple[str, ...] | list[str],
+    workspace: Path,
+    max_turns: int,
+) -> AgentResult:
+    """Read / write / run pytest, with `ToolGate` consulted before every execution.
+
+    The gate is `ToolGate.evaluate` - the same synchronous policy the Claude backend enforces
+    through its PreToolUse hook, called here directly. There is one policy and two call
+    sites, which is why `tests/test_agent.py` covers both backends from one matrix.
+
+    A denial is not an error: it is fed back to the model as the tool's result, exactly as
+    the Claude path does, so the model can try something permitted instead. Denials are
+    recorded on the result either way.
+    """
+    gate = ToolGate(allowed_tools, workspace=workspace)
+    tools = schemas_for(allowed_tools)
+    deadline = time.monotonic() + timeout
+
+    messages: list[dict] = []
+    if system_prompt:
+        messages.append({"role": "system", "content": system_prompt})
+    messages.append({"role": "user", "content": prompt})
+
+    input_tokens = output_tokens = turns = 0
+    text = ""
+
+    for _ in range(max_turns):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return _timed_out(model, gate, timeout, turns, input_tokens, output_tokens, text)
+
+        payload, error = _chat(model, messages, remaining, tools=tools)
+        if payload is None:
+            return AgentResult(
+                ok=False, backend="ollama", model=model, error=error,
+                num_turns=turns, denied=gate.denied,
+                input_tokens=input_tokens, output_tokens=output_tokens,
+            )
+
+        turns += 1
+        input_tokens += _as_int(payload.get("prompt_eval_count"))
+        output_tokens += _as_int(payload.get("eval_count"))
+        message = payload.get("message") or {}
+
+        content = message.get("content")
+        if isinstance(content, str) and content.strip():
+            text = content.strip()  # `thinking` is never read; only content
+
+        calls = message.get("tool_calls")
+        if not calls:
+            return AgentResult(
+                ok=True, text=text, backend="ollama", model=model, num_turns=turns,
+                cost_usd=0.0, denied=gate.denied, stop_reason=payload.get("done_reason"),
+                input_tokens=input_tokens, output_tokens=output_tokens,
+                duration_ms=int((time.monotonic() - (deadline - timeout)) * 1000),
+            )
+
+        messages.append(message)  # the assistant turn must be echoed back verbatim
+        for call in calls if isinstance(calls, list) else []:
+            messages.append(_handle_call(call, gate, workspace))
+
+    return AgentResult(
+        ok=False, backend="ollama", model=model, num_turns=turns, text=text,
+        error=f"reached the {max_turns}-turn limit without finishing",
+        denied=gate.denied, input_tokens=input_tokens, output_tokens=output_tokens,
+    )
+
+
+def _handle_call(call: object, gate: ToolGate, workspace: Path) -> dict:
+    """Gate one tool call, run it if permitted, and shape the reply the model expects."""
+    function = call.get("function") if isinstance(call, dict) else None
+    name = (function or {}).get("name") if isinstance(function, dict) else None
+    if not isinstance(name, str):
+        return _tool_message("unknown", "error: the tool call had no name")
+
+    # gpt-oss returns `arguments` already decoded. OpenAI's API returns a JSON string there,
+    # so accept both rather than trusting one shape.
+    raw = (function or {}).get("arguments")
+    if isinstance(raw, str):
+        try:
+            raw = json.loads(raw)
+        except ValueError:
+            return _tool_message(name, "error: arguments were not valid JSON")
+    arguments = raw if isinstance(raw, dict) else {}
+
+    denial = gate.evaluate(name, arguments)
+    if denial is not None:
+        # `evaluate` is the pure policy function and records nothing - the Claude path
+        # appends in its callback and its hook. This is the equivalent call site, so it has
+        # to record too, or a local run would deny correctly and report nothing.
+        gate.denied.append(denial)
+        # Denials are reported to the model, not raised: it can then try something allowed.
+        return _tool_message(name, f"denied: {denial}")
+
+    return _tool_message(name, execute(name, arguments, workspace))
+
+
+def _tool_message(name: str, content: str) -> dict:
+    return {"role": "tool", "content": content, "tool_name": name}
+
+
+def _timed_out(model, gate, timeout, turns, input_tokens, output_tokens, text) -> AgentResult:
+    return AgentResult(
+        ok=False, backend="ollama", model=model, num_turns=turns, text=text,
+        error=f"the local agent ran out of time after {timeout}s",
+        denied=gate.denied, input_tokens=input_tokens, output_tokens=output_tokens,
+    )
