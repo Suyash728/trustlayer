@@ -18,6 +18,7 @@ from trustlayer.checks.api_resolution import check_api_resolution
 from trustlayer.checks.base import CheckResult, Finding
 from trustlayer.checks.composed import check_composed
 from trustlayer.checks.fail_open import check_fail_open
+from trustlayer.checks.import_effects import check_import_effects
 from trustlayer.checks.slopsquat import check_slopsquat, scan
 from trustlayer.checks.stale_models import check_stale_models, load_registry
 from trustlayer.detect import RepoProfile, profile_repository
@@ -39,7 +40,7 @@ from trustlayer.suite import inspect_suite
 # rather than collapsing to `trustlayer <path>` when only one command is registered.
 app = typer.Typer(add_completion=False, help="Prove whether AI-written tests catch bugs.")
 
-DEFAULT_CHECKS = ("stale-models", "fail-open")
+DEFAULT_CHECKS = ("stale-models", "fail-open", "import-effects")
 OPT_IN_CHECKS = ("api-resolution", "composed", "slopsquat")
 ALL_CHECKS = DEFAULT_CHECKS + OPT_IN_CHECKS
 
@@ -80,8 +81,9 @@ def audit(
     Exit codes: 0 clean, 1 medium findings, 2 high findings, 3 operational error. The first
     three are what a pre-commit hook branches on.
 
-    `api-resolution` and `composed` are opt-in: the first imports code from the audited
-    repository's environment, the second shells out to linters.
+    `api-resolution`, `composed` and `slopsquat` are opt-in: the first imports code from
+    the audited repository's environment, the second shells out to linters, the third
+    contacts package registries.
     """
     if not path.is_dir():
         raise _fail(f"{path} is not a directory")
@@ -129,6 +131,8 @@ def _run_checks(
         results.append(check_stale_models(root, warn_within_days=warn_days))
     if "fail-open" in selected:
         results.extend(check_fail_open(root))
+    if "import-effects" in selected:
+        results.append(check_import_effects(root))
     if "api-resolution" in selected:
         results.extend(check_api_resolution(root))
     if "slopsquat" in selected:
