@@ -11,6 +11,7 @@ from dataclasses import dataclass
 import json
 from pathlib import Path
 import textwrap
+from typing import TYPE_CHECKING
 
 from rich.console import Console
 from rich.text import Text
@@ -18,6 +19,12 @@ from rich.text import Text
 from trustlayer.checks.base import SEVERITY_ORDER, CheckResult, Finding, Severity, sort_findings
 from trustlayer.detect import RepoProfile
 from trustlayer.suite import SuiteState
+
+
+if TYPE_CHECKING:
+    # Import-time only. At runtime this would close a cycle:
+    # report -> checks.slopsquat -> registry -> store -> report.
+    from trustlayer.checks.slopsquat import ScanResult
 
 
 JSON_SCHEMA_VERSION = 1
@@ -256,6 +263,138 @@ def to_dict(report: Report) -> dict:
 
 def render_json(report: Report) -> str:
     return json.dumps(to_dict(report), indent=2)
+
+
+def deps_exit_code(result: ScanResult) -> int:
+    """Severity owns the exit code here exactly as it does for `audit`."""
+    severities = {item.risk.severity for item in result.reportable}
+    if Severity.HIGH in severities:
+        return EXIT_HIGH
+    if Severity.MEDIUM in severities:
+        return EXIT_MEDIUM
+    return EXIT_CLEAN
+
+
+def render_deps(result: ScanResult, root: Path, console: Console, explanation: str = "") -> None:
+    """The ranked score table for `trustlayer deps`. Riskiest first."""
+    console.print(Text(f"trustlayer deps  {root}"))
+    console.print(Text(f"{len(result.scored)} package{'s' if len(result.scored) != 1 else ''} scored"))
+    for note in result.notes:
+        console.print(Text(f"{INDENT}{note}"))
+    console.print()
+
+    for item in result.reportable:
+        _print_scored(item, console)
+
+    cleared = [item for item in result.scored if not item.risk.reportable and item.risk.score is not None]
+    if cleared:
+        console.print(Text("cleared"))
+        width = max(len(item.name) for item in cleared)
+        for item in cleared:
+            console.print(Text(f"{INDENT}{item.name:<{width}}  {item.risk.score:>3}  {item.risk.verdict}"))
+        console.print()
+
+    unscorable = [item for item in result.scored if item.risk.score is None]
+    if unscorable:
+        console.print(Text("not scored"))
+        width = max(len(item.name) for item in unscorable)
+        for item in unscorable:
+            detail = item.risk.factors[0].detail if item.risk.factors else "registry unreachable"
+            console.print(Text(f"{INDENT}{item.name:<{width}}  {detail}"))
+        console.print()
+
+    if explanation:
+        console.print(Text("explanation"))
+        width = max(console.width - len(INDENT), 20)
+        for paragraph in explanation.splitlines():
+            for wrapped in textwrap.wrap(paragraph, width=width) or [""]:
+                console.print(Text(f"{INDENT}{wrapped}"))
+        console.print(
+            Text(f"{INDENT}(written by a model from the scores above; it changed none of them)")
+        )
+        console.print()
+
+    _print_deps_summary(result, console)
+
+
+def _print_scored(item, console: Console) -> None:
+    severity = item.risk.severity
+    label = Text(INDENT)
+    label.append(f"{severity.value.upper():<{LABEL_WIDTH}}", style=SEVERITY_STYLES[severity])
+    label.append(f"{item.risk.score:>3}  {item.name}{item.declared_spec or ''}  {item.file}:{item.line}")
+    console.print(label)
+
+    pad = INDENT + " " * LABEL_WIDTH
+    console.print(Text(f"{pad}{item.risk.verdict}"))
+
+    prefix = pad + INDENT
+    width = max(console.width - len(prefix), 20)
+    for line in item.risk.evidence[1:]:  # [0] is the score line, already shown in the label
+        for wrapped in textwrap.wrap(line, width=width, break_long_words=False, break_on_hyphens=False) or [""]:
+            console.print(Text(f"{prefix}{wrapped}"))
+    console.print()
+
+
+def _print_deps_summary(result: ScanResult, console: Console) -> None:
+    counts = {severity: 0 for severity in Severity}
+    for item in result.reportable:
+        counts[item.risk.severity] += 1
+
+    summary = Text()
+    for index, severity in enumerate(Severity):
+        if index:
+            summary.append("  |  ")
+        summary.append(
+            f"{counts[severity]} {severity.value}", style=SEVERITY_STYLES[severity] if counts[severity] else ""
+        )
+    console.print(summary)
+
+
+def deps_to_dict(result: ScanResult, root: Path, explanation: str = "") -> dict:
+    """The machine form of a dependency scan, including every factor and its points."""
+    return {
+        "version": JSON_SCHEMA_VERSION,
+        "root": str(root),
+        "exit_code": deps_exit_code(result),
+        "corpus": {
+            "source": result.corpus.source if result.corpus else "",
+            "packages": len(result.corpus) if result.corpus else 0,
+            "upstream_last_update": result.corpus.upstream_last_update if result.corpus else "",
+            "vendored_on": result.corpus.vendored_on if result.corpus else "",
+        },
+        "notes": list(result.notes),
+        "packages": [
+            {
+                "name": item.name,
+                "declared_spec": item.declared_spec,
+                "pinned": item.pinned,
+                "file": item.file,
+                "line": item.line,
+                "score": item.risk.score,
+                "severity": item.risk.severity.value if item.risk.severity else None,
+                "verdict": item.risk.verdict,
+                "nearest_popular": (
+                    {
+                        "name": item.risk.neighbour.name,
+                        "distance": item.risk.neighbour.distance,
+                        "downloads": item.risk.neighbour.downloads,
+                    }
+                    if item.risk.neighbour
+                    else None
+                ),
+                "factors": [
+                    {"name": f.name, "points": f.points, "detail": f.detail} for f in item.risk.factors
+                ],
+            }
+            for item in result.scored
+        ],
+        # Prose, never a verdict. The scores above are computed before this is requested.
+        "explanation": explanation or None,
+    }
+
+
+def render_deps_json(result: ScanResult, root: Path, explanation: str = "") -> str:
+    return json.dumps(deps_to_dict(result, root, explanation), indent=2)
 
 
 def render_registry(registry: list, console: Console, today) -> None:

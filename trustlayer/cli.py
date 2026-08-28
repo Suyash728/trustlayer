@@ -18,9 +18,19 @@ from trustlayer.checks.api_resolution import check_api_resolution
 from trustlayer.checks.base import CheckResult, Finding
 from trustlayer.checks.composed import check_composed
 from trustlayer.checks.fail_open import check_fail_open
+from trustlayer.checks.slopsquat import check_slopsquat, scan
 from trustlayer.checks.stale_models import check_stale_models, load_registry
-from trustlayer.detect import profile_repository
-from trustlayer.report import EXIT_ERROR, Report, render_json, render_registry, render_text
+from trustlayer.detect import RepoProfile, profile_repository
+from trustlayer.report import (
+    EXIT_ERROR,
+    Report,
+    deps_exit_code,
+    render_deps,
+    render_deps_json,
+    render_json,
+    render_registry,
+    render_text,
+)
 from trustlayer.store import diff_runs, list_runs, save_run
 from trustlayer.suite import inspect_suite
 
@@ -30,7 +40,7 @@ from trustlayer.suite import inspect_suite
 app = typer.Typer(add_completion=False, help="Prove whether AI-written tests catch bugs.")
 
 DEFAULT_CHECKS = ("stale-models", "fail-open")
-OPT_IN_CHECKS = ("api-resolution", "composed")
+OPT_IN_CHECKS = ("api-resolution", "composed", "slopsquat")
 ALL_CHECKS = DEFAULT_CHECKS + OPT_IN_CHECKS
 
 DURATION_RE = re.compile(r"^(?P<count>\d+)\s*(?P<unit>[dwmy]?)$", re.IGNORECASE)
@@ -85,7 +95,7 @@ def audit(
     started = time.monotonic()
     try:
         profile = profile_repository(path)
-        results = _run_checks(path, selected, warn_days)
+        results = _run_checks(path, selected, warn_days, profile)
         suite = inspect_suite(path)
     except OSError as error:
         raise _fail(f"could not audit {path}: {error}") from error
@@ -110,7 +120,9 @@ def audit(
     raise typer.Exit(code=report.exit_code)
 
 
-def _run_checks(root: Path, selected: list[str], warn_days: int | None) -> list[CheckResult]:
+def _run_checks(
+    root: Path, selected: list[str], warn_days: int | None, profile: RepoProfile
+) -> list[CheckResult]:
     results: list[CheckResult] = []
 
     if "stale-models" in selected:
@@ -119,6 +131,8 @@ def _run_checks(root: Path, selected: list[str], warn_days: int | None) -> list[
         results.extend(check_fail_open(root))
     if "api-resolution" in selected:
         results.extend(check_api_resolution(root))
+    if "slopsquat" in selected:
+        results.append(check_slopsquat(root, profile=profile))
     if "composed" in selected:
         native: list[Finding] = [f for result in results for f in result.findings]
         results.extend(check_composed(root, native))
@@ -166,6 +180,56 @@ def models(
 
     render_registry(registry, Console(no_color=no_color), today=datetime.now(tz=UTC).date())
 
+
+
+@app.command()
+def deps(
+    path: Annotated[Path, typer.Argument(help="Repository whose dependencies to score.")],
+    as_json: Annotated[bool, typer.Option("--json", help="Machine-readable output on stdout.")] = False,
+    no_network: Annotated[
+        bool,
+        typer.Option("--no-network", help="Never contact a registry; use the corpus and the cache only."),
+    ] = False,
+    explain: Annotated[
+        bool,
+        typer.Option("--explain", help="Add an LLM-written explanation. Costs money; changes no score."),
+    ] = False,
+    no_color: Annotated[bool, typer.Option("--no-color", help="Disable colour. NO_COLOR is also honoured.")] = False,
+) -> None:
+    """Score declared dependencies against real registry state.
+
+    Needs no virtualenv: it reads manifests, so a `requirements.txt` nobody has installed
+    yet can still be scored. Exit codes match `audit` - 0 clean, 1 medium, 2 high, 3 error.
+
+    Every score is mechanical. `--explain` asks a model to describe the scores in prose
+    after they are computed; it cannot alter a score, a severity, or a verdict.
+    """
+    if not path.is_dir():
+        raise _fail(f"{path} is not a directory")
+
+    try:
+        result = scan(path, offline=no_network)
+    except OSError as error:
+        raise _fail(f"could not scan {path}: {error}") from error
+
+    if result.skip_reason:
+        raise _fail(result.skip_reason)
+
+    explanation = ""
+    if explain:
+        from trustlayer.explain import explain_scan
+
+        explanation, failure = explain_scan(result, path)
+        if failure:
+            # Losing the prose must never change the verdict a hook branches on.
+            Console(stderr=True).print(f"warning: could not generate an explanation: {failure}")
+
+    if as_json:
+        print(render_deps_json(result, path.resolve(), explanation))
+    else:
+        render_deps(result, path.resolve(), Console(no_color=no_color), explanation)
+
+    raise typer.Exit(code=deps_exit_code(result))
 
 
 @app.command()

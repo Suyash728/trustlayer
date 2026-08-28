@@ -1,0 +1,13 @@
+# Dependencies for the article summarizer service.
+requests==2.32.3
+fastapi==0.115.0
+python-dotenv==1.0.1
+
+# HTML parsing
+beautifulsoup>=4.0
+
+# HTTP retry helpers
+reqeusts==2.31.0
+
+# LLM integrations
+langchain-comunity==0.2.1

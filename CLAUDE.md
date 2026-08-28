@@ -58,6 +58,7 @@ npm install --prefix trustlayer/checks/node    # optional: enables the TypeScrip
 uv run ruff check .                            # lint — must be clean
 uv run pytest -q                               # 126 tests, single config at the repo root
 uv run trustlayer audit <path> --all
+uv run trustlayer deps <repo>                  # dependency risk scores; --no-network works offline
 uv run trustlayer baseline <repo> --module src/x.py
 uv run trustlayer harden <repo> --target 90
 uv run trustlayer history <repo> -n 10
@@ -84,6 +85,21 @@ uv run trustlayer ui                           # localhost:7777, opens a browser
   `can_use_tool` is silently skipped whenever an allowlist entry allows a whole tool
   (`CanUseToolShadowedWarning`). The hook is consulted for every call. If you touch the
   gate, the denial matrix in `tests/test_agent.py` is the contract.
+- **The risk score is mechanical; the LLM only writes prose.** `trustlayer/risk.py` is pure
+  and does no I/O, `trustlayer/registry.py` fetches, `trustlayer/checks/slopsquat.py` adapts.
+  `trustlayer/explain.py` runs *after* scoring with `allowed_tools=()` and returns a string;
+  there is no code path from that string back into a score, a severity, or an exit code. If
+  you add a factor, add it to `risk.py` with a `Factor` detail line, or the score stops being
+  re-derivable by hand.
+- **Two slopsquat invariants are load-bearing, and `tests/test_slopsquat.py` pins both.**
+  Typo-adjacency alone must stay under the MEDIUM threshold (25 < 40), and an unmeasurable
+  factor must score 0 and say why. Breaking either turns the check into a false-positive
+  generator, which is worse than not shipping it.
+- **A corpus hit is never fetched.** `score_package` short-circuits on membership in
+  `data/top_pypi_packages.json`, so requesting one wastes a round trip on an answer that
+  cannot change the result — and it is why a manifest of ordinary packages scores offline.
+- **An injected `fetcher=` disables the registry cache.** Caching a fake answer would poison
+  every later run with data no registry ever returned. `fetch_many` enforces this.
 - **All SQLite access lives in `trustlayer/store.py`.** `check` is a SQL reserved word,
   so the column is quoted as `"check"` in every statement — unquoting it anywhere is a
   syntax error at table creation, which `tests/test_store.py` pins.
@@ -123,6 +139,7 @@ Built and shipped:
 | L3 | Report layer — grouped findings, severity exit codes, `--json`, suite state |
 | L4 | Agent layer — `run_agent`, `baseline` generation, `harden` mutation loop |
 | L5 | Persistence (`~/.trustlayer/runs.db`), `history`, `diff`, and a local read-only `ui` |
+| L6 | Slopsquat guard — `slopsquat` check + `deps` command, deterministic risk score, PyPI only |
 
 `AGENTS.md` froze scope to a web app (public URL, SSE stream, single run view). **That list
 was superseded by direct instruction** across L1–L5; none of it was built and the CLI was
@@ -149,6 +166,25 @@ integration, arbitrary repo-URL input, or multi-agent orchestration.
   never implemented.
 - **Install/run commands changed**: `requirements.txt`, `app.main:app`, and `pnpm` commands
   in the old guide referred to files that never existed.
+
+## Registry APIs (VERIFIED 2026-08-16 — do not rediscover)
+
+- **`pypi.org/pypi/<name>/json` → `info.downloads` is DEAD.** It returns
+  `{last_day: -1, last_week: -1, last_month: -1}` for every project on the index. Never read
+  it. Download counts come from `pypistats.org/api/packages/<name>/recent`, which is a third
+  party — so a failure there is `downloads: unavailable`, worth zero points, never a signal.
+- The same response carries `ownership.roles` (a list of `{role, user}`) — that is the
+  maintainer-count signal, and it is official. It is absent on mirrors, which means
+  "unavailable", not "zero maintainers".
+- Project age is the **earliest upload across all files of all versions**, not the first key
+  of `releases`: a version can exist with an empty file list and would date the project wrong.
+- npm: `registry.npmjs.org/<name>` has `time.created` and `maintainers`, and
+  `api.npmjs.org/downloads/point/last-week/<name>` is an official download endpoint — npm is
+  the one ecosystem where downloads are first-party. Not implemented yet; `PackageFacts` is
+  registry-neutral so it slots in behind the same shape.
+- Distance is **Damerau-Levenshtein (OSA), not Levenshtein.** Plain Levenshtein scores a
+  transposition as 2, so `reqeusts` would read as far from `requests` as an unrelated
+  two-character difference. Transposition is the most common typo and a primary squat vector.
 
 ## mutmut 3.6.0 output format (VERIFIED — do not rediscover)
 
