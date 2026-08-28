@@ -23,7 +23,7 @@ A network failure must never read as evidence about a package.
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import asdict, dataclass, replace
+from dataclasses import asdict, dataclass, field, replace
 from datetime import UTC, date, datetime
 from http.client import HTTPException
 import json
@@ -41,7 +41,7 @@ MAX_WORKERS = 8
 USER_AGENT = "trustlayer-audit"
 
 # Bump when the normalized shape changes so stale rows are ignored rather than misread.
-CACHE_FORMAT_VERSION = 1
+CACHE_FORMAT_VERSION = 2
 
 PYPI_URL = "https://pypi.org/pypi/{name}/json"
 PYPISTATS_URL = "https://pypistats.org/api/packages/{name}/recent"
@@ -65,6 +65,10 @@ class PackageFacts:
     downloads_note: str | None = None
     yanked: bool = False
     vulnerability_count: int = 0
+    # Every version the index lists, and the fully-yanked ones mapped to their reason.
+    # Both default to empty so a row missing them can never crash a run.
+    versions: list[str] = field(default_factory=list)
+    yanked_versions: dict[str, str] = field(default_factory=dict)
     from_cache: bool = False
 
     def to_json(self) -> str:
@@ -147,6 +151,8 @@ def fetch_pypi(name: str, *, timeout: float = PYPI_TIMEOUT_SECONDS, downloads: b
         first_release=first,
         last_release=last,
         release_count=len(releases) or None,
+        versions=sorted(releases),
+        yanked_versions=_yanked_versions(releases),
         maintainer_count=_maintainer_count(payload),
         yanked=bool(info.get("yanked")),
         vulnerability_count=len(vulnerabilities) if isinstance(vulnerabilities, list) else 0,
@@ -178,6 +184,26 @@ def _release_window(releases: dict) -> tuple[date | None, date | None]:
     if not stamps:
         return None, None
     return min(stamps), max(stamps)
+
+
+def _yanked_versions(releases: dict) -> dict[str, str]:
+    """Fully-yanked versions mapped to the reason the index recorded.
+
+    Yanking is per-file under PEP 592 but conventionally applied to a whole release, so a
+    version counts as yanked only when every one of its files is. A partially-yanked release
+    still has something installable, and claiming otherwise would be false.
+
+    `yanked_reason` is frequently null even on a genuine yank, which is why the value is
+    allowed to be an empty string rather than dropped.
+    """
+    yanked: dict[str, str] = {}
+    for version, files in releases.items():
+        if not isinstance(files, list) or not files:
+            continue
+        if all(isinstance(f, dict) and f.get("yanked") for f in files):
+            reason = files[0].get("yanked_reason")
+            yanked[version] = reason if isinstance(reason, str) else ""
+    return yanked
 
 
 def _parse_timestamp(raw: object) -> date | None:

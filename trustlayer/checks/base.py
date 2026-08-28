@@ -11,12 +11,15 @@ from collections.abc import Callable, Iterator
 from dataclasses import dataclass, field
 from enum import StrEnum
 from pathlib import Path
+import re
 import subprocess
 
 from trustlayer.detect import SKIP_DIRECTORY_NAMES
 
 
 DEFAULT_TIMEOUT_SECONDS = 60
+
+NAME_BOUNDARY = r"[A-Za-z0-9._-]"
 
 PYTHON_SUFFIXES = (".py",)
 TYPESCRIPT_SUFFIXES = (".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs")
@@ -136,6 +139,28 @@ def relative_to(path: Path, root: Path) -> str:
         return path.relative_to(root).as_posix()
     except ValueError:
         return str(path)
+
+
+def find_declaration_line(path: Path, name: str) -> int:
+    """Locate a package declaration by searching for the name's text, never by an offset.
+
+    `-` `_` and `.` are interchangeable in a Python distribution name, so they are treated as
+    one separator class; the boundaries stop `requests` matching inside `requests-oauthlib`.
+    Line 1 is the honest fallback when the name cannot be located, which happens when a
+    lockfile spells it differently.
+    """
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return 1
+
+    canonical = re.sub(r"[-_.]+", "-", name).strip().lower()
+    body = r"[-_.]+".join(re.escape(part) for part in canonical.split("-"))
+    pattern = re.compile(rf"(?<!{NAME_BOUNDARY}){body}(?!{NAME_BOUNDARY})", re.IGNORECASE)
+    for number, line in enumerate(text.splitlines(), start=1):
+        if pattern.search(line):
+            return number
+    return 1
 
 
 def read_source(path: Path) -> str | None:

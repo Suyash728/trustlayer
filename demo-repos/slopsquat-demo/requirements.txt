@@ -1,6 +1,6 @@
 # Dependencies for the article summarizer service.
 requests==2.32.3
-fastapi==0.115.0
+fastapi==0.999.0
 python-dotenv==1.0.1
 
 # HTML parsing

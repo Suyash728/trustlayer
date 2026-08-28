@@ -19,9 +19,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 import posixpath
-import re
 
-from trustlayer.checks.base import CheckResult, Finding, sort_findings
+from trustlayer.checks.base import CheckResult, Finding, find_declaration_line, sort_findings
 from trustlayer.deps import canonicalize_python_name
 from trustlayer.detect import Language, RepoProfile, profile_repository
 from trustlayer.registry import PackageFacts, fetch_many
@@ -30,7 +29,6 @@ from trustlayer.risk import Corpus, RiskScore, load_corpus, score_package
 
 CHECK_NAME = "slopsquat:pypi"
 
-NAME_BOUNDARY = r"[A-Za-z0-9._-]"
 
 # Stands in for a package that was never fetched because the corpus already answered for it.
 # `score_package` short-circuits on corpus membership before it reads any of these fields.
@@ -164,34 +162,13 @@ def _declarations(root: Path, profile: RepoProfile) -> list[tuple[str, _Site]]:
                     dependency.name,
                     _Site(
                         file=relative,
-                        line=_find_line(root / relative, dependency.name),
+                        line=find_declaration_line(root / relative, dependency.name),
                         declared_spec=dependency.declared_spec,
                         pinned=dependency.pinned,
                     ),
                 )
             )
     return found
-
-
-def _find_line(path: Path, name: str) -> int:
-    """Locate the declaration by searching for the name's text, never by computing an offset.
-
-    `-` `_` and `.` are interchangeable in a Python distribution name, so the pattern treats
-    them as one separator class; the boundaries stop `requests` from matching inside
-    `requests-oauthlib`. Line 1 is the honest fallback when the name cannot be located,
-    which happens for names normalized differently inside a lockfile.
-    """
-    try:
-        text = path.read_text(encoding="utf-8")
-    except (OSError, UnicodeDecodeError):
-        return 1
-
-    body = r"[-_.]+".join(re.escape(part) for part in canonicalize_python_name(name).split("-"))
-    pattern = re.compile(rf"(?<!{NAME_BOUNDARY}){body}(?!{NAME_BOUNDARY})", re.IGNORECASE)
-    for number, line in enumerate(text.splitlines(), start=1):
-        if pattern.search(line):
-            return number
-    return 1
 
 
 def check_slopsquat(

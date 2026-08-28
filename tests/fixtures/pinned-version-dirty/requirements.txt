@@ -1,0 +1,4 @@
+# Three real, popular, correctly-spelled packages. Two of the pins are still wrong.
+requests==2.32.3
+fastapi==0.999.0
+urllib3==2.0
