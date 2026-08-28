@@ -6,6 +6,7 @@ real registry and skips when it is unreachable. Nothing else is stubbed.
 
 from datetime import date
 from pathlib import Path
+import re
 import sys
 
 import pytest
@@ -250,8 +251,18 @@ def test_zero_false_positives_on_the_clean_typescript_fixture():
 # --------------------------------------------------------------------------------- L2d
 
 
+# Linters emit absolute paths, so a captured fixture necessarily contains the absolute path
+# of the machine that captured it - here `/home/.../Projects/TrustLayer`, which no longer
+# exists (the checkout is `trustlayer`, lowercase). Rewriting the recorded prefix to this
+# checkout keeps the fixture a faithful capture of real tool output while letting the test
+# run anywhere. Normalising paths is precisely what these tests exercise, so the absolute
+# form has to survive into the parser.
+_RECORDED_PREFIX_RE = re.compile(r'"(/[^"]*?)/tests/fixtures/')
+
+
 def _composed_fixture(name):
-    return (FIXTURES / "composed" / name).read_text()
+    text = (FIXTURES / "composed" / name).read_text()
+    return _RECORDED_PREFIX_RE.sub(f'"{REPO_ROOT.as_posix()}/tests/fixtures/', text)
 
 
 def test_ruff_parser_reads_real_ruff_output():

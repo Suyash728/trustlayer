@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from trustlayer.agent.baseline import tooling_interpreter
-from trustlayer.agent.runtime import DEFAULT_ALLOWED_TOOLS, run_agent
+from trustlayer.agent.runtime import DEFAULT_ALLOWED_TOOLS, resolve_backend, run_agent
 from trustlayer.agent.verify import count_tests, prune_to_passing
 from trustlayer.agent.workspace import Workspace, diff_workspace, workspace
 from trustlayer.mutation import MutationRun, Survivor, run_mutation
@@ -28,6 +28,11 @@ MAX_SURVIVORS_PER_ITERATION = 3
 DEFAULT_MAX_ITERATIONS = 5
 DEFAULT_TARGET_SCORE = 90.0
 PLATEAU_LIMIT = 2  # consecutive iterations without improvement before stopping
+
+# A ceiling on the whole run, not on one turn-set. `max_budget_usd` caps each run_agent
+# call individually, and this loop makes up to MAX_SURVIVORS_PER_ITERATION of them per
+# iteration - so without a cumulative stop a `--budget 2` run could spend many times that.
+DEFAULT_MAX_TOTAL_COST_USD = 10.0
 
 SYSTEM_PROMPT = (
     "You write pytest tests that kill mutants. You may read files, write test files, and "
@@ -61,6 +66,10 @@ class HardenResult:
     workspace_path: str = ""
     total_cost_usd: float = 0.0
     total_discarded: int = 0
+    # A local backend costs nothing, so tokens are what it reports instead.
+    total_input_tokens: int = 0
+    total_output_tokens: int = 0
+    backend: str = "claude"
     error: str | None = None
 
     @property
@@ -130,14 +139,19 @@ def harden(
     max_iterations: int = DEFAULT_MAX_ITERATIONS,
     timeout: float = 600,
     max_budget_usd: float = 2.0,
+    max_total_cost_usd: float = DEFAULT_MAX_TOTAL_COST_USD,
     keep_workspace: bool = False,
+    backend: str | None = None,
 ) -> HardenResult:
     """Raise a repository's mutation score, in a throwaway copy."""
     origin = Path(repository).resolve()
 
     with workspace(origin, keep=keep_workspace) as space:
         try:
-            return _loop(space, target_score, max_iterations, timeout, max_budget_usd)
+            return _loop(
+                space, target_score, max_iterations, timeout, max_budget_usd,
+                max_total_cost_usd, backend,
+            )
         except TimeoutError as error:
             return HardenResult(
                 baseline_score=0.0,
@@ -153,6 +167,8 @@ def _loop(
     max_iterations: int,
     timeout: float,
     max_budget_usd: float,
+    max_total_cost_usd: float,
+    backend: str | None,
 ) -> HardenResult:
     root = space.path
     # The workspace excludes .venv, so mutmut and pytest must come from the original.
@@ -166,7 +182,9 @@ def _loop(
     flat_streak = 0
     stopped = "reached the iteration limit"
     total_cost = 0.0
+    total_input_tokens = total_output_tokens = 0
     total_discarded = 0
+    budget_exhausted = False
 
     if score >= target_score:
         stopped = f"already at or above the {target_score}% target"
@@ -193,8 +211,15 @@ def _loop(
                 timeout=timeout,
                 max_budget_usd=max_budget_usd,
                 system_prompt=SYSTEM_PROMPT,
+                backend=backend,
             )
             total_cost += result.cost_usd or 0.0
+            total_input_tokens += result.input_tokens
+            total_output_tokens += result.output_tokens
+            if total_cost >= max_total_cost_usd:
+                stopped = f"hit the ${max_total_cost_usd} total cost ceiling"
+                budget_exhausted = True
+                break
             if test_path.is_file():
                 written += max(count_tests(test_path) - before_count, 0)
 
@@ -217,6 +242,9 @@ def _loop(
             )
         )
 
+        if budget_exhausted:
+            break
+
         if score <= previous_score:
             flat_streak += 1
             if flat_streak >= PLATEAU_LIMIT:
@@ -233,6 +261,9 @@ def _loop(
         diff=diff_workspace(space),
         workspace_path=str(space.path),
         total_cost_usd=round(total_cost, 4),
+        total_input_tokens=total_input_tokens,
+        total_output_tokens=total_output_tokens,
+        backend=resolve_backend(backend),
         total_discarded=total_discarded,
     )
 

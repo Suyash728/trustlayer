@@ -16,6 +16,8 @@ venv/
 .mypy_cache/
 .coverage
 coverage.xml
+# ...but the low-coverage fixture is test data, not a generated artifact.
+!tests/fixtures/**/coverage.xml
 htmlcov/
 
 # Mutation testing

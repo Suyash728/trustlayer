@@ -58,13 +58,14 @@ trustlayer audit <path> --warn-expiring-within 90d
 trustlayer audit <path> --json                 # machine output, stdout is pure JSON
 trustlayer audit <path> --no-color             # NO_COLOR is also honoured
 trustlayer deps <path>                         # score dependencies for slopsquatting
+trustlayer audit <path> --only pinned-version  # check version pins against the index
 trustlayer models --list
 ```
 
-`api-resolution`, `composed` and `slopsquat` are opt-in rather than default. The first
-imports code from the audited repository's environment in order to introspect it; the second
-shells out to linters; the third contacts package registries. None should be a surprise side
-effect of typing `audit`.
+`api-resolution`, `composed`, `slopsquat` and `pinned-version` are opt-in rather than
+default. The first imports code from the audited repository's environment in order to
+introspect it; the second shells out to linters; the last two contact package registries.
+None should be a surprise side effect of typing `audit`.
 
 ### Exit codes
 
@@ -100,9 +101,11 @@ Below 50% coverage the report suggests `trustlayer harden`, which now exists —
 
 | Check | Finds | Evidence it carries |
 |---|---|---|
-| `api-resolution` | Imports and attributes that do not exist in the installed environment | Resolved distribution + version, the real exported names ranked by similarity, or a definitive PyPI 404 |
+| `api-resolution` | Imports and attributes that do not exist in the installed environment, and calls that do not match the real signature | Resolved distribution + version, the real exported names ranked by similarity, the actual signature, or a definitive PyPI 404 |
 | `stale-models` | Deprecated model IDs in source and env files | Recorded retirement date, successor, and whether the entry was ever verified |
 | `fail-open` | Code that degrades silently instead of failing loudly | The source line plus the concrete failure mode |
+| `import-effects` | Network, subprocess, or destructive I/O that runs at import time | The source line, and what importing the module therefore does |
+| `pinned-version` | Version pins the index does not have, or that were yanked | The number of published versions, the newest few, and the maintainer's yank reason |
 | `slopsquat` | Declared dependencies that do not exist, are barely established, or sit one typo from a popular package | Registry age, release count, maintainer count, download volume, and edit distance — each with its own point value |
 | `composed` | Findings from ruff, semgrep, vulture, eslint, knip | The tool's own message, deduplicated against native findings |
 
@@ -117,6 +120,58 @@ against, the check skips and tells you what to install rather than guessing.
 A package is only reported as a possible slopsquat when PyPI returns a definitive 404. A
 network failure downgrades to `unresolvable`, because "we could not reach PyPI" and "this
 package does not exist" are not the same claim.
+
+## Three more mechanical checks
+
+### `import-effects` — I/O that runs on `import`
+
+Importing a module executes its top-level code. When that code opens a connection, shells out,
+or deletes a file, every importer inherits the effect — including the test collector, before a
+single test is selected. Models write this constantly, because "set up the client" has no
+notion that module scope is not a function body.
+
+The check is its silence. **Nesting of any kind means nothing is reported**: a call inside
+`if`, `try`, `with`, a loop, a function or a class is skipped, because the AST cannot see that
+a `subprocess` call sits behind a feature flag or under `if TYPE_CHECKING`. **Reads are not
+effects** either — `open(path)`, `Path.read_text()`, `json.load(open(...))` never report.
+Deleting data on import is HIGH; being slow or spawning a process is MEDIUM.
+
+Pure AST, so it needs no environment and runs by default.
+
+### `pinned-version` — the pin resolves to nothing
+
+`fastapi==0.999.0` names a real, popular, correctly spelled package and still cannot be
+installed. Neither `slopsquat` nor `api-resolution` sees it: one asks whether the project
+exists, the other whether the import resolves, and both answers are yes.
+
+Comparison is **PEP 440, not string equality**. `urllib3==2.0` legitimately resolves to the
+release published as `2.0.0`, and string matching would report that correct pin as missing.
+A pin that is not a valid version at all is left alone rather than guessed at.
+
+Only a *fully* yanked release counts as yanked — yanking is per-file under PEP 592, and a
+partially yanked release still has something installable. A missing version is HIGH; a yanked
+one is MEDIUM, because it still installs when pinned exactly.
+
+### `call-signature` — the call does not match the real signature
+
+Inside `api-resolution`, which already resolves against the audited repo's own interpreter.
+`api-resolution` answers "does this attribute exist"; this answers "can it be called the way
+the code calls it" — the next thing a model gets wrong once it has the name right.
+
+The guards are the check. It stays silent when the callable is not a plain Python function
+(C builtins have no reliable signature; classes drag in `__new__` and metaclasses), when the
+function is `@overload`-ed, when the signature has `*args` or `**kwargs`, when the call site
+uses `*a` or `**kw`, and when the receiver is not a plain name — `factory().go()` says nothing
+about `go`.
+
+Arity is judged only on a call with no keywords. A mixed call like `get(url, timeout=5)` is
+still checked for an unknown *keyword* — the name is in the signature or it is not — but
+deciding whether the positional count satisfies the required parameters once keywords also
+fill slots is where an off-by-one becomes a false accusation. A v1 limitation, not a
+permanent one.
+
+Measured against real code: scanning all of TrustLayer's own source produces zero signature
+findings outside the deliberate fixture.
 
 ## The slopsquat guard
 
@@ -200,7 +255,13 @@ the prose and nothing else — the exit code is unchanged.
 ```sh
 trustlayer baseline <repo> --module src/thing.py   # generate tests for untested code
 trustlayer harden <repo> --target 90               # raise the mutation score
+trustlayer harden <repo> --max-total-cost 5        # ceiling on the whole run
 ```
+
+**`--budget` caps one agent turn-set, not the run.** `harden` makes up to three per iteration
+for up to five iterations, so `--budget 2` can spend far more than two dollars.
+`--max-total-cost` is the ceiling on the whole run; it is checked after every agent call and
+reported the same way a plateau is.
 
 Both run the agent in a **temp copy** of the repository. Your repo is never written to —
 not even a `git stash` entry — and each run ends by printing a diff for review. Applying
@@ -229,6 +290,43 @@ Every denial is recorded and reported.
 **Known limitation:** coverage is reported as 0% for workspace runs. The temp copy excludes
 `.venv`, so the coverage reader cannot find an interpreter to summarize `.coverage`.
 Mutation score is unaffected — `harden` resolves mutmut from the original repo.
+
+## Running the agent on a local model
+
+The agent layer defaults to Claude and runs on Ollama on request:
+
+```sh
+systemctl --user start ollama          # or however your Ollama is managed
+trustlayer deps <path> --explain --backend ollama
+trustlayer harden <path> --backend ollama --max-total-cost 5
+export TRUSTLAYER_BACKEND=ollama       # or set it once
+```
+
+`TRUSTLAYER_OLLAMA_MODEL` and `TRUSTLAYER_OLLAMA_HOST` override the model and endpoint. An
+unrecognised backend name falls back to Claude rather than failing, so a typo in an
+environment variable cannot silently route work to a different model.
+
+**The tool-using path is gpt-oss only, and this is enforced rather than advised.** gpt-oss
+returns a structured `message.tool_calls`; qwen2.5-coder returns `tool_calls: None` and emits
+the call as raw JSON text in the message content. That is a reliability problem rather than a
+security one — the tool gate still evaluates whatever gets parsed — but a lost call is
+indistinguishable from a model choosing not to call anything, so a loop built on it silently
+does nothing. Asking for tools with a non-gpt-oss model returns a clear refusal before a call
+is spent.
+
+Use a context-raised build (`gpt-oss-agent-32k`, `gpt-oss-agent-64k`). The Ollama server caps
+context at 4096 whatever the model was trained for, and at 4096 the tool loop demonstrably
+fails.
+
+### The gate is the same for both backends
+
+`ToolGate` is one policy with two call sites: the Claude backend's `PreToolUse` hook, and the
+local loop, which consults it before executing anything. The local tools deliberately use
+Claude's names and argument keys — `Read(file_path)`, `Bash(command)` — so no translation
+layer exists to drift. `tests/test_localtools.py` runs a single denial matrix against both.
+
+A local run reports tokens and wall-clock instead of a dollar cost, because its cost is
+always zero and printing `$0.00` would read as a broken meter.
 
 ## History and the local UI
 

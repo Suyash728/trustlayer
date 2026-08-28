@@ -258,6 +258,8 @@ def run_agent(
             timeout=timeout,
             system_prompt=system_prompt,
             allowed_tools=allowed_tools,
+            workspace=Path(cwd),
+            max_turns=max_turns,
         )
 
     gate = ToolGate(allowed_tools, workspace=Path(cwd))

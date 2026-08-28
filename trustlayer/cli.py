@@ -250,6 +250,10 @@ def baseline(
     module: Annotated[str, typer.Option("--module", help="Module to generate tests for.")],
     budget: Annotated[float, typer.Option("--budget", help="Max USD for the run.")] = 2.0,
     timeout: Annotated[float, typer.Option("--timeout", help="Seconds per agent turn-set.")] = 600,
+    backend: Annotated[
+        str | None,
+        typer.Option("--backend", help="Model backend: claude (default) or ollama."),
+    ] = None,
 ) -> None:
     """Generate a pytest suite for an untested module, discarding whatever fails."""
     if not path.is_dir():
@@ -262,7 +266,7 @@ def baseline(
     with workspace(path) as space:
         result = generate_baseline(
             space.path, space.path / module, tools_root=path,
-            timeout=timeout, max_budget_usd=budget
+            timeout=timeout, max_budget_usd=budget, backend=backend,
         )
         diff = diff_workspace(space)
 
@@ -283,6 +287,8 @@ def baseline(
     console.print(
         f"coverage      {result.coverage_before or 0:.0f}% -> {result.coverage_after or 0:.0f}%"
     )
+    if result.agent:
+        console.print(f"cost          {_spend(result.agent)}")
     if result.agent and result.agent.denied:
         console.print(f"denied tools  {len(result.agent.denied)}")
         for denial in result.agent.denied:
@@ -297,6 +303,17 @@ def harden(
     target: Annotated[float, typer.Option("--target", help="Mutation score to reach.")] = 90.0,
     max_iterations: Annotated[int, typer.Option("--max-iterations")] = 5,
     budget: Annotated[float, typer.Option("--budget", help="Max USD per agent turn-set.")] = 2.0,
+    max_total_cost: Annotated[
+        float,
+        typer.Option(
+            "--max-total-cost",
+            help="Hard ceiling on the whole run. --budget only caps one turn-set, and a run makes many.",
+        ),
+    ] = 10.0,
+    backend: Annotated[
+        str | None,
+        typer.Option("--backend", help="Model backend: claude (default) or ollama."),
+    ] = None,
     keep_workspace: Annotated[bool, typer.Option("--keep-workspace")] = False,
 ) -> None:
     """Raise a repository's mutation score. Runs in a temp copy; applies nothing."""
@@ -311,6 +328,8 @@ def harden(
         target_score=target,
         max_iterations=max_iterations,
         max_budget_usd=budget,
+        max_total_cost_usd=max_total_cost,
+        backend=backend,
         keep_workspace=keep_workspace,
     )
 
@@ -329,11 +348,24 @@ def harden(
     console.print(f"final score     {result.final_score}%  ({result.improvement:+}%)")
     console.print(f"[bold]stopped[/bold]         {result.stopped_because}")
     console.print(f"tests discarded {result.total_discarded}")
-    console.print(f"cost            ${result.total_cost_usd}")
+    console.print(f"cost            {_harden_spend(result)}")
     console.print("\n--- diff for review (nothing applied) ---")
     console.print(result.diff or "(no changes)")
 if __name__ == "__main__":  # pragma: no cover
     sys.exit(app())
+
+
+def _spend(agent) -> str:
+    """A local run costs nothing, so reporting "$0.0" would read as a broken meter."""
+    if getattr(agent, "backend", "claude") == "ollama":
+        return f"$0 (local {agent.model}, {agent.input_tokens}->{agent.output_tokens} tokens)"
+    return f"${agent.cost_usd or 0:.4f}"
+
+
+def _harden_spend(result) -> str:
+    if result.backend == "ollama":
+        return f"$0 (local, {result.total_input_tokens}->{result.total_output_tokens} tokens)"
+    return f"${result.total_cost_usd}"
 
 
 SEVERITY_STYLE = {"high": "red", "medium": "yellow", "low": "cyan"}
