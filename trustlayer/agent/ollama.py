@@ -8,9 +8,14 @@ see the "Ollama API" section of CLAUDE.md. Two facts from that probe drive this 
   scratchpad into a user-facing explanation, so only `message.content` is ever read.
 - **Tool-call shape differs by model family.** gpt-oss returns a structured
   `message.tool_calls`; qwen2.5-coder returns `tool_calls: None` and emits the call as raw
-  JSON text in `message.content`. Recovering a call from free text means parsing prose to
-  decide what to execute, which is a poor way to feed a security gate - so the tool-using
-  path is gpt-oss-only and is not implemented in this stage.
+  JSON text in `message.content`, sometimes inside a fenced block. That is a reliability
+  problem rather than a security one - `ToolGate` still evaluates whatever is parsed, so a
+  mangled call is denied, not executed - but a client that misses or misreads a call
+  silently is not something to build a loop on. The tool path is therefore gpt-oss-only.
+
+  This is not a quirk of one probe: the same failure was found independently by a
+  controlled A/B test in ~/AI/OPENCODE.md, which traces it to the model's own `<tool_call>`
+  tag-wrapping at Q4 quantization and notes it is unaffected by context length.
 
 A local run costs nothing, which makes `cost_usd` useless as a comparison signal. Token
 counts and wall-clock duration are reported in its place.
@@ -29,20 +34,38 @@ from trustlayer.agent.runtime import AgentResult
 
 
 DEFAULT_HOST = "http://localhost:11434"
-DEFAULT_MODEL = "gpt-oss-agent-32k:latest"
+DEFAULT_MODEL = "gpt-oss-agent-64k:latest"
 DEFAULT_TIMEOUT_SECONDS = 300
 
 HOST_ENV = "TRUSTLAYER_OLLAMA_HOST"
 MODEL_ENV = "TRUSTLAYER_OLLAMA_MODEL"
 
 
-def default_model() -> str:
-    """The agent-tuned gpt-oss build: structured tool calls and num_ctx raised to 32768.
+# Only this family returns a structured `message.tool_calls`. Everything else emits the
+# call as text, which a loop cannot depend on. Verified twice: by probe here, and by the
+# A/B test recorded in ~/AI/OPENCODE.md.
+TOOL_CAPABLE_PREFIXES = ("gpt-oss",)
 
-    The stock tags train at a longer context than the server's 4096 default allows, so the
-    `-agent-*` variants exist precisely to raise it in their own Modelfile.
+
+def default_model() -> str:
+    """The agent-tuned gpt-oss build: structured tool calls and num_ctx raised to 65536.
+
+    The server caps context at 4096 whatever the model was trained for, so the `-agent-*`
+    variants exist precisely to raise it in their own Modelfile. 64k is this machine's
+    established default for agent work.
     """
     return os.environ.get(MODEL_ENV) or DEFAULT_MODEL
+
+
+def supports_tools(model: str) -> bool:
+    """Whether this model returns tool calls a loop can rely on.
+
+    Decided by family rather than by trying it: a model that emits its call as prose looks
+    exactly like a model that chose not to call anything, so a runtime probe cannot tell
+    "no tool needed" from "tool call lost".
+    """
+    bare = model.split("/")[-1]
+    return bare.startswith(TOOL_CAPABLE_PREFIXES)
 
 
 def host() -> str:
@@ -59,6 +82,18 @@ def run_ollama(
 ) -> AgentResult:
     """One local turn. Never raises: every failure comes back as `ok=False` with a reason."""
     chosen = model or default_model()
+
+    if allowed_tools and not supports_tools(chosen):
+        return AgentResult(
+            ok=False,
+            backend="ollama",
+            model=chosen,
+            error=(
+                f"{chosen} does not return structured tool calls - it emits them as text, "
+                f"which a tool loop cannot depend on. Use a {TOOL_CAPABLE_PREFIXES[0]} model "
+                f"(default: {DEFAULT_MODEL})"
+            ),
+        )
 
     if allowed_tools:
         # Staged deliberately. The gate must be enforced identically for a local model, and

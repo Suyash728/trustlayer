@@ -80,9 +80,34 @@ def test_the_model_and_host_can_be_overridden_by_environment(monkeypatch):
     assert ollama.host() == "http://box:9999"  # trailing slash trimmed
 
 
-def test_the_default_model_is_an_agent_variant():
-    """The -agent-* builds raise num_ctx in their Modelfile; the server default is 4096."""
+def test_the_default_model_is_a_tool_capable_agent_variant():
+    """The -agent-* builds raise num_ctx in their Modelfile; the server caps it at 4096."""
     assert "agent" in ollama.DEFAULT_MODEL
+    assert ollama.supports_tools(ollama.DEFAULT_MODEL)
+
+
+@pytest.mark.parametrize(
+    ("model", "capable"),
+    [
+        ("gpt-oss-agent-64k:latest", True),
+        ("gpt-oss:20b", True),
+        ("qwen2.5-coder-agent-32k:latest", False),
+        ("qwen2.5-coder:14b-instruct-q4_K_M", False),
+        ("gemma3:12b", False),
+    ],
+)
+def test_only_the_gpt_oss_family_is_treated_as_tool_capable(model, capable):
+    """qwen emits its call as text. That is a model bug, verified twice - see CLAUDE.md."""
+    assert ollama.supports_tools(model) is capable
+
+
+def test_a_model_that_emits_tool_calls_as_text_is_refused_before_spending_a_call():
+    result = ollama.run_ollama(
+        "go", model="qwen2.5-coder-agent-32k:latest", allowed_tools=("Read",)
+    )
+
+    assert result.ok is False
+    assert "does not return structured tool calls" in result.error
 
 
 # --------------------------------------------------------------------- happy path

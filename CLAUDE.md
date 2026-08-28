@@ -203,9 +203,25 @@ difference is load-bearing.
   `{"name": "read_file", "arguments": {"path": "config.yaml"}}`. Both the stock and the
   agent-tuned build behave this way, so it is the family, not the Modelfile.
 
-That difference is why the tool-using path should default to a gpt-oss model. Recovering a
-tool call from free text means parsing model prose to decide what to execute, which is a
-fragile way to feed a security gate.
+That difference is why the tool-using path is **gpt-oss only**, enforced by
+`supports_tools()` in `trustlayer/agent/ollama.py` rather than left to the caller.
+
+To be precise about the risk: a text-emitted call is a **reliability** problem, not a gate
+bypass. `ToolGate` still evaluates whatever gets parsed, so a mangled call is denied rather
+than executed. The problem is that a lost call is indistinguishable from a model choosing not
+to call anything, so a loop built on it silently does nothing.
+
+**This was found twice, independently.** The probe above reproduced it, and a controlled A/B
+test recorded in `~/AI/OPENCODE.md` reached the same conclusion from the other direction: it
+traces the cause to qwen2.5-coder's own `<tool_call>` tag-wrapping at Q4 quantization, shows
+it is unaffected by context length, and concludes that the gpt-oss agent build is "the only
+model on this machine verified reliable" for a real tool loop.
+
+**Local setup lives in `~/AI`.** Start the server with `systemctl --user start ollama`, not a
+bare `ollama serve` - the unit sets `OLLAMA_MODELS=/home/suyash/AI/models/ollama`,
+`OLLAMA_MAX_LOADED_MODELS=1` (switching models evicts the resident one) and
+`OLLAMA_KEEP_ALIVE=5m`. `~/AI/OLLAMA-ACCESS.md` and `~/AI/OPENCODE.md` are the reference.
+Ollama and ComfyUI cannot both hold a model in VRAM on this machine.
 
 - **`message.thinking`** is present on gpt-oss turns (hundreds of characters) and is
   reasoning, **not** answer text. Never concatenate it into output; read `message.content`.
@@ -219,9 +235,11 @@ fragile way to feed a security gate.
   tokens), `total_duration` (nanoseconds), `done_reason`. These are what a local run reports
   instead of a dollar cost, which is always zero.
 - **Context length**: the server defaults to `num_ctx=4096` regardless of the model's
-  training length. The `-agent-32k` / `-agent-64k` variants set `num_ctx` to 32768 / 65536 in
-  their own Modelfile, which is the entire reason they exist — prefer them over the stock
-  tags, or pass `options.num_ctx` explicitly.
+  training length, and at 4096 the tool loop demonstrably fails. The `-agent-32k` /
+  `-agent-64k` variants set `num_ctx` to 32768 / 65536 in their own Modelfile, which is the
+  entire reason they exist — never use a stock tag for agent work. `gpt-oss-agent-64k` is
+  this machine's established default and is TrustLayer's default too; the measured cost of
+  8x the context is about +360 MB of VRAM.
 - Observed latency, warm: ~1s for short prose, 6-20s for a tool turn. First call per model
   pays a load cost on top.
 
