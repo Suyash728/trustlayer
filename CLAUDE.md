@@ -186,6 +186,45 @@ integration, arbitrary repo-URL input, or multi-agent orchestration.
   transposition as 2, so `reqeusts` would read as far from `requests` as an unrelated
   two-character difference. Transposition is the most common typo and a primary squat vector.
 
+## Ollama API (VERIFIED 2026-08-28 — do not rediscover)
+
+`POST http://localhost:11434/api/chat`, body `{model, messages, stream: false, tools?}`.
+Probed against the models actually installed here; the shapes differ by family and the
+difference is load-bearing.
+
+**Two families, two different tool-call shapes.**
+
+- **gpt-oss** (`gpt-oss:20b`, `gpt-oss-agent-32k`, `gpt-oss-agent-64k`) returns a structured
+  `message.tool_calls`: a list of `{id, function: {index, name, arguments}}`. **`arguments`
+  is a decoded object, not a JSON string** — OpenAI's API returns a string there, so a client
+  written to that shape breaks. `message.content` is empty on a tool turn.
+- **qwen2.5-coder** (`qwen2.5-coder:14b-instruct-q4_K_M`, `qwen2.5-coder-agent-32k`) returns
+  **`tool_calls: None`** and emits the call as raw JSON text in `message.content`:
+  `{"name": "read_file", "arguments": {"path": "config.yaml"}}`. Both the stock and the
+  agent-tuned build behave this way, so it is the family, not the Modelfile.
+
+That difference is why the tool-using path should default to a gpt-oss model. Recovering a
+tool call from free text means parsing model prose to decide what to execute, which is a
+fragile way to feed a security gate.
+
+- **`message.thinking`** is present on gpt-oss turns (hundreds of characters) and is
+  reasoning, **not** answer text. Never concatenate it into output; read `message.content`.
+- **A model without tool support fails fast and definitively**: HTTP 400 with body
+  `{"error": "... does not support tools"}`, in about 0.1s. `gemma3:12b` is the case here.
+- **Tools offered but not used** is not an error: `tool_calls` is absent and `content`
+  carries prose. Treat it as a normal text turn.
+- **Feeding a result back**: append the assistant message verbatim, then
+  `{"role": "tool", "content": "<result>", "tool_name": "<name>"}`. Verified round-trip.
+- **Token and timing fields**: `eval_count` (output tokens), `prompt_eval_count` (input
+  tokens), `total_duration` (nanoseconds), `done_reason`. These are what a local run reports
+  instead of a dollar cost, which is always zero.
+- **Context length**: the server defaults to `num_ctx=4096` regardless of the model's
+  training length. The `-agent-32k` / `-agent-64k` variants set `num_ctx` to 32768 / 65536 in
+  their own Modelfile, which is the entire reason they exist — prefer them over the stock
+  tags, or pass `options.num_ctx` explicitly.
+- Observed latency, warm: ~1s for short prose, 6-20s for a tool turn. First call per model
+  pays a load cost on top.
+
 ## mutmut 3.6.0 output format (VERIFIED — do not rediscover)
 
 - `mutmut results --all true` → one line per mutant:
