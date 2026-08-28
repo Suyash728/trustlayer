@@ -130,6 +130,7 @@ def generate_baseline(
     tools_root: Path | None = None,
     timeout: float = 600,
     max_budget_usd: float = 2.0,
+    backend: str | None = None,
 ) -> BaselineResult:
     """Generate a suite for `module` inside `root`, then keep only what passes."""
     root = Path(root)
@@ -157,6 +158,7 @@ def generate_baseline(
         allowed_tools=DEFAULT_ALLOWED_TOOLS,
         timeout=timeout,
         max_budget_usd=max_budget_usd,
+        backend=backend,
         system_prompt=SYSTEM_PROMPT,
     )
 
