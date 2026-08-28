@@ -289,6 +289,21 @@ Ollama and ComfyUI cannot both hold a model in VRAM on this machine.
   removed line's text in the real source instead.
   (The original guide contained both this rule and an earlier, contradictory one saying to
   walk the hunk. Walking the hunk is wrong; only this rule survives.)
+- **`mutants/` is not scratch space, and it goes stale.** It holds a *copy* of the project
+  including a copy of `tests/`, plus `mutmut-stats.json` mapping each mutated function to the
+  tests that cover it. mutmut runs the tests from that copy and consults that map, and
+  refreshes **neither** when the real `tests/` changes. A test added after the first run is
+  never copied in, never enters the map, and never runs against a single mutant, so the score
+  comes back identical however good the test is.
+
+  This silently broke `harden`: every iteration reported the same score, every run reported
+  +0.0%, and the plateau detector stopped the loop on a number that could not move. Measured
+  on `pricing-py`, a generated test worth +1.9% read as +0.0%.
+
+  `run_mutation(fresh=True)` is therefore the default and clears `mutants/` and
+  `.mutmut-cache` first. mutmut 3.6.0 has no flag for this — `mutmut run --help` offers only
+  `--max-children`. A stale score is worse than a slow one; `tests/test_mutation_cache.py`
+  pins it.
 - `mutmut result-ids` does **not** exist in 3.6.0. Never call it.
 - mutmut and pytest live in the target repo's `.venv`. A workspace copy excludes `.venv`, so
   resolve those executables from the **original** repo. Use `Path.absolute()`, never

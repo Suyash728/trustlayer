@@ -19,6 +19,7 @@ from dataclasses import dataclass, field
 import logging
 from pathlib import Path
 import re
+import shutil
 import subprocess
 
 
@@ -90,13 +91,42 @@ def get_mutation_run(repo_path: str | Path, executable: str | Path = "mutmut") -
     )
 
 
+def clear_mutmut_state(repo_path: str | Path) -> None:
+    """Delete mutmut's working directory so the next run re-tests everything.
+
+    `mutants/` is not a scratch directory - it holds a **copy** of the project, including a
+    copy of `tests/`, plus `mutmut-stats.json` mapping each mutated function to the tests
+    that cover it. mutmut runs the tests from that copy and consults that map.
+
+    Neither is refreshed when the real `tests/` changes. A test added after the first run is
+    therefore never copied in, never appears in the map, and never runs against a single
+    mutant - so the score comes back identical no matter how good the new test is. That is
+    not a slow measurement, it is a wrong one, which is why the clear happens by default and
+    the caller has to opt out.
+
+    mutmut 3.6.0 has no flag for this: `mutmut run --help` offers only `--max-children`.
+    """
+    root = Path(repo_path)
+    shutil.rmtree(root / "mutants", ignore_errors=True)
+    (root / ".mutmut-cache").unlink(missing_ok=True)
+
+
 def run_mutation(
     repo_path: str | Path,
     timeout: float = MUTATION_TIMEOUT_SECONDS,
     executable: str | Path = "mutmut",
+    *,
+    fresh: bool = True,
 ) -> MutationRun:
-    """Execute `mutmut run`, then read the results. Every subprocess has a timeout."""
+    """Execute `mutmut run`, then read the results. Every subprocess has a timeout.
+
+    `fresh` clears mutmut's cached state first. It defaults to True because a stale score is
+    worse than a slow one: this whole project rests on the mutation score being the oracle,
+    and an oracle that cannot see new tests is not one.
+    """
     repository = Path(repo_path)
+    if fresh:
+        clear_mutmut_state(repository)
     try:
         subprocess.run(
             [str(executable), "run"],
