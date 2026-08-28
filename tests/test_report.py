@@ -29,6 +29,10 @@ FIXTURES = Path(__file__).parent / "fixtures"
 DEMO_REPO = FIXTURES.parents[1] / "demo-repos" / "pricing-py"
 runner = CliRunner()
 
+# Every `audit` invocation here passes --no-save. `audit` records to ~/.trustlayer/runs.db
+# by default, so without it the suite writes fixture runs into the user's real history
+# and they show up in `trustlayer history` and the UI.
+
 
 def finding(severity, check="c", file="a.py", line=1, verdict="v"):
     return Finding(severity=severity, check=check, file=file, line=line, claim="x", verdict=verdict)
@@ -61,26 +65,33 @@ def render(report, **console_kwargs):
     ],
 )
 def test_exit_code_is_driven_by_the_worst_severity(fixture, expected):
-    result = runner.invoke(app, ["audit", str(FIXTURES / fixture), "--only", "fail-open"])
+    result = runner.invoke(
+        app, ["audit", str(FIXTURES / fixture), "--only", "fail-open", "--no-save"]
+    )
 
     assert result.exit_code == expected
 
 
 def test_an_operational_error_never_looks_like_a_finding():
     """A bad path must not exit 2, or a hook cannot tell it from a high-severity finding."""
-    result = runner.invoke(app, ["audit", str(FIXTURES / "does-not-exist")])
+    result = runner.invoke(app, ["audit", str(FIXTURES / "does-not-exist"), "--no-save"])
 
     assert result.exit_code == EXIT_ERROR
 
 
 def test_an_unknown_check_is_an_operational_error():
-    result = runner.invoke(app, ["audit", str(FIXTURES / "failopen-clean"), "--only", "nonsense"])
+    result = runner.invoke(
+        app, ["audit", str(FIXTURES / "failopen-clean"), "--only", "nonsense", "--no-save"]
+    )
 
     assert result.exit_code == EXIT_ERROR
 
 
 def test_only_and_all_cannot_be_combined():
-    result = runner.invoke(app, ["audit", str(FIXTURES / "failopen-clean"), "--only", "fail-open", "--all"])
+    result = runner.invoke(
+        app,
+        ["audit", str(FIXTURES / "failopen-clean"), "--only", "fail-open", "--all", "--no-save"],
+    )
 
     assert result.exit_code == EXIT_ERROR
 
@@ -178,7 +189,7 @@ def test_no_color_and_NO_COLOR_produce_identical_ansi_free_output(monkeypatch):
 
 def test_json_output_is_parseable_and_carries_the_schema():
     result = runner.invoke(
-        app, ["audit", str(FIXTURES / "failopen-dirty"), "--only", "fail-open", "--json"]
+        app, ["audit", str(FIXTURES / "failopen-dirty"), "--only", "fail-open", "--json", "--no-save"]
     )
     payload = json.loads(result.stdout)
 
@@ -195,7 +206,7 @@ def test_json_output_is_parseable_and_carries_the_schema():
 
 def test_json_stdout_contains_nothing_but_json():
     result = runner.invoke(
-        app, ["audit", str(FIXTURES / "failopen-dirty"), "--only", "fail-open", "--json"]
+        app, ["audit", str(FIXTURES / "failopen-dirty"), "--only", "fail-open", "--json", "--no-save"]
     )
 
     assert result.stdout.lstrip().startswith("{")

@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from trustlayer.checks.base import Finding, Severity
+from trustlayer.checks.base import Finding, Severity, run_tool
 from trustlayer.checks.fail_open import check_python_fail_open
 from trustlayer.detect import profile_repository
 from trustlayer.report import Report
@@ -107,15 +107,65 @@ def test_deleting_a_run_cascades_to_its_findings(tmp_path):
 # ------------------------------------------------------------------------ git honesty
 
 
+def _git_repo(tmp_path: Path, *, dirty: bool) -> Path:
+    """A real git repository with a known state.
+
+    The previous version of these tests asserted against TrustLayer's own checkout and only
+    passed while it happened to have uncommitted work - so committing made the suite fail.
+    A test about dirtiness has to own the tree whose dirtiness it asserts.
+    """
+    root = tmp_path / ("dirty" if dirty else "clean")
+    (root / "src").mkdir(parents=True)
+    (root / "src" / "app.py").write_text("x = 1\n")
+
+    def git(*args):
+        run_tool(["git", *args], cwd=root, timeout=30)
+
+    git("init", "-q")
+    git("config", "user.email", "test@example.invalid")
+    git("config", "user.name", "Test")
+    git("config", "commit.gpgsign", "false")
+    git("add", "-A")
+    git("commit", "-q", "-m", "initial")
+    if dirty:
+        (root / "src" / "app.py").write_text("x = 2  # uncommitted\n")
+    return root
+
+
 def test_a_dirty_tree_is_recorded_as_dirty(tmp_path):
     """A run against uncommitted work must never look like a run against a commit."""
     db = tmp_path / "runs.db"
-    run_id = save_run(report_for(FIXTURES / "failopen-dirty"), 0.1, db_path=db)
+    root = _git_repo(tmp_path, dirty=True)
+
+    run_id = save_run(report_for(root, [finding()]), 0.1, db_path=db)
 
     stored = get_run(run_id, db_path=db)
-    assert stored.dirty is True  # this repo has uncommitted work while these tests run
+    assert stored.dirty is True
+    assert stored.git_sha  # a dirty tree still has a HEAD
     assert stored.summary["git_root"]
-    assert stored.summary["path_is_repo_root"] is False  # a fixture dir, not the repo root
+    assert stored.summary["path_is_repo_root"] is True
+
+
+def test_a_clean_tree_is_not_recorded_as_dirty(tmp_path):
+    """The other half of the same contract, which nothing pinned before."""
+    db = tmp_path / "runs.db"
+    root = _git_repo(tmp_path, dirty=False)
+
+    run_id = save_run(report_for(root, [finding()]), 0.1, db_path=db)
+
+    assert get_run(run_id, db_path=db).dirty is False
+
+
+def test_auditing_a_subdirectory_records_the_parent_repo(tmp_path):
+    """Auditing a subdirectory records the *parent* repo's SHA, so the flag has to say so."""
+    db = tmp_path / "runs.db"
+    root = _git_repo(tmp_path, dirty=False)
+
+    run_id = save_run(report_for(root / "src", [finding()]), 0.1, db_path=db)
+
+    stored = get_run(run_id, db_path=db)
+    assert stored.summary["path_is_repo_root"] is False
+    assert stored.summary["git_root"] == str(root.resolve())
 
 
 def test_a_directory_outside_git_records_no_sha(tmp_path):
