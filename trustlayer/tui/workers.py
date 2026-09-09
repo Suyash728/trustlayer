@@ -21,6 +21,7 @@ from pathlib import Path
 import sqlite3
 import time
 
+from trustlayer.agent.harden import HardenEvent, HardenResult, harden
 from trustlayer.checks.base import CheckResult
 from trustlayer.checks.runner import iter_checks
 from trustlayer.detect import profile_repository
@@ -91,4 +92,30 @@ def run_audit(
 
     return AuditOutcome(
         report=report, run_id=run_id, duration_s=duration, save_error=save_error
+    )
+
+
+def run_harden(
+    root: Path,
+    *,
+    target_score: float = 90.0,
+    max_iterations: int = 5,
+    max_total_cost_usd: float = 10.0,
+    backend: str | None = None,
+    on_event: Callable[[HardenEvent], None] | None = None,
+) -> HardenResult:
+    """Raise a repository's mutation score, reporting each step as it happens.
+
+    Runs in a thread for the reason in this module's docstring: `harden` calls `run_agent`,
+    which calls `anyio.run()`, and that cannot happen inside Textual's event loop.
+
+    The agent works in a temp copy and this returns a diff. Nothing here applies it.
+    """
+    return harden(
+        root,
+        target_score=target_score,
+        max_iterations=max_iterations,
+        max_total_cost_usd=max_total_cost_usd,
+        backend=backend,
+        on_event=on_event,
     )

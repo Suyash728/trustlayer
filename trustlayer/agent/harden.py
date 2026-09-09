@@ -14,6 +14,7 @@ not even a stash entry - and the run ends by printing a diff for review, applyin
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -39,6 +40,22 @@ SYSTEM_PROMPT = (
     "run pytest. You cannot use the network or git; those tools are blocked. Never modify "
     "source files - only test files."
 )
+
+
+@dataclass(frozen=True)
+class HardenEvent:
+    """Progress, reported as it happens.
+
+    Strictly one-directional: a listener receives what already occurred and returns nothing,
+    so no callback can influence a score, a discard, a stop reason or an exit code. Same
+    shape as `explain.py`, where prose is produced after the verdict and has no path back
+    into it. The loop behaves identically whether or not anyone is listening.
+    """
+
+    kind: str  # baseline | iteration-start | agent-turn | pruned | iteration-end | stopped
+    message: str
+    iteration: Iteration | None = None
+    score: float | None = None
 
 
 @dataclass(frozen=True)
@@ -142,6 +159,7 @@ def harden(
     max_total_cost_usd: float = DEFAULT_MAX_TOTAL_COST_USD,
     keep_workspace: bool = False,
     backend: str | None = None,
+    on_event: Callable[[HardenEvent], None] | None = None,
 ) -> HardenResult:
     """Raise a repository's mutation score, in a throwaway copy."""
     origin = Path(repository).resolve()
@@ -150,7 +168,7 @@ def harden(
         try:
             return _loop(
                 space, target_score, max_iterations, timeout, max_budget_usd,
-                max_total_cost_usd, backend,
+                max_total_cost_usd, backend, on_event,
             )
         except TimeoutError as error:
             return HardenResult(
@@ -169,12 +187,23 @@ def _loop(
     max_budget_usd: float,
     max_total_cost_usd: float,
     backend: str | None,
+    on_event: Callable[[HardenEvent], None] | None = None,
 ) -> HardenResult:
+    def emit(kind: str, message: str, **extra) -> None:
+        if on_event is not None:
+            on_event(HardenEvent(kind=kind, message=message, **extra))
+
     root = space.path
     # The workspace excludes .venv, so mutmut and pytest must come from the original.
     mutmut = _mutmut_executable(space.source)
     interpreter = tooling_interpreter(space.source)
+    emit("baseline", "measuring the baseline mutation score")
     baseline = run_mutation(root, executable=mutmut)
+    emit(
+        "baseline",
+        f"baseline {baseline.score}% - {baseline.killed} killed, {baseline.survived} survived",
+        score=baseline.score,
+    )
 
     iterations: list[Iteration] = []
     score = baseline.score
@@ -198,6 +227,10 @@ def _loop(
         if not targets:
             stopped = "no survivors left to target"
             break
+        emit(
+            "iteration-start",
+            f"iteration {number}: targeting {len(targets)} survivor(s)",
+        )
 
         written = discarded = 0
         for survivor in targets:
@@ -216,6 +249,11 @@ def _loop(
             total_cost += result.cost_usd or 0.0
             total_input_tokens += result.input_tokens
             total_output_tokens += result.output_tokens
+            emit(
+                "agent-turn",
+                f"wrote against {survivor.id}"
+                + (f" - {len(result.denied)} denied" if result.denied else ""),
+            )
             if total_cost >= max_total_cost_usd:
                 stopped = f"hit the ${max_total_cost_usd} total cost ceiling"
                 budget_exhausted = True
@@ -227,7 +265,9 @@ def _loop(
         _, dropped = prune_to_passing(root, _test_files(root), interpreter=interpreter)
         discarded = len(dropped)
         total_discarded += discarded
+        emit("pruned", f"{written} test(s) written, {discarded} discarded")
 
+        emit("iteration-end", "re-measuring the mutation score")
         current = run_mutation(root, executable=mutmut)
         previous_score, score = score, current.score
         iterations.append(
@@ -241,6 +281,12 @@ def _loop(
                 cost_usd=total_cost,
             )
         )
+        emit(
+            "iteration-end",
+            f"iteration {number}: {previous_score}% -> {score}%",
+            iteration=iterations[-1],
+            score=score,
+        )
 
         if budget_exhausted:
             break
@@ -253,6 +299,7 @@ def _loop(
         else:
             flat_streak = 0
 
+    emit("stopped", stopped, score=score)
     return HardenResult(
         baseline_score=baseline.score,
         final_score=score,

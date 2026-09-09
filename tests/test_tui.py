@@ -22,7 +22,13 @@ from trustlayer.report import Report
 from trustlayer.store import list_runs, save_run
 from trustlayer.suite import SuiteState
 from trustlayer.tui import create_app
-from trustlayer.tui.app import AuditScreen, ProjectsScreen, RunScreen, severity_cell
+from trustlayer.tui.app import (
+    AuditScreen,
+    HardenScreen,
+    ProjectsScreen,
+    RunScreen,
+    severity_cell,
+)
 from trustlayer.tui.workers import run_audit
 
 
@@ -379,3 +385,181 @@ def test_progress_callbacks_cannot_change_a_verdict(tmp_path):
 
     assert quiet.report.exit_code == noisy.report.exit_code
     assert [f.claim for f in quiet.report.findings] == [f.claim for f in noisy.report.findings]
+
+
+# ----------------------------------------------------------------- the harden loop
+
+
+def stub_harden_result(**overrides):
+    from trustlayer.agent.harden import HardenResult, Iteration
+
+    defaults = {
+        "baseline_score": 61.7,
+        "final_score": 70.1,
+        "iterations": [
+            Iteration(number=1, score_before=61.7, score_after=70.1, survivors_targeted=["a", "b"],
+                      tests_written=3, tests_discarded=1)
+        ],
+        "stopped_because": "reached the iteration limit",
+        "diff": "--- a/tests/test_x.py\n+++ b/tests/test_x.py\n+def test_new(): pass\n",
+        "total_discarded": 1,
+    }
+    return HardenResult(**{**defaults, **overrides})
+
+
+@pytest.mark.anyio
+async def test_the_dashboard_renders_iterations_as_events_arrive(tmp_path):
+    from trustlayer.agent.harden import HardenEvent
+    from trustlayer.tui import app as tui_app
+
+    def fake(root, *, on_event=None, **kwargs):
+        result = stub_harden_result()
+        on_event(HardenEvent("baseline", "baseline 61.7%", score=61.7))
+        on_event(HardenEvent("iteration-end", "iteration 1", iteration=result.iterations[0],
+                             score=70.1))
+        return result
+
+    app = create_app(db_path=tmp_path / "runs.db")
+    async with app.run_test() as pilot:
+        screen = HardenScreen(path=str(DIRTY))
+        app.push_screen(screen)
+        await pilot.pause()
+
+        original, tui_app.run_harden = tui_app.run_harden, fake
+        try:
+            screen.action_start()
+            await app.workers.wait_for_complete()
+            await pilot.pause()
+        finally:
+            tui_app.run_harden = original
+
+        table = screen.query_one("#harden-iterations")
+        assert table.row_count == 1
+        assert [str(c) for c in table.get_row_at(0)][:4] == ["1", "61.7%", "70.1%", "+8.4%"]
+        assert "61.7% -> 70.1%" in str(screen.query_one("#harden-status").content)
+
+
+@pytest.mark.anyio
+async def test_the_diff_is_shown_for_review_and_never_applied(tmp_path):
+    """The agent works in a temp copy. Applying its diff stays a human decision."""
+    from trustlayer.tui import app as tui_app
+
+    app = create_app(db_path=tmp_path / "runs.db")
+    async with app.run_test() as pilot:
+        screen = HardenScreen(path=str(DIRTY))
+        app.push_screen(screen)
+        await pilot.pause()
+
+        original, tui_app.run_harden = tui_app.run_harden, lambda root, **kw: stub_harden_result()
+        try:
+            screen.action_start()
+            await app.workers.wait_for_complete()
+            await pilot.pause()
+        finally:
+            tui_app.run_harden = original
+
+        shown = str(screen.query_one("#harden-diff").content)
+        assert "def test_new" in shown
+        assert "nothing was applied" in shown
+        # The screen has no path that writes: only the diff string reaches the widget.
+        assert not any(w.id == "harden-apply" for w in screen.query("*"))
+
+
+@pytest.mark.anyio
+async def test_the_local_model_toggle_selects_the_ollama_backend(tmp_path):
+    captured = {}
+    from trustlayer.tui import app as tui_app
+
+    def capture(root, *, backend=None, on_event=None, **kwargs):
+        captured["backend"] = backend
+        return stub_harden_result()
+
+    app = create_app(db_path=tmp_path / "runs.db")
+    async with app.run_test() as pilot:
+        screen = HardenScreen(path=str(DIRTY))
+        app.push_screen(screen)
+        await pilot.pause()
+        screen.query_one("#harden-local", Switch).value = True
+
+        original, tui_app.run_harden = tui_app.run_harden, capture
+        try:
+            screen.action_start()
+            await app.workers.wait_for_complete()
+            await pilot.pause()
+        finally:
+            tui_app.run_harden = original
+
+    assert captured["backend"] == "ollama"
+
+
+@pytest.mark.anyio
+async def test_a_harden_failure_is_reported_rather_than_crashing(tmp_path):
+    from trustlayer.tui import app as tui_app
+
+    app = create_app(db_path=tmp_path / "runs.db")
+    async with app.run_test() as pilot:
+        screen = HardenScreen(path=str(DIRTY))
+        app.push_screen(screen)
+        await pilot.pause()
+
+        original = tui_app.run_harden
+        tui_app.run_harden = lambda root, **kw: stub_harden_result(error="mutmut not found")
+        try:
+            screen.action_start()
+            await app.workers.wait_for_complete()
+            await pilot.pause()
+        finally:
+            tui_app.run_harden = original
+
+        assert "harden failed" in str(screen.query_one("#harden-status").content)
+        assert screen._harden_running is False
+
+
+def test_listening_to_events_cannot_change_the_outcome(tmp_path):
+    """The invariant. A listener receives what happened and returns nothing.
+
+    Same contract as the explanation path: produced after the verdict, no way back into it.
+    """
+    from unittest.mock import patch
+
+    from trustlayer.agent import harden as harden_module
+    from trustlayer.agent.runtime import AgentResult
+    from trustlayer.mutation import MutationRun, Survivor
+
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "m.py").write_text("def f0():\n    return 1\n")
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "tests" / "test_m.py").write_text("def test_f0():\n    assert True\n")
+
+    survivors = [Survivor(id="src.m.x_f0__mutmut_1", file="src/m.py", line=1, diff="")]
+
+    def run(on_event):
+        with (
+            patch.object(harden_module, "_mutmut_executable", lambda s: Path("mutmut")),
+            patch.object(harden_module, "tooling_interpreter", lambda s: Path("python")),
+            patch.object(
+                harden_module,
+                "run_mutation",
+                lambda r, executable=None: MutationRun(
+                    score=50.0, killed=1, survived=1, total=2, survivors=survivors
+                ),
+            ),
+            patch.object(harden_module, "prune_to_passing", lambda *a, **k: ([], [])),
+            patch.object(harden_module, "count_tests", lambda p: 0),
+            patch.object(
+                harden_module,
+                "run_agent",
+                lambda *a, **k: AgentResult(ok=True, text="d", cost_usd=0.01),
+            ),
+        ):
+            return harden_module.harden(
+                tmp_path, target_score=100.0, max_iterations=2, on_event=on_event
+            )
+
+    silent = run(None)
+    watched = run(lambda event: None)
+
+    assert silent.final_score == watched.final_score
+    assert silent.stopped_because == watched.stopped_because
+    assert silent.total_discarded == watched.total_discarded
+    assert len(silent.iterations) == len(watched.iterations)

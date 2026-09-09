@@ -28,7 +28,7 @@ from typing import ClassVar
 from textual import work
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Horizontal, Vertical
+from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.screen import Screen
 from textual.widgets import DataTable, Footer, Header, Input, Static, Switch
 
@@ -40,7 +40,7 @@ from trustlayer.store import (
     previous_run,
     run_findings,
 )
-from trustlayer.tui.workers import run_audit
+from trustlayer.tui.workers import run_audit, run_harden
 
 
 SEVERITY_STYLES = {"high": "red", "medium": "yellow", "low": "cyan"}
@@ -300,12 +300,126 @@ class AuditScreen(Screen):
         self._status("  |  ".join(parts))
 
 
+class HardenScreen(Screen):
+    """The mutation loop, live.
+
+    This is the screen the whole terminal UI was worth building for. `harden` takes minutes
+    and, from the CLI, prints nothing until it prints everything: baselining, targeting
+    survivors, writing tests, discarding the ones that fail on unmodified source, and
+    re-measuring all happen invisibly. Here they are visible while there is still time to
+    stop the run.
+
+    The diff at the end is shown, never applied. Applying it stays a human decision made
+    outside this tool.
+    """
+
+    BINDINGS: ClassVar[list[Binding]] = [
+        Binding("escape", "app.pop_screen", "Back"),
+        Binding("ctrl+r", "start", "Run"),
+    ]
+
+    def __init__(self, path: str = ".", db_path=None) -> None:
+        super().__init__()
+        self.start_path = path
+        self.db_path = db_path
+        self._harden_running = False
+
+    def compose(self) -> ComposeResult:
+        yield Header()
+        with Vertical():
+            with Horizontal(id="harden-controls"):
+                yield Input(value=self.start_path, placeholder="repository path", id="harden-path")
+                yield Static("local model", id="harden-local-label")
+                yield Switch(value=False, id="harden-local")
+            yield Static("Enter or ctrl+r to run. This takes minutes.", id="harden-status")
+            yield DataTable(id="harden-iterations", cursor_type="row", zebra_stripes=True)
+            with VerticalScroll(id="harden-diff-wrap"):
+                yield Static("", id="harden-diff", markup=False)
+        yield Footer()
+
+    def on_mount(self) -> None:
+        table = self.query_one("#harden-iterations", DataTable)
+        table.add_columns("iteration", "before", "after", "delta", "targeted", "written", "discarded")
+        self.query_one("#harden-path", Input).focus()
+
+    def on_input_submitted(self, _: Input.Submitted) -> None:
+        self.action_start()
+
+    def action_start(self) -> None:
+        if self._harden_running:
+            return
+        root = Path(self.query_one("#harden-path", Input).value.strip() or ".")
+        if not root.is_dir():
+            self._status(f"not a directory: {root}")
+            return
+
+        self._harden_running = True
+        self.query_one("#harden-iterations", DataTable).clear()
+        self.query_one("#harden-diff", Static).update("")
+        backend = "ollama" if self.query_one("#harden-local", Switch).value else None
+        self._harden(root, backend)
+
+    @work(thread=True, exclusive=True)
+    def _harden(self, root: Path, backend: str | None) -> None:
+        app = self.app
+        result = run_harden(
+            root,
+            backend=backend,
+            on_event=lambda event: app.call_from_thread(self._event, event),
+        )
+        app.call_from_thread(self._finished, result)
+
+    def _event(self, event) -> None:
+        self._status(event.message)
+        step = event.iteration
+        if step is not None:
+            self.query_one("#harden-iterations", DataTable).add_row(
+                str(step.number),
+                f"{step.score_before}%",
+                f"{step.score_after}%",
+                f"{step.improvement:+}%",
+                str(len(step.survivors_targeted)),
+                str(step.tests_written),
+                str(step.tests_discarded),
+            )
+
+    def _status(self, message: str) -> None:
+        self.query_one("#harden-status", Static).update(message)
+
+    def _finished(self, result) -> None:
+        self._harden_running = False
+        if result.error:
+            self._status(f"harden failed: {result.error}")
+            return
+
+        spend = (
+            f"{result.total_input_tokens}->{result.total_output_tokens} tokens"
+            if result.backend == "ollama"
+            else f"${result.total_cost_usd}"
+        )
+        self._status(
+            f"{result.baseline_score}% -> {result.final_score}%  ({result.improvement:+}%)  |  "
+            f"{result.stopped_because}  |  {result.total_discarded} discarded  |  {spend}"
+        )
+        self.query_one("#harden-diff", Static).update(
+            (result.diff or "(no changes)")
+            + "\n\n--- shown for review; nothing was applied to the repository ---"
+        )
+
+
 class TrustLayerApp(App):
     """Read-only browser over the run database."""
 
     TITLE = "TrustLayer"
     CSS = """
     #projects, #findings, #audit-findings { height: 1fr; }
+    #harden-controls { height: auto; padding: 0 1; }
+    #harden-path { width: 2fr; }
+    #harden-local-label { width: auto; padding: 1 1 0 2; }
+    #harden-status { padding: 0 1; height: auto; }
+    #harden-iterations { height: auto; max-height: 12; }
+    #harden-diff-wrap { height: 1fr; border-top: solid $panel; }
+    #harden-diff { padding: 0 1; }
     #audit-controls { height: auto; padding: 0 1; }
     #audit-path { width: 2fr; }
     #audit-all-label, #audit-save-label { width: auto; padding: 1 1 0 2; }
@@ -318,6 +432,7 @@ class TrustLayerApp(App):
     BINDINGS: ClassVar[list[Binding]] = [
         Binding("q", "quit", "Quit"),
         Binding("a", "audit", "Run audit"),
+        Binding("h", "harden", "Harden"),
     ]
 
     def __init__(self, db_path: Path | str | None = None, start_path: Path | str = ".") -> None:
@@ -330,6 +445,9 @@ class TrustLayerApp(App):
 
     def action_audit(self) -> None:
         self.push_screen(AuditScreen(path=str(self.start_path), db_path=self.db_path))
+
+    def action_harden(self) -> None:
+        self.push_screen(HardenScreen(path=str(self.start_path), db_path=self.db_path))
 
 
 def create_app(
