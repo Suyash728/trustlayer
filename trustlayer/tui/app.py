@@ -25,12 +25,14 @@ from __future__ import annotations
 from pathlib import Path
 from typing import ClassVar
 
+from textual import work
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
 from textual.screen import Screen
-from textual.widgets import DataTable, Footer, Header, Static
+from textual.widgets import DataTable, Footer, Header, Input, Static, Switch
 
+from trustlayer.checks.runner import ALL_CHECKS, DEFAULT_CHECKS
 from trustlayer.presentation import rank, severity_counts, trend
 from trustlayer.store import (
     get_run,
@@ -38,6 +40,7 @@ from trustlayer.store import (
     previous_run,
     run_findings,
 )
+from trustlayer.tui.workers import run_audit
 
 
 SEVERITY_STYLES = {"high": "red", "medium": "yellow", "low": "cyan"}
@@ -191,26 +194,145 @@ class RunScreen(Screen):
             self._show_evidence(str(event.row_key.value))
 
 
+class AuditScreen(Screen):
+    """Run checks against a repository and watch findings arrive.
+
+    The web UI cannot do this by rule - it renders the database and nothing else. That rule
+    is scoped to `trustlayer/ui/`; this surface may start a run. What does *not* change: the
+    agent still works in a temp copy and applies nothing, and no model produces a verdict
+    here. This screen only calls the same mechanical checks the CLI calls.
+    """
+
+    BINDINGS: ClassVar[list[Binding]] = [
+        Binding("escape", "app.pop_screen", "Back"),
+        Binding("ctrl+r", "start", "Run"),
+    ]
+
+    def __init__(self, path: str = ".", db_path=None) -> None:
+        super().__init__()
+        self.start_path = path
+        self.db_path = db_path
+        self._audit_running = False
+
+    def compose(self) -> ComposeResult:
+        yield Header()
+        with Vertical():
+            with Horizontal(id="audit-controls"):
+                yield Input(value=self.start_path, placeholder="repository path", id="audit-path")
+                yield Static("all checks", id="audit-all-label")
+                yield Switch(value=False, id="audit-all")
+                yield Static("record run", id="audit-save-label")
+                yield Switch(value=True, id="audit-save")
+            yield Static("Enter or ctrl+r to run.", id="audit-status")
+            yield DataTable(id="audit-findings", cursor_type="row", zebra_stripes=True)
+        yield Footer()
+
+    def on_mount(self) -> None:
+        table = self.query_one("#audit-findings", DataTable)
+        table.add_columns("severity", "location", "claim", "check")
+        self.query_one("#audit-path", Input).focus()
+
+    def on_input_submitted(self, _: Input.Submitted) -> None:
+        self.action_start()
+
+    def action_start(self) -> None:
+        # NB: not `_running` - that is a MessagePump internal Textual sets when the
+        # screen's pump starts, so a guard on it is always true and nothing ever runs.
+        if self._audit_running:
+            return  # one run at a time; a second would race the table
+        root = Path(self.query_one("#audit-path", Input).value.strip() or ".")
+        if not root.is_dir():
+            self._status(f"not a directory: {root}")
+            return
+
+        self._audit_running = True
+        self.query_one("#audit-findings", DataTable).clear()
+        selected = list(ALL_CHECKS if self.query_one("#audit-all", Switch).value else DEFAULT_CHECKS)
+        self._audit(root, selected, self.query_one("#audit-save", Switch).value)
+
+    @work(thread=True, exclusive=True)
+    def _audit(self, root: Path, selected: list[str], save: bool) -> None:
+        """Runs off the UI thread. See workers.py for why that is not optional."""
+        app = self.app
+        outcome = run_audit(
+            root,
+            selected,
+            save=save,
+            db_path=self.db_path,
+            on_result=lambda result: app.call_from_thread(self._add_result, result),
+            on_status=lambda message: app.call_from_thread(self._status, message),
+        )
+        app.call_from_thread(self._finished, outcome)
+
+    def _add_result(self, result) -> None:
+        table = self.query_one("#audit-findings", DataTable)
+        for f in sorted(result.findings, key=lambda f: (rank(f.severity), f.file, f.line)):
+            table.add_row(
+                severity_cell(f.severity), f"{f.file}:{f.line}", f.claim, f.check
+            )
+
+    def _status(self, message: str) -> None:
+        self.query_one("#audit-status", Static).update(message)
+
+    def _finished(self, outcome) -> None:
+        self._audit_running = False
+        if outcome.error:
+            self._status(outcome.error)
+            return
+
+        report = outcome.report
+        if report is None:
+            # AuditOutcome permits both fields to be empty; say nothing rather than crash.
+            self._status("nothing to report")
+            return
+        counts = report.counts
+        parts = [
+            "  ".join(f"{counts[s]} {s.value}" for s in counts),
+            f"{outcome.duration_s:.1f}s",
+        ]
+        if outcome.run_id is not None:
+            parts.append(f"recorded as #{outcome.run_id}")
+        if outcome.save_error:
+            parts.append(f"not recorded: {outcome.save_error}")
+        skipped = [r for r in report.results if r.skipped]
+        if skipped:
+            parts.append(f"{len(skipped)} skipped")
+        self._status("  |  ".join(parts))
+
+
 class TrustLayerApp(App):
     """Read-only browser over the run database."""
 
     TITLE = "TrustLayer"
     CSS = """
-    #projects, #findings { height: 1fr; }
+    #projects, #findings, #audit-findings { height: 1fr; }
+    #audit-controls { height: auto; padding: 0 1; }
+    #audit-path { width: 2fr; }
+    #audit-all-label, #audit-save-label { width: auto; padding: 1 1 0 2; }
+    #audit-status { padding: 0 1; height: auto; }
     #findings { width: 3fr; }
     #evidence { width: 2fr; padding: 1 2; border-left: solid $panel; }
     #run-summary { padding: 0 1; height: auto; }
     #projects-empty { padding: 1 2; height: auto; }
     """
-    BINDINGS: ClassVar[list[Binding]] = [Binding("q", "quit", "Quit")]
+    BINDINGS: ClassVar[list[Binding]] = [
+        Binding("q", "quit", "Quit"),
+        Binding("a", "audit", "Run audit"),
+    ]
 
-    def __init__(self, db_path: Path | str | None = None) -> None:
+    def __init__(self, db_path: Path | str | None = None, start_path: Path | str = ".") -> None:
         super().__init__()
         self.db_path = db_path
+        self.start_path = start_path
 
     def on_mount(self) -> None:
         self.push_screen(ProjectsScreen(db_path=self.db_path))
 
+    def action_audit(self) -> None:
+        self.push_screen(AuditScreen(path=str(self.start_path), db_path=self.db_path))
 
-def create_app(db_path: Path | str | None = None) -> TrustLayerApp:
-    return TrustLayerApp(db_path=db_path)
+
+def create_app(
+    db_path: Path | str | None = None, start_path: Path | str = "."
+) -> TrustLayerApp:
+    return TrustLayerApp(db_path=db_path, start_path=start_path)

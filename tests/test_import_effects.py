@@ -183,6 +183,6 @@ def test_a_repo_without_python_skips_with_a_reason(tmp_path):
 
 def test_the_check_runs_by_default():
     """It touches nothing but the AST, so it is not opt-in."""
-    from trustlayer.cli import DEFAULT_CHECKS
+    from trustlayer.checks.runner import DEFAULT_CHECKS
 
     assert "import-effects" in DEFAULT_CHECKS

@@ -12,15 +12,18 @@ from pathlib import Path
 from typing import ClassVar
 
 import pytest
+from textual.widgets import Switch
 
 from trustlayer.checks.base import CheckResult, Finding, Severity
+from trustlayer.checks.runner import ALL_CHECKS, DEFAULT_CHECKS
 from trustlayer.detect import profile_repository
 from trustlayer.presentation import rank, severity_counts, trend
 from trustlayer.report import Report
-from trustlayer.store import save_run
+from trustlayer.store import list_runs, save_run
 from trustlayer.suite import SuiteState
 from trustlayer.tui import create_app
-from trustlayer.tui.app import ProjectsScreen, RunScreen, severity_cell
+from trustlayer.tui.app import AuditScreen, ProjectsScreen, RunScreen, severity_cell
+from trustlayer.tui.workers import run_audit
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -202,3 +205,177 @@ def test_the_tui_command_is_registered():
 
     names = {command.name or command.callback.__name__ for command in cli.registered_commands}
     assert "tui" in names
+
+
+# ------------------------------------------------------------------ running audits
+
+
+DIRTY = FIXTURES / "import-effects-dirty"
+
+
+async def run_audit_screen(pilot, screen: AuditScreen):
+    """Start a run and wait for the thread worker, rather than sleeping and hoping."""
+    screen.action_start()
+    await pilot.app.workers.wait_for_complete()
+    await pilot.pause()
+
+
+@pytest.mark.anyio
+async def test_an_audit_runs_from_the_ui_and_renders_its_findings(tmp_path):
+    db = tmp_path / "runs.db"
+    app = create_app(db_path=db)
+
+    async with app.run_test() as pilot:
+        screen = AuditScreen(path=str(DIRTY), db_path=db)
+        app.push_screen(screen)
+        await pilot.pause()
+        await run_audit_screen(pilot, screen)
+
+        table = screen.query_one("#audit-findings")
+        assert table.row_count == 6
+        status = str(screen.query_one("#audit-status").content)
+        assert "2 high" in status and "4 medium" in status
+
+
+@pytest.mark.anyio
+async def test_the_guard_does_not_block_the_first_run(tmp_path):
+    """Regression: the flag was once named `_running`, which is a MessagePump internal
+    Textual sets when the screen's pump starts - so the guard was always true and no audit
+    ever launched, silently."""
+    db = tmp_path / "runs.db"
+    app = create_app(db_path=db)
+
+    async with app.run_test() as pilot:
+        screen = AuditScreen(path=str(DIRTY), db_path=db)
+        app.push_screen(screen)
+        await pilot.pause()
+
+        assert screen._audit_running is False
+        await run_audit_screen(pilot, screen)
+        assert screen.query_one("#audit-findings").row_count > 0
+
+
+@pytest.mark.anyio
+async def test_a_recorded_run_lands_in_the_database(tmp_path):
+    db = tmp_path / "runs.db"
+    app = create_app(db_path=db)
+
+    async with app.run_test() as pilot:
+        screen = AuditScreen(path=str(DIRTY), db_path=db)
+        app.push_screen(screen)
+        await pilot.pause()
+        await run_audit_screen(pilot, screen)
+
+        assert "recorded as #" in str(screen.query_one("#audit-status").content)
+        assert len(list_runs(db_path=db)) == 1
+
+
+@pytest.mark.anyio
+async def test_recording_can_be_switched_off(tmp_path):
+    db = tmp_path / "runs.db"
+    app = create_app(db_path=db)
+
+    async with app.run_test() as pilot:
+        screen = AuditScreen(path=str(DIRTY), db_path=db)
+        app.push_screen(screen)
+        await pilot.pause()
+        screen.query_one("#audit-save", Switch).value = False
+        await run_audit_screen(pilot, screen)
+
+        assert "recorded as #" not in str(screen.query_one("#audit-status").content)
+        assert list_runs(db_path=db) == []
+
+
+@pytest.mark.anyio
+async def test_a_bad_path_is_reported_rather_than_crashing(tmp_path):
+    app = create_app(db_path=tmp_path / "runs.db")
+
+    async with app.run_test() as pilot:
+        screen = AuditScreen(path=str(tmp_path / "nope"), db_path=tmp_path / "runs.db")
+        app.push_screen(screen)
+        await pilot.pause()
+        screen.action_start()
+        await pilot.pause()
+
+        assert "not a directory" in str(screen.query_one("#audit-status").content)
+        assert screen._audit_running is False
+
+
+@pytest.mark.anyio
+async def test_the_interface_stays_responsive_while_a_run_is_in_flight(tmp_path):
+    """The whole reason the work is threaded. A frozen UI is the failure this prevents."""
+    import threading
+
+    from trustlayer.tui import app as tui_app
+    from trustlayer.tui.workers import AuditOutcome
+
+    release = threading.Event()
+
+    def slow_audit(*args, **kwargs):
+        release.wait(timeout=10)  # hold the worker thread open
+        return AuditOutcome()
+
+    app = create_app(db_path=tmp_path / "runs.db")
+    async with app.run_test() as pilot:
+        screen = AuditScreen(path=str(DIRTY), db_path=tmp_path / "runs.db")
+        app.push_screen(screen)
+        await pilot.pause()
+
+        original = tui_app.run_audit
+        tui_app.run_audit = slow_audit
+        try:
+            screen.action_start()
+            await pilot.pause()
+            assert screen._audit_running is True  # still working
+
+            # The UI thread is free: a keypress is still processed while the worker blocks.
+            await pilot.press("tab")
+            await pilot.pause()
+            assert app.is_running is True
+        finally:
+            release.set()
+            await app.workers.wait_for_complete()
+            tui_app.run_audit = original
+
+
+@pytest.mark.anyio
+async def test_all_checks_selects_the_opt_in_ones_too(tmp_path):
+    captured = {}
+    from trustlayer.tui import app as tui_app
+    from trustlayer.tui.workers import AuditOutcome
+
+    def capture(root, selected, **kwargs):
+        captured["selected"] = selected
+        return AuditOutcome()
+
+    app = create_app(db_path=tmp_path / "runs.db")
+    async with app.run_test() as pilot:
+        screen = AuditScreen(path=str(DIRTY), db_path=tmp_path / "runs.db")
+        app.push_screen(screen)
+        await pilot.pause()
+        screen.query_one("#audit-all", Switch).value = True
+
+        original = tui_app.run_audit
+        tui_app.run_audit = capture
+        try:
+            await run_audit_screen(pilot, screen)
+        finally:
+            tui_app.run_audit = original
+
+    assert set(captured["selected"]) == set(ALL_CHECKS)
+
+
+def test_progress_callbacks_cannot_change_a_verdict(tmp_path):
+    """`on_result` and `on_status` receive what already happened and return nothing."""
+    quiet = run_audit(DIRTY, list(DEFAULT_CHECKS), save=False, db_path=tmp_path / "a.db")
+    noisy = run_audit(
+        DIRTY,
+        list(DEFAULT_CHECKS),
+        save=False,
+        db_path=tmp_path / "b.db",
+        on_result=lambda result: None,
+        on_status=lambda message: None,
+    )
+
+    assert quiet.report.exit_code == noisy.report.exit_code
+    assert [f.claim for f in quiet.report.findings] == [f.claim for f in noisy.report.findings]

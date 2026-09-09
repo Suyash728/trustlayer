@@ -270,7 +270,7 @@ def test_the_check_scores_a_manifest_with_no_virtualenv_present():
 
 def test_the_check_is_opt_in_and_actually_wired_into_the_cli():
     """Network-touching checks are never a surprise side effect of typing `audit`."""
-    from trustlayer.cli import ALL_CHECKS, DEFAULT_CHECKS, OPT_IN_CHECKS
+    from trustlayer.checks.runner import ALL_CHECKS, DEFAULT_CHECKS, OPT_IN_CHECKS
 
     assert "slopsquat" in OPT_IN_CHECKS
     assert "slopsquat" in ALL_CHECKS

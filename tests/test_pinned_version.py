@@ -170,7 +170,7 @@ def test_the_finding_points_at_the_declaring_line(tmp_path):
 
 def test_the_check_is_opt_in():
     """It contacts registries, so it is never a surprise side effect of `audit`."""
-    from trustlayer.cli import DEFAULT_CHECKS, OPT_IN_CHECKS
+    from trustlayer.checks.runner import DEFAULT_CHECKS, OPT_IN_CHECKS
 
     assert "pinned-version" in OPT_IN_CHECKS
     assert "pinned-version" not in DEFAULT_CHECKS
