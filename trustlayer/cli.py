@@ -457,6 +457,19 @@ def diff(
 
 
 @app.command()
+def tui() -> None:
+    """Browse recorded runs in the terminal.
+
+    Unlike `ui`, this needs no browser and no network: the web UI loads Tailwind and HTMX
+    from a CDN and is unstyled offline. Interactive, so its exit status carries no verdict -
+    always 0. Use `audit` in a hook or CI, where severity owns the exit code.
+    """
+    from trustlayer.tui import create_app
+
+    create_app().run()
+
+
+@app.command()
 def ui(
     port: Annotated[int, typer.Option("--port", help="Port to serve on.")] = 7777,
     host: Annotated[str, typer.Option("--host", help="Interface to bind.")] = "127.0.0.1",

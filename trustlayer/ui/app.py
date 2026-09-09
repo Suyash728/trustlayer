@@ -20,6 +20,8 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.templating import Jinja2Templates
 
+from trustlayer.presentation import rank as _rank
+from trustlayer.presentation import trend as _trend
 from trustlayer.store import (
     diff_runs,
     get_run,
@@ -31,7 +33,6 @@ from trustlayer.store import (
 
 
 TEMPLATES = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
-SEVERITY_ORDER = ("high", "medium", "low")
 
 
 def create_app(db_path: Path | str | None = None) -> FastAPI:
@@ -99,22 +100,3 @@ def create_app(db_path: Path | str | None = None) -> FastAPI:
         )
 
     return app
-
-
-def _rank(severity: str) -> int:
-    return SEVERITY_ORDER.index(severity) if severity in SEVERITY_ORDER else len(SEVERITY_ORDER)
-
-
-def _trend(run, prior) -> dict:
-    """A delta, not a plot. `None` prior means there is nothing to compare against."""
-    if prior is None:
-        return {"symbol": "", "delta": 0, "label": "first run", "direction": "none"}
-
-    now = run.counts.get("total", 0)
-    before = prior.counts.get("total", 0)
-    delta = now - before
-    if delta > 0:
-        return {"symbol": "▲", "delta": delta, "label": f"+{delta}", "direction": "worse"}
-    if delta < 0:
-        return {"symbol": "▼", "delta": delta, "label": str(delta), "direction": "better"}
-    return {"symbol": "—", "delta": 0, "label": "no change", "direction": "flat"}
