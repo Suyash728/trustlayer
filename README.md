@@ -328,6 +328,30 @@ layer exists to drift. `tests/test_localtools.py` runs a single denial matrix ag
 A local run reports tokens and wall-clock instead of a dollar cost, because its cost is
 always zero and printing `$0.00` would read as a broken meter.
 
+## The terminal UI
+
+```sh
+trustlayer tui        # a = run an audit, h = harden, enter = open a run, q = quit
+```
+
+No browser and no network. `trustlayer ui` loads Tailwind and HTMX from a CDN and is
+unstyled offline, which is an odd shape for a tool whose argument is that it works offline
+and deterministically; this surface has no such dependency.
+
+Three things it does that the web UI cannot:
+
+- **Run an audit** and watch findings arrive check by check rather than all at the end.
+- **Watch `harden` work.** The mutation loop takes minutes and, from the CLI, prints nothing
+  until it prints everything. Here the baseline, each iteration's before-and-after score,
+  tests written and discarded, and any denied tool calls appear as they happen. A real run
+  on a local model took `demo-repos/pricing-py` from 61.7% to 80.4% across five iterations,
+  and showed that iteration 4 briefly went *backwards* — which the CLI never displayed.
+- **Show the diff for review.** There is no apply button, and a test asserts there is no
+  apply path at all. The agent works in a temp copy; applying its work stays your decision.
+
+It is interactive, so its exit status carries no verdict and is always 0. `audit` keeps
+owning exit codes for hooks and CI.
+
 ## History and the local UI
 
 Every `audit` records a run in `~/.trustlayer/runs.db` (`--no-save` opts out), keyed to the

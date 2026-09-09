@@ -1,6 +1,8 @@
 # Plan — an interactive terminal UI (`trustlayer tui`)
 
-Status: **proposal, not built.** One decision below needs sign-off before Phase 2 starts.
+Status: **phases 1-3 built and shipped** (2026-09-09). Phase 4 deliberately not started —
+it is gated on the first three being used in anger. The read-only rule was scoped as
+recommended below; CLAUDE.md records the change.
 
 ## Context
 

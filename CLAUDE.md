@@ -45,8 +45,10 @@ the misunderstanding into the suite and everything downstream would inherit it.
 - **Mutation testing**: mutmut 3.6.0 + pytest.
 - **TypeScript checks**: ts-morph 27.0.2 via Node 24 (`trustlayer/checks/node/`).
 - **Persistence**: SQLite at `~/.trustlayer/runs.db`, stdlib `sqlite3`, no ORM.
-- **Local UI**: FastAPI + Jinja2 on `localhost:7777`, Tailwind and HTMX from CDN.
+- **Local web UI**: FastAPI + Jinja2 on `localhost:7777`, Tailwind and HTMX from CDN.
   One process, no build step, no `node_modules`. Read-only: it cannot trigger a run.
+- **Terminal UI**: Textual 8.2.8 (`trustlayer tui`). No browser, no CDN, works offline.
+  Unlike the web UI it *may* trigger runs — see the scoping note in Architecture rules.
 - **Not built**: Next.js frontend, SSE streaming, Railway/Vercel deploy, any remote
   surface. `apps/web/` is an empty directory. `apps/api/` holds only the mutmut re-export
   and its test.
@@ -66,6 +68,7 @@ uv run trustlayer deps <repo> --explain --backend ollama   # local model writes 
 uv run trustlayer history <repo> -n 10
 uv run trustlayer diff <repo>
 uv run trustlayer ui                           # localhost:7777, opens a browser
+uv run trustlayer tui                          # terminal UI; a=audit, h=harden, q=quit
 ```
 
 > `ruff format` has **never** been run on this repo — it would reformat 18 of 31 files.
@@ -127,6 +130,22 @@ uv run trustlayer ui                           # localhost:7777, opens a browser
 - **`harden --budget` caps one turn-set, not the run.** `--max-total-cost` is the ceiling on
   the whole loop and is checked after every agent call. Up to 5 iterations x 3 survivors = 15
   turn-sets, so the two numbers differ by an order of magnitude.
+- **Every long operation in the TUI runs in a Textual thread worker, and this is not
+  optional.** Textual runs an asyncio loop; `run_agent` calls `anyio.run()`, which starts a
+  second one, and nesting them raises. `run_mutation` blocks on `subprocess.run`, and the
+  registry and Ollama clients block on `urllib`. Calling any of them from the UI thread is a
+  crash or a multi-minute freeze. Results come back through `app.call_from_thread`.
+- **Check dispatch lives in `trustlayer/checks/runner.py`, not in `cli.py`.** `iter_checks`
+  yields each result as it lands (the TUI shows progress); `run_checks` returns the finished
+  list (the CLI). One table — two copies would drift the moment a check is added and the
+  surfaces would disagree about what `--all` means.
+- **`harden`'s `on_event` is one-directional.** A listener receives what already happened and
+  returns nothing, so it cannot influence a score, a discard, a stop reason or an exit code.
+  `tests/test_tui.py` runs the loop with and without a listener and asserts identical
+  outcomes. Same contract as `explain.py`.
+- **Presentation helpers shared by both UIs live in `trustlayer/presentation.py`.** Two
+  answers to "did this repository get worse" that disagree is worse than either alone; a test
+  asserts the web UI's `_trend`/`_rank` are literally the shared functions.
 - **All SQLite access lives in `trustlayer/store.py`.** `check` is a SQL reserved word,
   so the column is quoted as `"check"` in every statement — unquoting it anywhere is a
   syntax error at table creation, which `tests/test_store.py` pins.
@@ -137,9 +156,16 @@ uv run trustlayer ui                           # localhost:7777, opens a browser
   *parent* repo's SHA and a dirty tree is not comparable to a commit.
 - **`diff` matches findings on `(check, file, claim, verdict)` — never the line number.**
   A finding that moved because someone added an import is the same finding.
-- **The UI is read-only.** It renders the database and cannot trigger a run or write to a
-  repository. Severity is a reserved *status* palette; counts are ink and a small coloured
-  mark carries identity, so a colour never means anything on its own.
+- **The web UI is read-only, and that rule is scoped to `trustlayer/ui/`** (scoped
+  2026-09-09). It renders the database and cannot trigger a run or write to a
+  repository. `trustlayer/tui/` **may** start an audit or a harden run — an interactive
+  UI that cannot trigger anything is a viewer. Two invariants did **not** move and are
+  asserted in `tests/test_tui.py`: the agent still works in a temp copy and the TUI shows
+  its diff without any apply path, and no model produces a verdict on either surface.
+- **Severity is a reserved *status* palette on both surfaces**; counts are ink and a small
+  coloured mark carries identity, so a colour never means anything on its own. In the
+  terminal this matters more, because the palette belongs to the user — `severity_cell`
+  always emits the word as well as the mark, and a test asserts it.
 - **The agent never writes to a real repository.** It works in a temp copy
   (`trustlayer/agent/workspace.py`); runs end by printing a diff and applying nothing.
 - Every subprocess call has an explicit timeout. No exceptions.
@@ -168,6 +194,7 @@ Built and shipped:
 | L5 | Persistence (`~/.trustlayer/runs.db`), `history`, `diff`, and a local read-only `ui` |
 | L6 | Slopsquat guard — `slopsquat` check + `deps` command, deterministic risk score, PyPI only |
 | L7 | Check breadth (`import-effects`, `pinned-version`, `call-signature`) + Ollama backend |
+| L8 | Terminal UI — run browser, live audits, live `harden` dashboard |
 
 `AGENTS.md` froze scope to a web app (public URL, SSE stream, single run view). **That list
 was superseded by direct instruction** across L1–L5; none of it was built and the CLI was
@@ -276,6 +303,23 @@ Ollama and ComfyUI cannot both hold a model in VRAM on this machine.
   8x the context is about +360 MB of VRAM.
 - Observed latency, warm: ~1s for short prose, 6-20s for a tool turn. First call per model
   pays a load cost on top.
+
+## Textual 8.2.8 (VERIFIED 2026-09-09 — do not rediscover)
+
+- **Never name an attribute `_running` on a `Screen`, `Widget` or `App`.** `_running` is a
+  `MessagePump` internal that Textual sets when the node's message pump starts. A re-entry
+  guard reading it is therefore always true, so the action it guards never runs — silently,
+  with no error anywhere. This cost a full debugging session: every piece worked in
+  isolation and only stepping through the action line by line found it. The TUI uses
+  `_audit_running` / `_harden_running`.
+- `Static` exposes **`.content`**, not `.renderable`. Reading `.renderable` raises.
+- Screen capture is **`App.export_screenshot()`** (SVG). There is no `export_text()`.
+- Tests: `App.run_test()` is an **async context manager** yielding a `Pilot`
+  (`press`, `click`, `pause(delay)`). Async tests use `@pytest.mark.anyio` with a local
+  `anyio_backend` fixture returning `"asyncio"`, matching `tests/test_agent.py`.
+- Wait for thread workers with **`await app.workers.wait_for_complete()`**. Polling
+  `pilot.pause()` in a loop races the worker and produces flaky, confusing failures.
+- `BINDINGS` must be annotated `ClassVar[list[Binding]]` or ruff's RUF012 rejects it.
 
 ## mutmut 3.6.0 output format (VERIFIED — do not rediscover)
 
