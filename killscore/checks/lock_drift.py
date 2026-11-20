@@ -107,11 +107,14 @@ def _uv(base: Path, prefix: str) -> list[Finding] | str:
     )
     if root_entry is None:
         return f"not compared: uv.lock has no local entry for {name}"
-    locked_versions = {
-        canonicalize_name(str(p.get("name", ""))): str(p.get("version", ""))
-        for p in packages
-        if not _is_local(p)
-    }
+    # One name can be locked at several versions: uv forks the resolution for conflicting
+    # groups or extras (openai-python locks pydantic 1.10.26 *and* 2.12.5). A dict keyed by
+    # name silently kept the last one and accused the other group's spec.
+    locked_versions: dict[str, set[str]] = {}
+    for package in packages:
+        if not _is_local(package):
+            key = canonicalize_name(str(package.get("name", "")))
+            locked_versions.setdefault(key, set()).add(str(package.get("version", "")))
     metadata = root_entry.get("metadata") if isinstance(root_entry.get("metadata"), dict) else {}
 
     manifest_file = posixpath.join(prefix, "pyproject.toml") if prefix else "pyproject.toml"
@@ -145,11 +148,16 @@ def _uv(base: Path, prefix: str) -> list[Finding] | str:
                     f"`{requirement.name}{_extras(extras)}{spec}`",
                     "the lock describes a different manifest; run `uv lock` and commit the result",
                 ))
-            version = locked_versions.get(key)
-            if version and requirement.specifier and not _satisfies(requirement.specifier, version):
+            versions = sorted(v for v in locked_versions.get(key, set()) if v)
+            if (
+                versions
+                and requirement.specifier
+                and not any(_satisfies(requirement.specifier, v) for v in versions)
+            ):
+                pinned = " and ".join(versions)
                 findings.append(_finding(
                     Severity.MEDIUM, manifest_file, line, str(requirement), "locked-version-violates-spec",
-                    f"uv.lock pins {requirement.name} {version}, which `{requirement.specifier}` excludes "
+                    f"uv.lock pins {requirement.name} {pinned}, which `{requirement.specifier}` excludes "
                     "(PEP 440, via packaging)",
                     "installing from the lock gives a version the manifest forbids",
                 ))
@@ -258,7 +266,10 @@ def _pnpm_lock(base: Path, prefix: str) -> list[Finding] | str:
         major = 0
     if major < 6:
         return "not compared: pnpm lockfile older than v6 records specs differently"
-    importer = ((lock.get("importers") or {}).get(".")) or {}
+    # A workspace lockfile keys the root under `importers["."]`; a single-project v6 lockfile
+    # has no `importers` and records the same specs at the top level (shadcn-ui/taxonomy).
+    importers = lock.get("importers")
+    importer = (importers.get(".") or {}) if isinstance(importers, dict) else lock
     recorded = {
         group: {
             name: entry.get("specifier")

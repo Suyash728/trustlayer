@@ -154,7 +154,11 @@ def test_typo_adjacency_alone_never_reaches_medium():
     and widely downloaded, earns adjacency points and nothing else. If that alone could
     reach MEDIUM the check would libel every package with a similar name.
     """
-    result = score_package("beautifulsoup", real("beautifulsoup"), CORPUS, today=TODAY)
+    # 154,929 is beautifulsoup's real pypistats figure (2026-11-21): established enough to be
+    # real, nowhere near popular enough to rule out a squat on its name alone.
+    result = score_package(
+        "beautifulsoup", real("beautifulsoup", downloads_last_month=154_929), CORPUS, today=TODAY
+    )
 
     assert result.neighbour is not None and result.neighbour.name == "beautifulsoup4"
     assert result.score < MEDIUM_THRESHOLD
@@ -251,7 +255,8 @@ def test_the_check_scores_a_manifest_with_no_virtualenv_present():
                     maintainer_count=1,
                     downloads_last_month=4,
                 ),
-                "requesst": real("requesst"),
+                # A squat is obscure: 20k/month adds no download points, so adjacency is all that scores.
+                "requesst": real("requesst", downloads_last_month=20_000),
             }
         ),
         corpus=CORPUS,
@@ -640,3 +645,37 @@ def test_a_name_that_only_appears_in_a_comment_still_falls_back_to_it(tmp_path):
     manifest = tmp_path / "requirements.txt"
     manifest.write_text("flask\n# see requests docs\n")
     assert find_declaration_line(manifest, "requests") == 2
+
+
+# ------------------------------------------- public-repo field test (2026-11-21)
+
+
+def _adjacency(result):
+    return next(f for f in result.factors if f.name == "typo-adjacency")
+
+
+def test_a_package_with_a_million_monthly_downloads_is_not_a_squat():
+    """Found on taxonomy/hono/zod: prisma (112M/month) read as 'unfamiliar' for being two
+    edits from prismjs. A squat lives on mistakes; a million people a month is not one."""
+    result = score_package(
+        "beautifulsoup", real("beautifulsoup", downloads_last_month=1_000_000), CORPUS, today=TODAY
+    )
+
+    factor = _adjacency(result)
+    assert factor.points == 0
+    assert "beautifulsoup4" in factor.detail and "1,000,000" in factor.detail
+    assert result.severity is None
+
+
+def test_just_under_a_million_still_counts_as_adjacent():
+    result = score_package(
+        "beautifulsoup", real("beautifulsoup", downloads_last_month=999_999), CORPUS, today=TODAY
+    )
+    assert _adjacency(result).points == 25
+
+
+def test_unknown_downloads_cannot_prove_a_package_established():
+    result = score_package(
+        "beautifulsoup", real("beautifulsoup", downloads_last_month=None), CORPUS, today=TODAY
+    )
+    assert _adjacency(result).points == 25

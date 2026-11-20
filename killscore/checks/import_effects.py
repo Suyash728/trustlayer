@@ -134,19 +134,28 @@ def check_import_effects(root: Path) -> CheckResult:
     if not sources:
         return CheckResult(CHECK_NAME, skipped=True, skip_reason="no Python sources found")
 
-    findings: list[Finding] = []
+    parsed: list[tuple[Path, str, ast.Module]] = []
     for path in sources:
         source = read_source(path)
         if source is None:
             continue
         try:
-            tree = ast.parse(source)
+            parsed.append((path, source, ast.parse(source)))
         except SyntaxError:
+            continue
+
+    imported = _imported_names([tree for _, _, tree in parsed])
+    findings: list[Finding] = []
+    scripts = 0
+    for path, source, tree in parsed:
+        effects = _effects_in_module(tree)
+        if effects and _is_script(path, imported):
+            scripts += 1
             continue
 
         lines = source.splitlines()
         relative = relative_to(path, root)
-        for effect in _effects_in_module(tree):
+        for effect in effects:
             severity, why = EFFECTS[effect.verdict]
             evidence = [why]
             if 0 < effect.line <= len(lines):
@@ -163,7 +172,42 @@ def check_import_effects(root: Path) -> CheckResult:
                 )
             )
 
-    return CheckResult(CHECK_NAME, sort_findings(findings))
+    notes = []
+    if scripts:
+        notes.append(
+            f"{scripts} file(s) with module-level I/O not judged: outside any package and imported "
+            "by no file in the repository, so they run as scripts and have no importer to affect"
+        )
+    return CheckResult(CHECK_NAME, sort_findings(findings), notes=notes)
+
+
+def _imported_names(trees: list[ast.Module]) -> set[str]:
+    """Every dotted module name, and each of its components, that any file imports.
+
+    Components are kept so `from lib import fetch` and `import lib.fetch` both mark `fetch`.
+    Over-approximating "imported" only ever keeps a finding, never hides one.
+    """
+    names: set[str] = set()
+    for tree in trees:
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    names.update(alias.name.split("."))
+            elif isinstance(node, ast.ImportFrom):
+                if node.module:
+                    names.update(node.module.split("."))
+                names.update(alias.name for alias in node.names)
+    return names
+
+
+def _is_script(path: Path, imported: set[str]) -> bool:
+    """Not in a package, never imported, and not something pytest imports itself."""
+    name = path.name
+    if name == "conftest.py" or name.startswith("test_") or path.stem.endswith("_test"):
+        return False
+    if (path.parent / "__init__.py").exists():
+        return False
+    return path.stem not in imported
 
 
 def _effects_in_module(tree: ast.Module) -> list[_Effect]:

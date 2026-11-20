@@ -8,11 +8,48 @@
 
 import { existsSync } from "node:fs";
 import { join, relative } from "node:path";
-import { Node, Project } from "ts-morph";
+import { Node, Project, SyntaxKind } from "ts-morph";
 
 const root = process.argv[2];
 const URLISH = /url|uri|endpoint|host|dsn|conn|base|webhook|origin/i;
+// Mirrors CREDENTIAL_PARTS in fail_open.py: WEBHOOK_SECRET names a credential, not a URL.
+const CREDENTIAL_PARTS = new Set([
+  "secret", "key", "token", "password", "passwd", "signing", "signature", "credential", "credentials",
+]);
+
+function namesAUrl(name) {
+  if (!name || !URLISH.test(name)) return false;
+  const snake = name.replace(/([a-z0-9])([A-Z])/g, "$1_$2").toLowerCase();
+  return !snake.split(/[^a-z0-9]+/).some((part) => CREDENTIAL_PARTS.has(part));
+}
+
+/** Mirrors `_tests_name`: `url !== ""`, `!url`, `url || fallback` test the value outside an `if`. */
+function testsName(node, bound) {
+  const isBound = (n) => Node.isIdentifier(n) && n.getText() === bound;
+  if (Node.isBinaryExpression(node)) {
+    const op = node.getOperatorToken().getText();
+    if (["===", "!==", "==", "!="].includes(op)) {
+      const sides = [node.getLeft(), node.getRight()];
+      return sides.some(isBound) && sides.some((side) => isEmptyFallback(side));
+    }
+    if (op === "||" || op === "&&" || op === "??") return isBound(node.getLeft());
+  }
+  if (Node.isPrefixUnaryExpression(node) && node.getOperatorToken() === SyntaxKind.ExclamationToken) {
+    return isBound(node.getOperand());
+  }
+  return false;
+}
 const GATE = /auth|tier|gate|permission|access|allow/i;
+// Mirrors QUESTION_WORDS in fail_open.py: a gate's name asks a yes/no question.
+const QUESTION_WORDS = new Set([
+  "is", "has", "can", "check", "may", "should", "verify", "validate", "authorize",
+  "authorise", "allow", "allowed", "permit", "require", "ensure",
+]);
+
+function readsAsQuestion(name) {
+  const words = name.replace(/([a-z0-9])([A-Z])/g, "$1_$2").toLowerCase().split(/[^a-z0-9]+/);
+  return QUESTION_WORDS.has(words.find((word) => word) ?? "");
+}
 
 function emit(payload) {
   process.stdout.write(JSON.stringify(payload));
@@ -115,11 +152,11 @@ function isGuarded(node, bound) {
   const assignedAt = node.getEndLineNumber();
   let guarded = false;
   scope.forEachDescendant((candidate, traversal) => {
+    if (candidate.getStartLineNumber() < assignedAt) return;
     const condition = conditionOf(candidate);
-    if (!condition || candidate.getStartLineNumber() < assignedAt) return;
-    const mentions = [condition, ...condition.getDescendants()].some(
-      (n) => Node.isIdentifier(n) && n.getText() === bound,
-    );
+    const mentions = condition
+      ? [condition, ...condition.getDescendants()].some((n) => Node.isIdentifier(n) && n.getText() === bound)
+      : candidate.getStartLineNumber() > node.getStartLineNumber() && testsName(candidate, bound);
     if (mentions) {
       guarded = true;
       traversal.stop();
@@ -159,7 +196,7 @@ for (const sourceFile of project.getSourceFiles()) {
           const variable = node.getLeft().getText();
           const bound = enclosingName(node);
           const signal =
-            URLISH.test(variable) || (bound && URLISH.test(bound)) || insideUrlTemplate(node);
+            namesAUrl(variable) || namesAUrl(bound) || insideUrlTemplate(node);
           if (signal && !isGuarded(node, bound)) {
             record(node, "high", `${variable} ${operator} ${node.getRight().getText()}`, "env-default-degrades-url");
           }
@@ -175,7 +212,7 @@ for (const sourceFile of project.getSourceFiles()) {
       Node.isFunctionExpression(node)
     ) {
       const name = functionName(node);
-      if (name && GATE.test(name) && hasIfStatement(node)) {
+      if (name && GATE.test(name) && readsAsQuestion(name) && hasIfStatement(node)) {
         const last = lastStatementOf(node);
         if (last) {
           const text = last.getText().replace(/;$/, "").trim();

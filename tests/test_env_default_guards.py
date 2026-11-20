@@ -212,3 +212,111 @@ def test_guarded_typescript_env_default_is_silent(tmp_path, source):
 )
 def test_unguarded_typescript_env_default_still_fires(tmp_path, source):
     assert _typescript(tmp_path, source) == ["env-default-degrades-url"]
+
+
+# --------------------------------------------------- public-repo field test (2026-11-21)
+# openai-python and anthropic-sdk-python produced 12 HIGH env-default findings, all false.
+# Implicit None is Python's "not set" value: libraries substitute a default or raise. Only
+# an empty string (or None formatted into a URL) produces the relative-URL failure mode.
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        pytest.param(
+            """
+            import os
+            BASE_URL = os.environ.get("BASE_URL")
+            """,
+            id="implicit-None-alone",
+        ),
+        pytest.param(
+            """
+            import os
+            client = Client(base_url=os.getenv("OPENAI_BASE_URL"))
+            """,
+            id="implicit-None-passed-to-a-library",
+        ),
+        pytest.param(
+            """
+            import os
+            azure_endpoint: str | None = os.environ.get("AZURE_OPENAI_ENDPOINT")
+            """,
+            id="implicit-None-declared-optional",
+        ),
+        pytest.param(
+            """
+            import os
+            WEBHOOK_SECRET = os.getenv("WEBHOOK_SECRET", "")
+            """,
+            id="credential-named-webhook-is-not-a-url",
+        ),
+        pytest.param(
+            """
+            import os
+            def use_gateway():
+                url = os.environ.get("BEDROCK_BASE_URL", "")
+                return url is None or not url.strip()
+            """,
+            id="tested-in-a-return-expression",
+        ),
+        pytest.param(
+            """
+            import os
+            class Client:
+                def __init__(self):
+                    base_url = os.environ.get("GATEWAY_BASE_URL", "")
+                    self.overridden = base_url != ""
+            """,
+            id="compared-to-empty-later",
+        ),
+    ],
+)
+def test_field_test_shapes_are_silent(tmp_path, source):
+    assert _python(tmp_path, source) == []
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        pytest.param(
+            """
+            import os
+            DATABASE_URL = f"postgres://{os.environ.get('DB_HOST')}/app"
+            """,
+            id="implicit-None-formatted-into-a-url",
+        ),
+        pytest.param(
+            """
+            import os
+            WEBHOOK_URL = os.getenv("WEBHOOK_URL", "")
+            """,
+            id="a-webhook-url-is-still-a-url",
+        ),
+        pytest.param(
+            """
+            import os
+            def call():
+                url = os.getenv("API_URL", "")
+                return requests.get(url + "/v1")
+            """,
+            id="used-but-never-tested",
+        ),
+    ],
+)
+def test_field_test_shapes_still_fire(tmp_path, source):
+    assert _python(tmp_path, source) == ["env-default-degrades-url"]
+
+
+def test_a_credential_named_env_default_is_silent_in_typescript(tmp_path):
+    assert _typescript(tmp_path, 'export const webhookSecret = process.env.WEBHOOK_SECRET || "";\n') == []
+
+
+def test_a_later_comparison_guards_in_typescript(tmp_path):
+    source = """
+    export function overridden(): boolean {
+      const baseUrl = process.env.GATEWAY_BASE_URL || "";
+      return baseUrl !== "";
+    }
+    """
+    assert _typescript(tmp_path, source) == []
