@@ -142,6 +142,8 @@ def _env_default_detections(tree: ast.AST) -> list[_Detection]:
         signals = [name for name in ([variable] + targets) if name and URLISH_RE.search(name)]
         if not signals and not in_url_fstring:
             continue  # only one signal: not enough to call it a defect
+        if _is_guarded(node, targets, parents, tree):
+            continue  # an empty value that is tested before use cannot reach a request
 
         detections.append(
             _Detection(
@@ -201,6 +203,56 @@ def _enclosing_assignment_names(node: ast.AST, parents: dict[int, ast.AST]) -> l
             return [parent.target.id]
         current = parent
     return []
+
+
+_TEST_OWNERS = (ast.If, ast.While, ast.IfExp, ast.Assert)
+_SCOPES = (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda, ast.Module)
+
+
+def _is_guarded(
+    call: ast.Call, targets: list[str], parents: dict[int, ast.AST], tree: ast.AST
+) -> bool:
+    """True when the empty value is tested before anything can use it.
+
+    Three shapes, all found reporting HIGH in a real repository:
+    the getter *is* a condition (`if os.environ.get(...)`), it has a non-empty `or`
+    fallback, or the name it is bound to is tested later in the same scope
+    (`if not endpoint: raise`, `if url is not None`). The test must mention the bound name
+    and come after the assignment; an unrelated `if` guards nothing.
+    """
+    current: ast.AST = call
+    while (parent := parents.get(id(current))) is not None and not isinstance(parent, ast.stmt):
+        if isinstance(parent, ast.IfExp) and parent.test is current:
+            return True
+        if isinstance(parent, ast.BoolOp) and isinstance(parent.op, ast.Or):
+            later = parent.values[parent.values.index(current) + 1 :]
+            if any(not _is_empty_constant(value) for value in later):
+                return True
+        current = parent
+    if isinstance(parent, (ast.If, ast.While, ast.Assert)) and parent.test is current:
+        return True
+
+    if not targets:
+        return False
+    statement = parent if parent is not None else call
+    scope: ast.AST = tree
+    walker: ast.AST | None = statement
+    while (walker := parents.get(id(walker))) is not None:
+        if isinstance(walker, _SCOPES):
+            scope = walker
+            break
+    assigned_at = getattr(statement, "end_lineno", None) or call.lineno
+    for node in ast.walk(scope):
+        if not isinstance(node, _TEST_OWNERS) or node.lineno < assigned_at:
+            continue
+        mentioned = {n.id for n in ast.walk(node.test) if isinstance(n, ast.Name)}
+        if mentioned.intersection(targets):
+            return True
+    return False
+
+
+def _is_empty_constant(node: ast.expr) -> bool:
+    return isinstance(node, ast.Constant) and node.value in ("", None)
 
 
 def _inside_url_fstring(node: ast.AST, parents: dict[int, ast.AST]) -> bool:

@@ -164,7 +164,14 @@ def find_declaration_line(path: Path, name: str) -> int:
     canonical = re.sub(r"[-_.]+", "-", name).strip().lower()
     body = r"[-_.]+".join(re.escape(part) for part in canonical.split("-"))
     pattern = re.compile(rf"(?<!{NAME_BOUNDARY}){body}(?!{NAME_BOUNDARY})", re.IGNORECASE)
-    for number, line in enumerate(text.splitlines(), start=1):
+    lines = text.splitlines()
+    # A comment that explains a dependency is not where it is declared, and pointing a SARIF
+    # annotation or an inline ignore at it is useless. Prefer a match before any `#`; a name
+    # that is only ever mentioned in a comment still beats the line-1 fallback.
+    for number, line in enumerate(lines, start=1):
+        if pattern.search(line.split("#", 1)[0]):
+            return number
+    for number, line in enumerate(lines, start=1):
         if pattern.search(line):
             return number
     return 1

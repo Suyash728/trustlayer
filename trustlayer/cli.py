@@ -135,12 +135,13 @@ def audit(
     Exit codes: 0 clean, 1 medium findings, 2 high findings, 3 operational error. The first
     three are what a pre-commit hook branches on.
 
-    `api-resolution`, `composed`, `slopsquat` and `pinned-version` are opt-in:
+    `api-resolution`, `composed`, `slopsquat`, `pinned-version` and `gha-refs` are opt-in:
     `api-resolution` imports code from the audited repository's environment, `composed`
-    shells out to linters, and `slopsquat` and `pinned-version` contact package registries.
+    shells out to linters, `slopsquat` and `pinned-version` contact package registries, and
+    `gha-refs` contacts GitHub.
 
-    `[tool.trustlayer] exclude = [...]` in pyproject.toml (or `.trustlayer.toml`) and an
-    inline `# trustlayer: ignore[check]` hide findings; the count hidden is always printed.
+    `\\[tool.trustlayer] exclude = \\[...]` in pyproject.toml (or `.trustlayer.toml`) and an
+    inline `# trustlayer: ignore\\[check]` hide findings; the count hidden is always printed.
     """
     if not path.is_dir():
         raise _fail(f"{path} is not a directory")

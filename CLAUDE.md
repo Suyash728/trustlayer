@@ -62,7 +62,7 @@ the misunderstanding into the suite and everything downstream would inherit it.
 uv sync                                        # install; there is no requirements.txt
 npm install --prefix trustlayer/checks/node    # optional: TS checks (or `trustlayer setup-node`)
 uv run ruff check .                            # lint — must be clean
-uv run pytest -q                               # ~590 tests, offline, single root config
+uv run pytest -q                               # ~625 tests, offline, single root config
 uv run trustlayer audit <path> --all
 uv run trustlayer audit <path> --format sarif --fail-on high --baseline known.json
 uv run trustlayer mcp                          # stdio MCP server for coding agents
@@ -121,6 +121,23 @@ uv run trustlayer tui                          # terminal UI; a=audit, h=harden,
   with no star-unpacking. Loosening any of these turns a check into a false-positive
   generator. `tests/test_import_effects.py` and `tests/test_call_signature.py` lead with
   silence tests for exactly this reason.
+- **Field-test guards (added 2026-11-20 after auditing 9 sibling repos; 8 of 9 HIGHs were
+  false).** `env-default-degrades-url` is silent when the empty value is tested before use —
+  the getter is itself a condition, has a non-empty `or` fallback, or its bound name appears in
+  a later `if`/`while`/ternary/`assert` in the same scope (`_is_guarded` in `fail_open.py`,
+  `isGuarded` in `fail_open.mjs`; keep them in step). `api-resolution` maps known import aliases
+  (`IMPORT_DISTRIBUTIONS`: `cv2`→opencv-python, …) and looks up the distribution, never the
+  import name; a 404 only means "possible-slopsquat" when every named distribution 404s. The TS
+  resolver treats a relative import naming an existing *file* (`./globals.css`) as resolved.
+  `tests/test_env_default_guards.py`, `tests/test_ts_asset_imports.py` and the alias tests in
+  `tests/test_api_resolution_guards.py` pin both silence and firing.
+- **Empty handlers with a comment still fire `swallowed-exception` — by decision.** Models
+  write `except ValueError: pass  # ignore malformed input` when cutting corners, so a comment
+  is not evidence of intent. Deliberate cases use `# trustlayer: ignore[fail-open]`.
+- **`Dependency.source` is where the version came from; `declared_in` is the manifest that
+  names it.** `slopsquat` (a claim about the name) reports at `declared_in`; `pinned-version`
+  (a claim about the locked version) keeps `source`. `find_declaration_line` prefers a match
+  outside a `#` comment, because manifests explain their dependencies in comments.
 - **`call-signature` deliberately ignores bound methods and mixed-argument arity.** Both are
   v1 limitations, not oversights. `obj.method(...)` cannot be resolved to a signature without
   knowing what `obj` is, and computing whether a positional count satisfies required

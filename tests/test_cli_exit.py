@@ -58,3 +58,19 @@ def test_every_command_is_registered_before_the_entry_point_runs(command):
     """The `__main__` guard used to sit above these definitions."""
     names = {c.name or c.callback.__name__ for c in cli.app.registered_commands}
     assert command in names
+
+
+def test_audit_help_keeps_its_square_brackets_and_lists_every_opt_in_check(capsys, monkeypatch):
+    """Rich read `[tool.trustlayer]` and `[check]` as style tags and silently dropped them."""
+    from trustlayer.checks.runner import OPT_IN_CHECKS
+
+    monkeypatch.setenv("COLUMNS", "200")
+    monkeypatch.setattr("sys.argv", ["trustlayer", "audit", "--help"])
+    assert cli.main_entry() in (0, None)
+
+    text = " ".join(capsys.readouterr().out.split())
+    assert "[tool.trustlayer] exclude = [...]" in text
+    assert "trustlayer: ignore[check]" in text
+    assert "\\[" not in text
+    for check in OPT_IN_CHECKS:
+        assert f"`{check}`" in text or check in text.split("opt-in")[0], check

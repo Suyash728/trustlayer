@@ -144,6 +144,14 @@ A package is only reported as a possible slopsquat when PyPI returns a definitiv
 network failure is a note, not a finding, because "we could not reach PyPI" and "this
 package does not exist" are not the same claim.
 
+An import name is not always a distribution name, so a 404 on one can mean nothing:
+`cv2` is published as `opencv-python`, `PIL` as `Pillow`, `fitz` as `PyMuPDF`. A short
+hand-curated table (`IMPORT_DISTRIBUTIONS` in `trustlayer/checks/api_resolution.py`) maps
+the common traps to their distributions, and those are looked up instead; the evidence
+names the mapping, so `import cv2` with OpenCV not installed reads as *not installed*
+(MEDIUM), not as a fake package (HIGH). A mapped import is still HIGH if every distribution
+it names returns 404.
+
 Shapes that look missing but are not are left alone: a submodule imported from its package
 (`from xml.etree import ElementTree` — it is not in `dir(xml.etree)` until imported, and
 TrustLayer flagged exactly that in its own source before the probe learned to ask
@@ -260,8 +268,9 @@ This check reads **manifests, not imports**, and therefore needs no virtualenv a
 is deliberate twice over: it is what lets a bare `requirements.txt` be scored, and it avoids
 a false positive that would otherwise be unavoidable — import names and distribution names
 differ (`yaml` ships as PyYAML, `cv2` as opencv-python), so scoring a bare import name would
-manufacture 404s for real packages. `api-resolution` already owns the import path and does it
-properly, behind an interpreter probe.
+manufacture 404s for real packages. `api-resolution` owns the import path: it resolves
+against the project's own interpreter and maps known import aliases to their distributions
+before it ever trusts a 404 (see *Detection guarantees*).
 
 ### The score
 

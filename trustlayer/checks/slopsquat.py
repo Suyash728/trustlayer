@@ -227,11 +227,9 @@ def _declarations(root: Path, profile: RepoProfile) -> list[tuple[str, _Site]]:
                 continue
             seen.add(canonical)
 
-            relative = (
-                dependency.source
-                if project.path == "."
-                else posixpath.join(project.path, dependency.source)
-            )
+            # The name is wrong in the manifest, not in the lockfile that echoes it.
+            declared = dependency.declared_in or dependency.source
+            relative = declared if project.path == "." else posixpath.join(project.path, declared)
             found.append(
                 (
                     dependency.name,

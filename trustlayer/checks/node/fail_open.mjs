@@ -86,6 +86,48 @@ function insideUrlTemplate(node) {
   return false;
 }
 
+/** The condition a node owns, for every construct that tests one. */
+function conditionOf(node) {
+  if (Node.isIfStatement(node) || Node.isWhileStatement(node)) return node.getExpression();
+  if (Node.isConditionalExpression(node)) return node.getCondition();
+  return null;
+}
+
+/**
+ * Mirrors `_is_guarded` in fail_open.py: the empty value is tested before anything uses it.
+ * Either the expression is itself a condition, or the name it is bound to is tested later
+ * in the same function (or file). An unrelated `if` guards nothing.
+ */
+function isGuarded(node, bound) {
+  let current = node;
+  let parent = current.getParent();
+  while (parent && !Node.isStatement(parent)) {
+    if (Node.isConditionalExpression(parent) && parent.getCondition() === current) return true;
+    current = parent;
+    parent = current.getParent();
+  }
+  if (parent && conditionOf(parent) === current) return true;
+
+  if (!bound || bound.includes(".")) return false;
+  const scope =
+    node.getFirstAncestor((a) => Node.isFunctionLikeDeclaration(a) || Node.isArrowFunction(a)) ??
+    node.getSourceFile();
+  const assignedAt = node.getEndLineNumber();
+  let guarded = false;
+  scope.forEachDescendant((candidate, traversal) => {
+    const condition = conditionOf(candidate);
+    if (!condition || candidate.getStartLineNumber() < assignedAt) return;
+    const mentions = [condition, ...condition.getDescendants()].some(
+      (n) => Node.isIdentifier(n) && n.getText() === bound,
+    );
+    if (mentions) {
+      guarded = true;
+      traversal.stop();
+    }
+  });
+  return guarded;
+}
+
 function lastStatementOf(fn) {
   const body = fn.getBody?.();
   if (!body || !Node.isBlock(body)) return null;
@@ -118,7 +160,7 @@ for (const sourceFile of project.getSourceFiles()) {
           const bound = enclosingName(node);
           const signal =
             URLISH.test(variable) || (bound && URLISH.test(bound)) || insideUrlTemplate(node);
-          if (signal) {
+          if (signal && !isGuarded(node, bound)) {
             record(node, "high", `${variable} ${operator} ${node.getRight().getText()}`, "env-default-degrades-url");
           }
         }

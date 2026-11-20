@@ -72,6 +72,9 @@ class Dependency:
     pinned: bool
     declared_spec: str | None  # "^18.2.0", ">=8.0", "==1.2.3"
     source: str  # the file the version came from
+    # The manifest that names it. Differs from `source` when the version came from a lockfile;
+    # a claim about the *name* (slopsquat) belongs here, a claim about the *version* in `source`.
+    declared_in: str | None = None
 
 
 @dataclass(frozen=True)
@@ -279,6 +282,7 @@ def _resolve(
                     pinned=True,
                     declared_spec=declaration.spec or None,
                     source=lockfile,
+                    declared_in=declaration.source,
                 )
             )
             continue
@@ -291,6 +295,7 @@ def _resolve(
                 pinned=version is not None,
                 declared_spec=declaration.spec or None,
                 source=declaration.source,
+                declared_in=declaration.source,
             )
         )
     return dependencies

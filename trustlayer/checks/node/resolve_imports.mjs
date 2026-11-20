@@ -8,8 +8,8 @@
  * a false positive.
  */
 
-import { existsSync, readFileSync } from "node:fs";
-import { join, relative } from "node:path";
+import { existsSync, readFileSync, statSync } from "node:fs";
+import { dirname, join, relative, resolve } from "node:path";
 import { Project } from "ts-morph";
 
 const root = process.argv[2];
@@ -69,6 +69,10 @@ function similarity(a, b) {
   return 1 - dist[a.length][b.length] / maxLen;
 }
 
+function isFileOnDisk(path) {
+  return statSync(path, { throwIfNoEntry: false })?.isFile() ?? false;
+}
+
 function rankSimilar(wanted, names) {
   return names
     .map((name) => [name, similarity(wanted, name)])
@@ -107,6 +111,10 @@ for (const sourceFile of project.getSourceFiles()) {
 
     if (!target) {
       const isRelative = specifier.startsWith(".");
+      // TypeScript only resolves modules it can type, so `import "./globals.css"` never gets a
+      // source file even when the stylesheet exists; a bundler owns that import. A file on disk
+      // at exactly that path is the honest answer. A directory is not: it still needs an index.
+      if (isRelative && isFileOnDisk(resolve(dirname(filePath), specifier))) continue;
       if (isRelative) {
         findings.push({
           severity: "high",

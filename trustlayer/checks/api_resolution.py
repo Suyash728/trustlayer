@@ -43,6 +43,43 @@ NODE_TIMEOUT_SECONDS = 120
 PYPI_TIMEOUT_SECONDS = 8
 MAX_RANKED_NAMES = 5
 
+# Import names that are not the name of the distribution that provides them. A PyPI 404 on
+# one of these is a fact about the *import name*, not evidence of a fake package, so the
+# distribution is looked up instead. Hand-curated on purpose: every entry is checkable on
+# pypi.org, and a guess here would turn a real 404 into silence. Several distributions can
+# provide one module (`psycopg2`); any one of them existing is enough.
+IMPORT_DISTRIBUTIONS: dict[str, tuple[str, ...]] = {
+    "attr": ("attrs",),
+    "bs4": ("beautifulsoup4",),
+    "cv2": ("opencv-python", "opencv-python-headless", "opencv-contrib-python"),
+    "Crypto": ("pycryptodome",),
+    "dateutil": ("python-dateutil",),
+    "docx": ("python-docx",),
+    "dotenv": ("python-dotenv",),
+    "fitz": ("PyMuPDF",),
+    "gi": ("PyGObject",),
+    "git": ("GitPython",),
+    "googleapiclient": ("google-api-python-client",),
+    "jose": ("python-jose",),
+    "jwt": ("PyJWT",),
+    "magic": ("python-magic",),
+    "multipart": ("python-multipart",),
+    "MySQLdb": ("mysqlclient",),
+    "OpenSSL": ("pyOpenSSL",),
+    "PIL": ("Pillow",),
+    "pptx": ("python-pptx",),
+    "psycopg2": ("psycopg2-binary", "psycopg2"),
+    "rest_framework": ("djangorestframework",),
+    "serial": ("pyserial",),
+    "skimage": ("scikit-image",),
+    "sklearn": ("scikit-learn",),
+    "telegram": ("python-telegram-bot",),
+    "usb": ("pyusb",),
+    "win32api": ("pywin32",),
+    "yaml": ("PyYAML",),
+    "zmq": ("pyzmq",),
+}
+
 INTERPRETER_CANDIDATES = (
     Path(".venv") / "bin" / "python",
     Path("venv") / "bin" / "python",
@@ -277,10 +314,14 @@ def _module_findings(
 def _unresolved_verdict(
     top_level: str, interpreter: Path, origin: str, lookup
 ) -> tuple[Severity, str, list[str]] | None:
-    base = [
-        f"not importable by {interpreter} ({origin})",
-        "note: import name and distribution name can differ (e.g. `yaml` ships as `PyYAML`)",
-    ]
+    base = [f"not importable by {interpreter} ({origin})"]
+    distributions = IMPORT_DISTRIBUTIONS.get(top_level)
+    if distributions:
+        return _aliased_verdict(top_level, distributions, base, lookup)
+
+    base.append(
+        "note: import name and distribution name can differ (e.g. `yaml` ships as `PyYAML`)"
+    )
     on_pypi = lookup(top_level)
 
     if on_pypi is False:
@@ -296,6 +337,24 @@ def _unresolved_verdict(
             [*base, f"exists on PyPI: https://pypi.org/project/{top_level}/ - not installed here"],
         )
     return None  # PyPI could not answer: nothing is known, so nothing is claimed
+
+
+def _aliased_verdict(
+    top_level: str, distributions: tuple[str, ...], base: list[str], lookup
+) -> tuple[Severity, str, list[str]] | None:
+    """Judge a known import alias by its distributions; the import name's own 404 is moot."""
+    provided_by = " or ".join(f"`{name}`" for name in distributions)
+    base = [*base, f"`{top_level}` is the import name of {provided_by}, not a PyPI project"]
+    answers = {name: lookup(name) for name in distributions}
+
+    existing = [name for name, found in answers.items() if found is True]
+    if existing:
+        links = ", ".join(f"https://pypi.org/project/{name}/" for name in existing)
+        return Severity.MEDIUM, "not-installed", [*base, f"exists on PyPI: {links} - not installed here"]
+    if all(found is False for found in answers.values()):
+        missing = ", ".join(f"https://pypi.org/pypi/{name}/json" for name in distributions)
+        return Severity.HIGH, "possible-slopsquat", [*base, f"{missing} returned 404 - no such project"]
+    return None  # at least one distribution could not be checked: nothing is claimed
 
 
 def _attribute_findings(

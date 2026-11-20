@@ -587,3 +587,56 @@ def test_pypi_facts_against_the_real_registry(name):
     assert facts.release_count and facts.release_count > 1
     # info.downloads is dead (-1); nothing may read it back in as a real figure.
     assert facts.downloads_last_month is None
+
+
+def test_a_locked_dependency_is_reported_where_it_was_declared_not_in_the_lockfile(tmp_path):
+    """Found on graphify: findings pointed at `uv.lock:1614`, a line inside the project's own
+    metadata block. The name is fixed in the manifest, which is also where a SARIF annotation
+    and an inline `# trustlayer: ignore` have to land."""
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "app"\nversion = "0.1.0"\n'
+        'dependencies = [\n    "requests>=2",\n    "langchain-comunity>=0.1",\n]\n'
+    )
+    (tmp_path / "uv.lock").write_text(
+        'version = 1\n\n[[package]]\nname = "app"\nversion = "0.1.0"\n'
+        '[package.metadata]\nrequires-dist = [\n'
+        '    { name = "langchain-comunity", specifier = ">=0.1" },\n'
+        '    { name = "requests", specifier = ">=2" },\n]\n\n'
+        '[[package]]\nname = "langchain-comunity"\nversion = "0.1.0"\n\n'
+        '[[package]]\nname = "requests"\nversion = "2.32.0"\n'
+    )
+
+    result = check_slopsquat(
+        tmp_path,
+        fetcher=fetcher_for({"langchain-comunity": missing("langchain-comunity")}),
+        corpus=CORPUS,
+        today=TODAY,
+    )
+
+    finding = next(f for f in result.findings if f.claim.startswith("langchain-comunity"))
+    declared = (tmp_path / "pyproject.toml").read_text().splitlines()
+    assert finding.file == "pyproject.toml"
+    assert "langchain-comunity" in declared[finding.line - 1]
+
+
+def test_the_declaring_line_is_not_a_comment_that_mentions_the_package(tmp_path):
+    """Found on graphify: 4 of 7 findings pointed at comments explaining the dependency."""
+    from trustlayer.checks.base import find_declaration_line
+
+    manifest = tmp_path / "pyproject.toml"
+    manifest.write_text(
+        "[project]\n"
+        "# tree-sitter-pascal is optional (see #781)\n"
+        "dependencies = [\n"
+        '    "tree-sitter-pascal>=0.1",  # tree-sitter-pascal again\n'
+        "]\n"
+    )
+    assert find_declaration_line(manifest, "tree-sitter-pascal") == 4
+
+
+def test_a_name_that_only_appears_in_a_comment_still_falls_back_to_it(tmp_path):
+    from trustlayer.checks.base import find_declaration_line
+
+    manifest = tmp_path / "requirements.txt"
+    manifest.write_text("flask\n# see requests docs\n")
+    assert find_declaration_line(manifest, "requests") == 2
