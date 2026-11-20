@@ -85,10 +85,10 @@ def test_the_vendored_corpus_is_in_canonical_form():
 @pytest.mark.parametrize(
     ("text", "model_id", "found"),
     [
-        ("`embedding-001` * April 9, 2024", "embedding-001", True),  # trustlayer: ignore[stale-models]
-        ("`gemini-embedding-001` * July 14, 2025", "embedding-001", False),  # trustlayer: ignore[stale-models]
-        ("gemini-2.0-flash-001 * June 1", "gemini-2.0-flash", False),  # trustlayer: ignore[stale-models]
-        ("llama-3.1-8b-instant 08/16/26", "llama-3.1-8b-instant", True),  # trustlayer: ignore[stale-models]
+        ("`embedding-001` * April 9, 2024", "embedding-001", True),  # killscore: ignore[stale-models]
+        ("`gemini-embedding-001` * July 14, 2025", "embedding-001", False),  # killscore: ignore[stale-models]
+        ("gemini-2.0-flash-001 * June 1", "gemini-2.0-flash", False),  # killscore: ignore[stale-models]
+        ("llama-3.1-8b-instant 08/16/26", "llama-3.1-8b-instant", True),  # killscore: ignore[stale-models]
     ],
 )
 def test_ids_must_appear_as_whole_ids(text, model_id, found):

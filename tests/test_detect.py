@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from trustlayer.detect import Dependency, Language, Project, RepoProfile, profile_repository
+from killscore.detect import Dependency, Language, Project, RepoProfile, profile_repository
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -50,6 +50,7 @@ def test_lockfile_versions_win_over_manifest_specifiers():
         pinned=True,
         declared_spec=">=2.6",
         source="uv.lock",
+        declared_in="pyproject.toml",
     )
     assert dependency(billing, "httpx").version == "0.27.0"
     assert billing.pinned_count == len(billing.dependencies) == 3
@@ -99,6 +100,7 @@ def test_monorepo_python_app_follows_requirements_includes():
         pinned=True,
         declared_spec="==8.2.0",
         source="requirements-dev.txt",
+        declared_in="requirements-dev.txt",
     )
 
 
@@ -129,6 +131,7 @@ def test_monorepo_web_app_resolves_package_lock_and_skips_nested_installs():
         pinned=True,
         declared_spec="^29.7.0",
         source="package-lock.json",
+        declared_in="package.json",
     )
     # chalk is only at node_modules/jest/node_modules/chalk, so it is not a direct dep.
     assert {d.name for d in web.dependencies} == {"next", "jest"}
@@ -153,7 +156,7 @@ def test_unittest_is_not_reported_just_because_a_tests_directory_exists():
 
 
 def test_nested_project_tests_do_not_leak_into_the_parent_runner_detection():
-    """tests/fixtures/python-unittest is a project root; its runner is not TrustLayer's."""
+    """tests/fixtures/python-unittest is a project root; its runner is not killscore's."""
     repo = profile_repository(FIXTURES.parents[1])
     root = project_at(repo, ".", Language.PYTHON)
 

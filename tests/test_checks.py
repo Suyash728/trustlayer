@@ -11,14 +11,14 @@ import sys
 
 import pytest
 
-from trustlayer.checks.api_resolution import (
+from killscore.checks.api_resolution import (
     check_python_apis,
     check_typescript_apis,
     pypi_package_exists,
     rank_similar_names,
 )
-from trustlayer.checks.base import Severity
-from trustlayer.checks.composed import (
+from killscore.checks.base import Severity
+from killscore.checks.composed import (
     NATIVE_VERDICT_BUCKETS,
     _deduplicate,
     _parse_eslint,
@@ -28,8 +28,8 @@ from trustlayer.checks.composed import (
     _parse_vulture,
     check_composed,
 )
-from trustlayer.checks.fail_open import check_python_fail_open, check_typescript_fail_open
-from trustlayer.checks.stale_models import check_stale_models, load_registry
+from killscore.checks.fail_open import check_python_fail_open, check_typescript_fail_open
+from killscore.checks.stale_models import check_stale_models, load_registry
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -156,14 +156,14 @@ def test_registry_rows_match_the_vendor_pages_they_cite():
     """Values read from the vendor pages on 2026-11-20; see the comments in the TOML."""
     registry = {model.model_id: model for model in load_registry()}
 
-    llama = registry["llama-3.3-70b-versatile"]  # trustlayer: ignore[stale-models]
+    llama = registry["llama-3.3-70b-versatile"]  # killscore: ignore[stale-models]
     assert llama.deprecated_on == date(2026, 8, 16)
     assert llama.successor == "openai/gpt-oss-120b or qwen/qwen3.6-27b"
     # These are Google Gemini API embedding IDs, not OpenAI's.
-    assert registry["text-embedding-004"].provider == "google"  # trustlayer: ignore[stale-models]
-    assert registry["gemini-2.5-flash"].successor == "gemini-3.5-flash-lite"  # trustlayer: ignore[stale-models]
-    assert registry["gemini-2.5-flash"].deprecated_on == date(2026, 12, 1)  # trustlayer: ignore[stale-models]
-    assert "gemini-2.0-flash*" not in registry  # replaced by explicit IDs  # trustlayer: ignore[stale-models]
+    assert registry["text-embedding-004"].provider == "google"  # killscore: ignore[stale-models]
+    assert registry["gemini-2.5-flash"].successor == "gemini-3.5-flash-lite"  # killscore: ignore[stale-models]
+    assert registry["gemini-2.5-flash"].deprecated_on == date(2026, 12, 1)  # killscore: ignore[stale-models]
+    assert "gemini-2.0-flash*" not in registry  # replaced by explicit IDs  # killscore: ignore[stale-models]
     assert all(model.verified and model.source_url.startswith("https://") for model in registry.values())
 
 
@@ -171,11 +171,11 @@ def test_retired_models_are_found_in_source_and_env_files():
     result = check_stale_models(FIXTURES / "models-dirty", today=TODAY)
 
     claims = {f.claim for f in result.findings}
-    assert "llama-3.3-70b-versatile" in claims  # trustlayer: ignore[stale-models]
-    assert "gemini-2.0-flash-001" in claims  # trustlayer: ignore[stale-models]
-    assert "text-embedding-004" in claims  # trustlayer: ignore[stale-models]
-    assert "llama-3.1-8b-instant" in claims  # from .env.example  # trustlayer: ignore[stale-models]
-    assert "gemini-embedding-exp-03-07" in claims  # from .env.example  # trustlayer: ignore[stale-models]
+    assert "llama-3.3-70b-versatile" in claims  # killscore: ignore[stale-models]
+    assert "gemini-2.0-flash-001" in claims  # killscore: ignore[stale-models]
+    assert "text-embedding-004" in claims  # killscore: ignore[stale-models]
+    assert "llama-3.1-8b-instant" in claims  # from .env.example  # killscore: ignore[stale-models]
+    assert "gemini-embedding-exp-03-07" in claims  # from .env.example  # killscore: ignore[stale-models]
     # Every row is now vendor-verified, so a retired model is HIGH.
     assert all(f.severity is Severity.HIGH for f in result.findings)
     assert {f.verdict for f in result.findings} == {"retired-model"}
@@ -227,11 +227,11 @@ verified = true
 
 def test_a_scheduled_retirement_is_silent_until_the_window_is_requested():
     without = check_stale_models(FIXTURES / "models-dirty", today=TODAY)
-    assert "gemini-2.5-flash" not in {f.claim for f in without.findings}  # trustlayer: ignore[stale-models]
+    assert "gemini-2.5-flash" not in {f.claim for f in without.findings}  # killscore: ignore[stale-models]
 
     within = check_stale_models(FIXTURES / "models-dirty", today=TODAY, warn_within_days=120)
     scheduled = by_verdict(within, "scheduled-retirement")
-    assert [f.claim for f in scheduled] == ["gemini-2.5-flash"]  # trustlayer: ignore[stale-models]
+    assert [f.claim for f in scheduled] == ["gemini-2.5-flash"]  # killscore: ignore[stale-models]
     assert scheduled[0].severity is Severity.MEDIUM
     assert "91 days from now" in scheduled[0].evidence[0]
 
@@ -308,8 +308,8 @@ def test_zero_false_positives_on_the_clean_typescript_fixture():
 
 
 # Linters emit absolute paths, so a captured fixture necessarily contains the absolute path
-# of the machine that captured it - here `/home/.../Projects/TrustLayer`, which no longer
-# exists (the checkout is `trustlayer`, lowercase). Rewriting the recorded prefix to this
+# of the machine that captured it - here `/home/.../Projects/killscore`, which no longer
+# exists (the checkout is `killscore`, lowercase). Rewriting the recorded prefix to this
 # checkout keeps the fixture a faithful capture of real tool output while letting the test
 # run anywhere. Normalising paths is precisely what these tests exercise, so the absolute
 # form has to survive into the parser.
@@ -411,7 +411,7 @@ def test_a_copy_of_the_registry_is_never_scanned(tmp_path):
 
 
 def test_a_toml_config_that_names_a_retired_model_is_still_flagged(tmp_path):
-    (tmp_path / "config.toml").write_text('[llm]\nmodel = "llama-3.3-70b-versatile"\n')  # trustlayer: ignore[stale-models]
+    (tmp_path / "config.toml").write_text('[llm]\nmodel = "llama-3.3-70b-versatile"\n')  # killscore: ignore[stale-models]
     result = check_stale_models(tmp_path, today=TODAY)
 
-    assert [f.claim for f in result.findings] == ["llama-3.3-70b-versatile"]  # trustlayer: ignore[stale-models]
+    assert [f.claim for f in result.findings] == ["llama-3.3-70b-versatile"]  # killscore: ignore[stale-models]

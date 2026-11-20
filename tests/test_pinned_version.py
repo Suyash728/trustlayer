@@ -9,9 +9,9 @@ from pathlib import Path
 
 import pytest
 
-from trustlayer.checks.base import Severity
-from trustlayer.checks.pinned_version import CHECK_NAME, check_pinned_version
-from trustlayer.registry import PackageFacts, _yanked_versions
+from killscore.checks.base import Severity
+from killscore.checks.pinned_version import CHECK_NAME, check_pinned_version
+from killscore.registry import PackageFacts, _yanked_versions
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -170,7 +170,7 @@ def test_the_finding_points_at_the_declaring_line(tmp_path):
 
 def test_the_check_is_opt_in():
     """It contacts registries, so it is never a surprise side effect of `audit`."""
-    from trustlayer.checks.runner import DEFAULT_CHECKS, OPT_IN_CHECKS
+    from killscore.checks.runner import DEFAULT_CHECKS, OPT_IN_CHECKS
 
     assert "pinned-version" in OPT_IN_CHECKS
     assert "pinned-version" not in DEFAULT_CHECKS

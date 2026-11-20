@@ -14,12 +14,12 @@ import sys
 
 import pytest
 
-from trustlayer.checks.api_resolution import (
+from killscore.checks.api_resolution import (
     CallClaim,
     check_python_apis,
     collect_python_claims,
 )
-from trustlayer.checks.base import Severity
+from killscore.checks.base import Severity
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -200,7 +200,7 @@ def test_the_probe_only_describes_what_it_can_be_sure_about(module, name, descri
     import json as json_module
     import subprocess
 
-    from trustlayer.checks.api_resolution import PROBE_PATH
+    from killscore.checks.api_resolution import PROBE_PATH
 
     completed = subprocess.run(
         [sys.executable, str(PROBE_PATH)],

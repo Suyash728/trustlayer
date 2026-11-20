@@ -7,12 +7,12 @@ from pathlib import Path
 import pytest
 from rich.console import Console
 
-from trustlayer.checks.base import CheckResult, Finding, Severity
-from trustlayer.checks.runner import run_checks, suppress
-from trustlayer.config import Config, ConfigError, load_config
-from trustlayer.detect import profile_repository
-from trustlayer.report import Report, render_text, to_dict
-from trustlayer.suite import inspect_suite
+from killscore.checks.base import CheckResult, Finding, Severity
+from killscore.checks.runner import run_checks, suppress
+from killscore.config import Config, ConfigError, load_config
+from killscore.detect import profile_repository
+from killscore.report import Report, render_text, to_dict
+from killscore.suite import inspect_suite
 
 
 def _finding(file: str, line: int = 1, check: str = "stale-models") -> Finding:
@@ -35,9 +35,9 @@ def test_exclude_patterns_match_paths_and_whole_directories(pattern, path, expec
     assert Config(exclude=(pattern,)).is_excluded(path) is expected
 
 
-def test_config_reads_tool_trustlayer_from_pyproject(tmp_path):
+def test_config_reads_tool_killscore_from_pyproject(tmp_path):
     (tmp_path / "pyproject.toml").write_text(
-        '[tool.trustlayer]\nexclude = ["tests/fixtures/", "demo"]\n', encoding="utf-8"
+        '[tool.killscore]\nexclude = ["tests/fixtures/", "demo"]\n', encoding="utf-8"
     )
     config = load_config(tmp_path)
 
@@ -45,8 +45,8 @@ def test_config_reads_tool_trustlayer_from_pyproject(tmp_path):
     assert config.source == "pyproject.toml"
 
 
-def test_a_standalone_trustlayer_toml_works_for_non_python_repos(tmp_path):
-    (tmp_path / ".trustlayer.toml").write_text('exclude = ["vendor"]\n', encoding="utf-8")
+def test_a_standalone_killscore_toml_works_for_non_python_repos(tmp_path):
+    (tmp_path / ".killscore.toml").write_text('exclude = ["vendor"]\n', encoding="utf-8")
 
     assert load_config(tmp_path).exclude == ("vendor",)
 
@@ -57,24 +57,24 @@ def test_no_config_means_nothing_is_excluded(tmp_path):
 
 def test_a_misspelled_setting_is_an_error_not_a_silent_no_op(tmp_path):
     (tmp_path / "pyproject.toml").write_text(
-        '[tool.trustlayer]\nexcludes = ["tests"]\n', encoding="utf-8"
+        '[tool.killscore]\nexcludes = ["tests"]\n', encoding="utf-8"
     )
     with pytest.raises(ConfigError, match="excludes"):
         load_config(tmp_path)
 
 
 def test_exclude_must_be_a_list_of_strings(tmp_path):
-    (tmp_path / ".trustlayer.toml").write_text('exclude = "tests"\n', encoding="utf-8")
+    (tmp_path / ".killscore.toml").write_text('exclude = "tests"\n', encoding="utf-8")
     with pytest.raises(ConfigError):
         load_config(tmp_path)
 
 
 def test_inline_ignore_matches_named_checks_and_check_families(tmp_path):
     (tmp_path / "a.py").write_text(
-        'x = "m"  # trustlayer: ignore[stale-models]\n'
-        'y = "m"  # trustlayer: ignore[fail-open]\n'
-        'z = "m"  # trustlayer: ignore\n'
-        "import q  # trustlayer: ignore[api-resolution]\n"
+        'x = "m"  # killscore: ignore[stale-models]\n'
+        'y = "m"  # killscore: ignore[fail-open]\n'
+        'z = "m"  # killscore: ignore\n'
+        "import q  # killscore: ignore[api-resolution]\n"
         "w = 1\n",
         encoding="utf-8",
     )
@@ -90,7 +90,7 @@ def test_inline_ignore_matches_named_checks_and_check_families(tmp_path):
 
 
 def test_a_js_style_comment_also_suppresses(tmp_path):
-    (tmp_path / "a.ts").write_text('const m = "x"; // trustlayer: ignore[stale-models]\n')
+    (tmp_path / "a.ts").write_text('const m = "x"; // killscore: ignore[stale-models]\n')
 
     assert Config().ignored_inline(tmp_path, "a.ts", 1, "stale-models")
 
@@ -108,10 +108,10 @@ def test_suppression_counts_what_it_hides(tmp_path):
 
 def test_a_suppressed_run_says_so_in_text_and_json(tmp_path):
     (tmp_path / "pyproject.toml").write_text(
-        '[project]\nname = "x"\n[tool.trustlayer]\nexclude = ["fixtures"]\n', encoding="utf-8"
+        '[project]\nname = "x"\n[tool.killscore]\nexclude = ["fixtures"]\n', encoding="utf-8"
     )
     (tmp_path / "fixtures").mkdir()
-    (tmp_path / "fixtures" / "client.py").write_text('MODEL = "llama-3.3-70b-versatile"\n')  # trustlayer: ignore[stale-models]
+    (tmp_path / "fixtures" / "client.py").write_text('MODEL = "llama-3.3-70b-versatile"\n')  # killscore: ignore[stale-models]
 
     profile = profile_repository(tmp_path)
     results = run_checks(tmp_path, ["stale-models"], None, profile)
@@ -127,12 +127,12 @@ def test_a_suppressed_run_says_so_in_text_and_json(tmp_path):
 
 
 def test_the_repository_config_excludes_its_own_fixtures():
-    """TrustLayer's own pyproject must keep the intentional fixtures out of a self-audit."""
+    """killscore's own pyproject must keep the intentional fixtures out of a self-audit."""
     config = load_config(Path(__file__).resolve().parents[1])
 
     assert config.is_excluded("tests/fixtures/models-dirty/client.py")
     assert config.is_excluded("demo-repos/slopsquat-demo/requirements.txt")
-    assert not config.is_excluded("trustlayer/cli.py")
+    assert not config.is_excluded("killscore/cli.py")
 
 
 def test_a_note_about_an_excluded_project_is_dropped(tmp_path):
@@ -147,8 +147,8 @@ def test_a_note_about_an_excluded_project_is_dropped(tmp_path):
 
 def test_excluded_manifests_are_never_fetched(tmp_path):
     """`deps` must not spend a request - or fail a run - on a fixture it was told to skip."""
-    from trustlayer.checks.slopsquat import scan
-    from trustlayer.risk import load_corpus
+    from killscore.checks.slopsquat import scan
+    from killscore.risk import load_corpus
 
     (tmp_path / "requirements.txt").write_text("requests==2.32.3\n")
     (tmp_path / "fixtures").mkdir()

@@ -2,7 +2,7 @@
 
 Registry answers are injected, so every score is deterministic offline; one opt-in test
 hits the real PyPI and skips when it is unreachable. Nothing here may touch
-~/.trustlayer - the cache is either disabled or pointed at a tmp_path, and one test
+~/.killscore - the cache is either disabled or pointed at a tmp_path, and one test
 asserts that an injected fetcher can never write to the real cache.
 
 The two load-bearing tests are `test_typo_adjacency_alone_never_reaches_medium` and
@@ -17,11 +17,11 @@ from pathlib import Path
 
 import pytest
 
-from trustlayer.checks.base import Severity
-from trustlayer.checks.slopsquat import CHECK_NAME, check_slopsquat, scan
-from trustlayer.registry import CACHE_FORMAT_VERSION, PackageFacts, fetch_many, fetch_pypi
-from trustlayer.report import deps_exit_code, deps_to_dict
-from trustlayer.risk import (
+from killscore.checks.base import Severity
+from killscore.checks.slopsquat import CHECK_NAME, check_slopsquat, scan
+from killscore.registry import CACHE_FORMAT_VERSION, PackageFacts, fetch_many, fetch_pypi
+from killscore.report import deps_exit_code, deps_to_dict
+from killscore.risk import (
     HIGH_THRESHOLD,
     MEDIUM_THRESHOLD,
     Corpus,
@@ -30,7 +30,7 @@ from trustlayer.risk import (
     nearest_popular,
     score_package,
 )
-from trustlayer.store import read_registry_cache, write_registry_cache
+from killscore.store import read_registry_cache, write_registry_cache
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -270,7 +270,7 @@ def test_the_check_scores_a_manifest_with_no_virtualenv_present():
 
 def test_the_check_is_opt_in_and_actually_wired_into_the_cli():
     """Network-touching checks are never a surprise side effect of typing `audit`."""
-    from trustlayer.checks.runner import ALL_CHECKS, DEFAULT_CHECKS, OPT_IN_CHECKS
+    from killscore.checks.runner import ALL_CHECKS, DEFAULT_CHECKS, OPT_IN_CHECKS
 
     assert "slopsquat" in OPT_IN_CHECKS
     assert "slopsquat" in ALL_CHECKS
@@ -469,7 +469,7 @@ def test_an_injected_fetcher_never_writes_to_the_cache(tmp_path):
 def test_a_failed_lookup_is_not_cached(tmp_path):
     db = tmp_path / "runs.db"
 
-    from trustlayer.registry import _write_cache
+    from killscore.registry import _write_cache
 
     _write_cache([unreachable("thing")], db)
 
@@ -481,8 +481,8 @@ def test_a_failed_lookup_is_not_cached(tmp_path):
 
 def test_the_explanation_cannot_change_any_score(monkeypatch):
     """The model may write whatever it likes; the numbers were decided before it ran."""
-    from trustlayer import explain
-    from trustlayer.agent.runtime import AgentResult
+    from killscore import explain
+    from killscore.agent.runtime import AgentResult
 
     result = scan(
         FIXTURES / "slopsquat-dirty",
@@ -508,7 +508,7 @@ def test_the_explanation_cannot_change_any_score(monkeypatch):
 
 
 def test_nothing_to_report_asks_no_model(monkeypatch):
-    from trustlayer import explain
+    from killscore import explain
 
     def explode(*args, **kwargs):
         raise AssertionError("the agent must not be called when there is nothing to explain")
@@ -527,8 +527,8 @@ def test_nothing_to_report_asks_no_model(monkeypatch):
 
 
 def test_an_agent_failure_costs_the_prose_and_nothing_else(monkeypatch):
-    from trustlayer import explain
-    from trustlayer.agent.runtime import AgentResult
+    from killscore import explain
+    from killscore.agent.runtime import AgentResult
 
     result = scan(
         FIXTURES / "slopsquat-dirty",
@@ -549,8 +549,8 @@ def test_an_agent_failure_costs_the_prose_and_nothing_else(monkeypatch):
 
 def test_the_explanation_agent_is_given_no_tools():
     """The gate, not the prompt, is what stops the model from looking anything up."""
-    from trustlayer.agent.runtime import ToolGate
-    from trustlayer.explain import explain_scan  # noqa: F401 - imported for the contract
+    from killscore.agent.runtime import ToolGate
+    from killscore.explain import explain_scan  # noqa: F401 - imported for the contract
 
     gate = ToolGate(())
 
@@ -587,3 +587,56 @@ def test_pypi_facts_against_the_real_registry(name):
     assert facts.release_count and facts.release_count > 1
     # info.downloads is dead (-1); nothing may read it back in as a real figure.
     assert facts.downloads_last_month is None
+
+
+def test_a_locked_dependency_is_reported_where_it_was_declared_not_in_the_lockfile(tmp_path):
+    """Found on graphify: findings pointed at `uv.lock:1614`, a line inside the project's own
+    metadata block. The name is fixed in the manifest, which is also where a SARIF annotation
+    and an inline `# killscore: ignore` have to land."""
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "app"\nversion = "0.1.0"\n'
+        'dependencies = [\n    "requests>=2",\n    "langchain-comunity>=0.1",\n]\n'
+    )
+    (tmp_path / "uv.lock").write_text(
+        'version = 1\n\n[[package]]\nname = "app"\nversion = "0.1.0"\n'
+        '[package.metadata]\nrequires-dist = [\n'
+        '    { name = "langchain-comunity", specifier = ">=0.1" },\n'
+        '    { name = "requests", specifier = ">=2" },\n]\n\n'
+        '[[package]]\nname = "langchain-comunity"\nversion = "0.1.0"\n\n'
+        '[[package]]\nname = "requests"\nversion = "2.32.0"\n'
+    )
+
+    result = check_slopsquat(
+        tmp_path,
+        fetcher=fetcher_for({"langchain-comunity": missing("langchain-comunity")}),
+        corpus=CORPUS,
+        today=TODAY,
+    )
+
+    finding = next(f for f in result.findings if f.claim.startswith("langchain-comunity"))
+    declared = (tmp_path / "pyproject.toml").read_text().splitlines()
+    assert finding.file == "pyproject.toml"
+    assert "langchain-comunity" in declared[finding.line - 1]
+
+
+def test_the_declaring_line_is_not_a_comment_that_mentions_the_package(tmp_path):
+    """Found on graphify: 4 of 7 findings pointed at comments explaining the dependency."""
+    from killscore.checks.base import find_declaration_line
+
+    manifest = tmp_path / "pyproject.toml"
+    manifest.write_text(
+        "[project]\n"
+        "# tree-sitter-pascal is optional (see #781)\n"
+        "dependencies = [\n"
+        '    "tree-sitter-pascal>=0.1",  # tree-sitter-pascal again\n'
+        "]\n"
+    )
+    assert find_declaration_line(manifest, "tree-sitter-pascal") == 4
+
+
+def test_a_name_that_only_appears_in_a_comment_still_falls_back_to_it(tmp_path):
+    from killscore.checks.base import find_declaration_line
+
+    manifest = tmp_path / "requirements.txt"
+    manifest.write_text("flask\n# see requests docs\n")
+    assert find_declaration_line(manifest, "requests") == 2

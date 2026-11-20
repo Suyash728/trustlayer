@@ -1,4 +1,4 @@
-"""`trustlayer mcp`: the checks over stdio JSON-RPC, with stdout reserved for the protocol."""
+"""`killscore mcp`: the checks over stdio JSON-RPC, with stdout reserved for the protocol."""
 
 from __future__ import annotations
 
@@ -13,8 +13,8 @@ import time
 
 import pytest
 
-from trustlayer import __version__, mcp_server
-from trustlayer.checks.runner import DEFAULT_CHECKS
+from killscore import __version__, mcp_server
+from killscore.checks.runner import DEFAULT_CHECKS
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -60,7 +60,7 @@ def test_a_bad_request_is_exit_three_never_clean(kwargs, message):
 
 
 def test_a_crashing_check_is_exit_three(monkeypatch):
-    from trustlayer.checks import runner
+    from killscore.checks import runner
 
     def explode(*args, **kwargs):
         raise RuntimeError("boom")
@@ -73,7 +73,7 @@ def test_a_crashing_check_is_exit_three(monkeypatch):
 
 
 def test_audit_does_not_record_unless_asked(monkeypatch):
-    from trustlayer import store
+    from killscore import store
 
     monkeypatch.setattr(store, "save_run", lambda *a, **k: pytest.fail("recorded a run"))
     mcp_server.audit_payload(str(FIXTURES / "models-clean"))
@@ -101,9 +101,9 @@ def test_models_lists_sourced_rows():
 async def test_the_tools_are_registered_with_schemas():
     tools = {tool.name: tool for tool in await mcp_server.build_server().list_tools()}
 
-    assert set(tools) == {"trustlayer_audit", "trustlayer_deps", "trustlayer_models"}
-    assert tools["trustlayer_audit"].inputSchema["required"] == ["path"]
-    assert tools["trustlayer_audit"].annotations.readOnlyHint is True
+    assert set(tools) == {"killscore_audit", "killscore_deps", "killscore_models"}
+    assert tools["killscore_audit"].inputSchema["required"] == ["path"]
+    assert tools["killscore_audit"].annotations.readOnlyHint is True
 
 
 @pytest.fixture
@@ -118,7 +118,7 @@ def anyio_backend():
 NOISY_SERVER = textwrap.dedent(
     """
     import subprocess, sys
-    from trustlayer import __version__, mcp_server
+    from killscore import __version__, mcp_server
 
     real = mcp_server.audit_payload
 
@@ -196,19 +196,19 @@ def test_stdout_carries_only_json_rpc_even_when_a_tool_prints():
                 },
             )
         )
-        assert init["result"]["serverInfo"]["name"] == "trustlayer"
+        assert init["result"]["serverInfo"]["name"] == "killscore"
         assert init["result"]["serverInfo"]["version"] == __version__
         server.send("notifications/initialized", notify=True)
 
         listed = server.response(server.send("tools/list"))
         assert {t["name"] for t in listed["result"]["tools"]} == {
-            "trustlayer_audit", "trustlayer_deps", "trustlayer_models",
+            "killscore_audit", "killscore_deps", "killscore_models",
         }
 
         called = server.response(
             server.send(
                 "tools/call",
-                {"name": "trustlayer_audit", "arguments": {"path": str(FIXTURES / "failopen-dirty")}},
+                {"name": "killscore_audit", "arguments": {"path": str(FIXTURES / "failopen-dirty")}},
             )
         )
         result = called["result"]

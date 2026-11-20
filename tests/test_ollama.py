@@ -15,8 +15,8 @@ import urllib.error
 
 import pytest
 
-from trustlayer.agent import ollama
-from trustlayer.agent.runtime import (
+from killscore.agent import ollama
+from killscore.agent.runtime import (
     CLAUDE_BACKEND,
     OLLAMA_BACKEND,
     AgentResult,
@@ -58,7 +58,7 @@ def turn(content="ok", **extra):
 
 def test_claude_is_the_default_and_a_typo_never_reroutes(monkeypatch):
     """A mistyped environment variable must not silently send work to another model."""
-    monkeypatch.delenv("TRUSTLAYER_BACKEND", raising=False)
+    monkeypatch.delenv("KILLSCORE_BACKEND", raising=False)
 
     assert resolve_backend() == CLAUDE_BACKEND
     assert resolve_backend("olama") == CLAUDE_BACKEND
@@ -66,7 +66,7 @@ def test_claude_is_the_default_and_a_typo_never_reroutes(monkeypatch):
 
 
 def test_an_explicit_backend_beats_the_environment(monkeypatch):
-    monkeypatch.setenv("TRUSTLAYER_BACKEND", "ollama")
+    monkeypatch.setenv("KILLSCORE_BACKEND", "ollama")
 
     assert resolve_backend() == OLLAMA_BACKEND
     assert resolve_backend("claude") == CLAUDE_BACKEND
@@ -424,7 +424,7 @@ def test_a_missing_duration_falls_back_to_what_we_timed(monkeypatch):
 
 
 def test_run_agent_routes_to_ollama_without_touching_the_claude_path(monkeypatch):
-    from trustlayer.agent import runtime
+    from killscore.agent import runtime
 
     monkeypatch.setattr(
         ollama, "run_ollama", lambda *a, **k: AgentResult(ok=True, text="local", backend="ollama")
@@ -441,7 +441,7 @@ def test_run_agent_routes_to_ollama_without_touching_the_claude_path(monkeypatch
 
 
 def test_the_explanation_carries_its_attribution():
-    from trustlayer.explain import Explanation
+    from killscore.explain import Explanation
 
     local = Explanation("prose", "ollama", "gpt-oss-agent-32k:latest", 646, 466, 17300)
     remote = Explanation("prose", "claude", "claude-opus-5")
@@ -456,7 +456,7 @@ def test_the_explanation_carries_its_attribution():
 def test_a_real_local_model_answers(model):
     """Opt-in: skips when nothing is listening on the Ollama port.
 
-    Runs against TRUSTLAYER_OLLAMA_MODEL when set, else the stock default.
+    Runs against KILLSCORE_OLLAMA_MODEL when set, else the stock default.
     """
     result = ollama.run_ollama(
         "Reply with exactly the word READY and nothing else.", model=model, timeout=180

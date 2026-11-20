@@ -48,7 +48,7 @@ SCOPED_PAUSE_SECONDS = 1.0
 MAX_ATTEMPTS = 8
 MAX_BACKOFF_SECONDS = 120
 TIMEOUT_SECONDS = 60
-USER_AGENT = "trustlayer-corpus-refresh"
+USER_AGENT = "killscore-corpus-refresh"
 
 COMMENT = (
     "THIS FILE GOES STALE. Snapshot of the most-downloaded npm packages, used as the npm "

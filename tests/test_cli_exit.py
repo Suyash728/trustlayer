@@ -10,14 +10,14 @@ from pathlib import Path
 
 import pytest
 
-from trustlayer import cli
+from killscore import cli
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
 def _run(monkeypatch, *args: str) -> int:
-    monkeypatch.setattr("sys.argv", ["trustlayer", *args])
+    monkeypatch.setattr("sys.argv", ["killscore", *args])
     return cli.main_entry()
 
 
@@ -49,7 +49,7 @@ def test_a_crash_inside_a_check_is_operational_not_medium(monkeypatch):
 
 
 def test_a_bad_config_is_operational(monkeypatch, tmp_path):
-    (tmp_path / ".trustlayer.toml").write_text("exclude = 3\n")
+    (tmp_path / ".killscore.toml").write_text("exclude = 3\n")
     assert _run(monkeypatch, "audit", str(tmp_path), "--no-save") == 3
 
 
@@ -58,3 +58,19 @@ def test_every_command_is_registered_before_the_entry_point_runs(command):
     """The `__main__` guard used to sit above these definitions."""
     names = {c.name or c.callback.__name__ for c in cli.app.registered_commands}
     assert command in names
+
+
+def test_audit_help_keeps_its_square_brackets_and_lists_every_opt_in_check(capsys, monkeypatch):
+    """Rich read `[tool.killscore]` and `[check]` as style tags and silently dropped them."""
+    from killscore.checks.runner import OPT_IN_CHECKS
+
+    monkeypatch.setenv("COLUMNS", "200")
+    monkeypatch.setattr("sys.argv", ["killscore", "audit", "--help"])
+    assert cli.main_entry() in (0, None)
+
+    text = " ".join(capsys.readouterr().out.split())
+    assert "[tool.killscore] exclude = [...]" in text
+    assert "killscore: ignore[check]" in text
+    assert "\\[" not in text
+    for check in OPT_IN_CHECKS:
+        assert f"`{check}`" in text or check in text.split("opt-in")[0], check

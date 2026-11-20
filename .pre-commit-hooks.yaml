@@ -1,30 +1,30 @@
 # Consume from another repository:
 #
 #   repos:
-#     - repo: https://github.com/Suyash728/trustlayer
+#     - repo: https://github.com/Suyash728/killscore
 #       rev: v0.2.0
 #       hooks:
-#         - id: trustlayer-audit
+#         - id: killscore-audit
 #           args: [--fail-on, high]      # optional; default fails on medium and high
-#         - id: trustlayer-deps
+#         - id: killscore-deps
 #           args: [--no-network]         # optional; scores from the corpus and cache only
 #
 # Exit codes are the contract: 0 clean, 1 medium, 2 high, 3 operational error. pre-commit
 # fails the commit on any non-zero code; --fail-on decides which severities count.
-- id: trustlayer-audit
-  name: trustlayer audit
+- id: killscore-audit
+  name: killscore audit
   description: Mechanical checks for AI-written code (stale models, fail-open handlers, import side effects).
-  entry: trustlayer audit . --no-save
+  entry: killscore audit . --no-save
   language: python
   pass_filenames: false
   always_run: true
   require_serial: true
   minimum_pre_commit_version: "3.0.0"
 
-- id: trustlayer-deps
-  name: trustlayer deps
+- id: killscore-deps
+  name: killscore deps
   description: Score declared dependencies for slopsquatting (PyPI and npm).
-  entry: trustlayer deps .
+  entry: killscore deps .
   language: python
   pass_filenames: false
   files: (^|/)(requirements[^/]*\.txt|pyproject\.toml|setup\.(cfg|py)|package\.json)$

@@ -1,7 +1,11 @@
-# TrustLayer
+# killscore
 
-Proves whether AI-written tests actually catch bugs, and whether AI-written code is telling
-the truth about the APIs it calls.
+**Mechanical checks for AI-written code and mutation-verified tests.** Hallucinated APIs,
+slopsquatted dependencies, and assertions that can't fail. No LLM produces a verdict.
+
+The name is the thesis: line coverage is a vanity metric, and the mutation *kill score* is
+the oracle. killscore proves whether AI-written tests actually catch bugs, and whether
+AI-written code is telling the truth about the APIs it calls.
 
 The governing rule for every check in this repo: **no LLM produces any verdict.** Checks are
 mechanical or they do not ship. Every finding carries evidence you can re-derive by hand —
@@ -10,18 +14,18 @@ a resolved package version, a real exported name, a registry 404, a source line.
 ## Install
 
 ```sh
-uvx trustlayer audit .                         # from a wheel, no checkout needed
+uvx killscore audit .                         # from a wheel, no checkout needed
 uv sync                                        # or from a checkout: Python package and CLI
-trustlayer setup-node                          # optional: enables the TypeScript checks
+killscore setup-node                          # optional: enables the TypeScript checks
 ```
 
 The wheel carries its data (the model registry and both package corpora). The TypeScript
 checks need ts-morph, which a wheel cannot ship, so `setup-node` installs it into
-`~/.trustlayer/node` (or `$TRUSTLAYER_NODE_DIR`); in a checkout,
-`npm install --prefix trustlayer/checks/node` still works. Without either, those checks skip
+`~/.killscore/node` (or `$KILLSCORE_NODE_DIR`); in a checkout,
+`npm install --prefix killscore/checks/node` still works. Without either, those checks skip
 with the reason. They never guess.
 
-Run the CLI as `uv run trustlayer ...`, or activate the venv (`.venv/bin/activate`,
+Run the CLI as `uv run killscore ...`, or activate the venv (`.venv/bin/activate`,
 `.venv/bin/activate.fish`) and drop the prefix. The examples below omit it.
 
 ### The demo repository
@@ -41,7 +45,7 @@ cd demo-repos/pricing-py && .venv/bin/python -m pytest -q --cov   # writes .cove
 ```
 
 **`--python` is not optional here.** `uv pip install` prefers `$VIRTUAL_ENV` over the
-`.venv` in the current directory, and TrustLayer's own venv is usually activated by this
+`.venv` in the current directory, and killscore's own venv is usually activated by this
 point. So `cd demo-repos/pricing-py && uv pip install -e .` installs mutmut, pytest-cov and
 an editable `pricing-py` into the **root** venv and leaves the demo venv empty; the symptom
 is `No module named pytest` from an interpreter you just installed pytest into. Naming the
@@ -55,18 +59,18 @@ repository it is auditing. It never runs a suite to obtain coverage.
 ## Usage
 
 ```sh
-trustlayer audit <path>                        # the five offline checks
-trustlayer audit <path> --all                  # everything, including the opt-in checks
-trustlayer audit <path> --only api-resolution  # exactly one check
-trustlayer audit <path> --warn-expiring-within 90d
-trustlayer audit <path> --format json          # or --json; stdout is pure JSON
-trustlayer audit <path> --format sarif         # SARIF 2.1.0 for code scanning
-trustlayer audit <path> --fail-on high         # which severities fail (default: medium)
-trustlayer audit <path> --baseline known.json  # fail only on findings not already known
-trustlayer audit <path> --no-color             # NO_COLOR is also honoured
-trustlayer deps <path>                         # score PyPI and npm dependencies
-trustlayer models --list
-trustlayer mcp                                 # the checks, as an MCP server for agents
+killscore audit <path>                        # the five offline checks
+killscore audit <path> --all                  # everything, including the opt-in checks
+killscore audit <path> --only api-resolution  # exactly one check
+killscore audit <path> --warn-expiring-within 90d
+killscore audit <path> --format json          # or --json; stdout is pure JSON
+killscore audit <path> --format sarif         # SARIF 2.1.0 for code scanning
+killscore audit <path> --fail-on high         # which severities fail (default: medium)
+killscore audit <path> --baseline known.json  # fail only on findings not already known
+killscore audit <path> --no-color             # NO_COLOR is also honoured
+killscore deps <path>                         # score PyPI and npm dependencies
+killscore models --list
+killscore mcp                                 # the checks, as an MCP server for agents
 ```
 
 The default checks are offline and read files only: `stale-models`, `fail-open`,
@@ -109,7 +113,7 @@ cases are counted once. Coverage is read from an artifact the repo already produ
 `.coverage` via the repo's own `coverage report`). **The test suite is never run to obtain
 it.** If no artifact exists, coverage is reported as unavailable rather than guessed.
 
-Below 50% coverage the report suggests `trustlayer harden`, which now exists — see
+Below 50% coverage the report suggests `killscore harden`, which now exists — see
 "The agent layer" below.
 
 A check that cannot turn something into a certain finding says so under **notes** — for
@@ -137,16 +141,24 @@ A missing linter is always a skip with a reason, never an audit failure.
 ### Detection guarantees
 
 `api-resolution` resolves against **the audited repository's own interpreter** (`.venv/`,
-`venv/`, or the poetry env), never TrustLayer's. If there is no environment to resolve
+`venv/`, or the poetry env), never killscore's. If there is no environment to resolve
 against, the check skips and tells you what to install rather than guessing.
 
 A package is only reported as a possible slopsquat when PyPI returns a definitive 404. A
 network failure is a note, not a finding, because "we could not reach PyPI" and "this
 package does not exist" are not the same claim.
 
+An import name is not always a distribution name, so a 404 on one can mean nothing:
+`cv2` is published as `opencv-python`, `PIL` as `Pillow`, `fitz` as `PyMuPDF`. A short
+hand-curated table (`IMPORT_DISTRIBUTIONS` in `killscore/checks/api_resolution.py`) maps
+the common traps to their distributions, and those are looked up instead; the evidence
+names the mapping, so `import cv2` with OpenCV not installed reads as *not installed*
+(MEDIUM), not as a fake package (HIGH). A mapped import is still HIGH if every distribution
+it names returns 404.
+
 Shapes that look missing but are not are left alone: a submodule imported from its package
 (`from xml.etree import ElementTree` — it is not in `dir(xml.etree)` until imported, and
-TrustLayer flagged exactly that in its own source before the probe learned to ask
+killscore flagged exactly that in its own source before the probe learned to ask
 `find_spec`), a module alias the file rebinds elsewhere (`json = resp.json()`), and a
 first-party package in a nested directory or `src/` layout. A nested project with no
 virtualenv of its own is resolved against the root one, but "not installed" from a borrowed
@@ -171,7 +183,7 @@ AST, and pytest itself confirms the fixture's eight tautologies all *pass*:
 ### `lock-drift` — the lockfile describes a different manifest
 
 `uv.lock`, `package-lock.json` (v2+) and `pnpm-lock.yaml` (v6+) record the manifest specs they
-were generated from. TrustLayer compares those to the manifest as it is now — the same
+were generated from. killscore compares those to the manifest as it is now — the same
 comparison `uv sync --locked`, `npm ci` and `pnpm install --frozen-lockfile` make before
 refusing to install — and checks each `uv.lock` version against its PEP 440 specifier. npm
 semver ranges are never evaluated: comparing what the lockfile recorded is exact, and
@@ -238,7 +250,7 @@ deciding whether the positional count satisfies the required parameters once key
 fill slots is where an off-by-one becomes a false accusation. A v1 limitation, not a
 permanent one.
 
-Measured against real code: scanning all of TrustLayer's own source produces zero signature
+Measured against real code: scanning all of killscore's own source produces zero signature
 findings outside the deliberate fixture.
 
 ## The slopsquat guard
@@ -248,20 +260,21 @@ is rarely an import in a repo with a working virtualenv — it is a `requirement
 generated thirty seconds ago and installed by nobody yet.
 
 ```sh
-trustlayer deps <path>              # ranked score table, riskiest first (PyPI and npm)
-trustlayer deps <path> --json       # every factor and its point value
-trustlayer deps <path> --format sarif
-trustlayer deps <path> --no-network # corpus and cache only; never contacts a registry
-trustlayer deps <path> --explain    # adds prose from a model; opt-in, changes no score
-trustlayer audit <path> --only slopsquat
+killscore deps <path>              # ranked score table, riskiest first (PyPI and npm)
+killscore deps <path> --json       # every factor and its point value
+killscore deps <path> --format sarif
+killscore deps <path> --no-network # corpus and cache only; never contacts a registry
+killscore deps <path> --explain    # adds prose from a model; opt-in, changes no score
+killscore audit <path> --only slopsquat
 ```
 
 This check reads **manifests, not imports**, and therefore needs no virtualenv at all. That
 is deliberate twice over: it is what lets a bare `requirements.txt` be scored, and it avoids
 a false positive that would otherwise be unavoidable — import names and distribution names
 differ (`yaml` ships as PyYAML, `cv2` as opencv-python), so scoring a bare import name would
-manufacture 404s for real packages. `api-resolution` already owns the import path and does it
-properly, behind an interpreter probe.
+manufacture 404s for real packages. `api-resolution` owns the import path: it resolves
+against the project's own interpreter and maps known import aliases to their distributions
+before it ever trusts a 404 (see *Detection guarantees*).
 
 ### The score
 
@@ -317,7 +330,7 @@ exactly — npm does not fold case or `-_.` the way PyPI does. A `package.json` 
 `workspace:` and git specs are listed in a note and never scored, because a local path "not
 existing on npm" is not evidence of anything. npm findings report as `slopsquat:npm`.
 
-Responses are cached in `~/.trustlayer/runs.db` for 24 hours, per registry. `--no-network` reads that cache
+Responses are cached in `~/.killscore/runs.db` for 24 hours, per registry. `--no-network` reads that cache
 without a TTL and contacts nothing, so a warm cache reproduces an online run byte for byte —
 which is the honest demonstration that the score is deterministic and the network only ever
 adds evidence.
@@ -333,9 +346,9 @@ the prose and nothing else — the exit code is unchanged.
 ## The agent layer
 
 ```sh
-trustlayer baseline <repo> --module src/thing.py   # generate tests for untested code
-trustlayer harden <repo> --target 90               # raise the mutation score
-trustlayer harden <repo> --max-total-cost 5        # ceiling on the whole run
+killscore baseline <repo> --module src/thing.py   # generate tests for untested code
+killscore harden <repo> --target 90               # raise the mutation score
+killscore harden <repo> --max-total-cost 5        # ceiling on the whole run
 ```
 
 **`--budget` caps one agent turn-set, not the run.** `harden` makes up to three per iteration
@@ -387,9 +400,9 @@ The agent layer defaults to Claude and runs on Ollama on request:
 
 ```sh
 systemctl --user start ollama          # or however your Ollama is managed
-trustlayer deps <path> --explain --backend ollama
-trustlayer harden <path> --backend ollama --max-total-cost 5
-export TRUSTLAYER_BACKEND=ollama       # or set it once
+killscore deps <path> --explain --backend ollama
+killscore harden <path> --backend ollama --max-total-cost 5
+export KILLSCORE_BACKEND=ollama       # or set it once
 ```
 
 The default model is the stock `gpt-oss:20b` tag (`ollama pull gpt-oss:20b`); any model whose
@@ -397,7 +410,7 @@ The default model is the stock `gpt-oss:20b` tag (`ollama pull gpt-oss:20b`); an
 error names the installed models that report tool support — nothing is picked for you,
 because "supports tools" is a template claim some models do not live up to.
 
-`TRUSTLAYER_OLLAMA_MODEL` and `TRUSTLAYER_OLLAMA_HOST` override the model and endpoint. An
+`KILLSCORE_OLLAMA_MODEL` and `KILLSCORE_OLLAMA_HOST` override the model and endpoint. An
 unrecognised backend name falls back to Claude rather than failing, so a typo in an
 environment variable cannot silently route work to a different model.
 
@@ -413,7 +426,7 @@ offered. It then goes through the same gate as any other call, and the result co
 `recovered_text_calls`. Anything that merely looks like a call ends the run with an explicit
 error rather than reading as "finished": a lost call must never pass for a completed task.
 
-`num_ctx` is sent on every request — `TRUSTLAYER_OLLAMA_NUM_CTX`, else the model's own
+`num_ctx` is sent on every request — `KILLSCORE_OLLAMA_NUM_CTX`, else the model's own
 Modelfile value, else 32768, never above the trained length. The server default of 4096
 demonstrably breaks the tool loop, and a loop that would run at 4096 or less is refused.
 
@@ -430,10 +443,10 @@ always zero and printing `$0.00` would read as a broken meter.
 ## The terminal UI
 
 ```sh
-trustlayer tui        # a = run an audit, h = harden, enter = open a run, q = quit
+killscore tui        # a = run an audit, h = harden, enter = open a run, q = quit
 ```
 
-No browser and no network. `trustlayer ui` loads Tailwind and HTMX from a CDN and is
+No browser and no network. `killscore ui` loads Tailwind and HTMX from a CDN and is
 unstyled offline, which is an odd shape for a tool whose argument is that it works offline
 and deterministically; this surface has no such dependency.
 
@@ -453,13 +466,13 @@ owning exit codes for hooks and CI.
 
 ## History and the local UI
 
-Every `audit` records a run in `~/.trustlayer/runs.db` (`--no-save` opts out), keyed to the
+Every `audit` records a run in `~/.killscore/runs.db` (`--no-save` opts out), keyed to the
 git SHA so a run is comparable to a commit.
 
 ```sh
-trustlayer history <path> -n 10   # recent runs with severity counts
-trustlayer diff <path>            # what appeared or disappeared since the previous run
-trustlayer ui                     # localhost:7777, read-only browser over the database
+killscore history <path> -n 10   # recent runs with severity counts
+killscore diff <path>            # what appeared or disappeared since the previous run
+killscore ui                     # localhost:7777, read-only browser over the database
 ```
 
 A run also records the git root, whether the tree was **dirty**, and whether the audited
@@ -470,7 +483,7 @@ and a run against uncommitted work must never look like a run against a commit.
 line number. A finding that shifted because someone added an import above it is the same
 finding; including the line would turn one unrelated edit into a screenful of false churn.
 
-**`trustlayer ui` needs a network connection to look right.** Tailwind and HTMX load from
+**`killscore ui` needs a network connection to look right.** Tailwind and HTMX load from
 CDN, which is what "no build step, no node_modules" costs. The page still renders and every
 link works offline; it is just unstyled.
 
@@ -483,7 +496,7 @@ schedule and nothing in this repo updates itself. Review it on every release, an
 every quarter.
 
 Entries carry `verified = false` until someone confirms them against an official vendor
-deprecation page and records the `source_url`. `trustlayer models --list` prints these as
+deprecation page and records the `source_url`. `killscore models --list` prints these as
 **UNVERIFIED**. An unverified row is a lead, not an authority.
 
 An unverified row is reported as MEDIUM (`retired-model-unverified`), never HIGH: a note is
@@ -503,7 +516,7 @@ tripwire that tells a human which row to re-verify. The scheduled workflow
 
 To review:
 
-1. `trustlayer models --list` and look at the Source column.
+1. `killscore models --list` and look at the Source column.
 2. For each UNVERIFIED row, find the vendor's deprecation notice.
 3. Fill in `source_url`, set `verified = true`, and correct the date if it differs.
 4. Add newly announced retirements; remove entries for models that were un-deprecated.
@@ -518,7 +531,7 @@ baseline, so a stale corpus means a genuinely popular new package can be scored 
 until the snapshot catches up.
 
 The file records its own provenance — `source`, `upstream_last_update`, and `vendored_on` —
-and `trustlayer deps` prints all three, so a reader can always tell how old the judgement is.
+and `killscore deps` prints all three, so a reader can always tell how old the judgement is.
 
 `scripts/update_top_pypi.py` regenerates it from
 [hugovk/top-pypi-packages](https://hugovk.github.io/top-pypi-packages/top-pypi-packages.min.json),
@@ -533,23 +546,23 @@ a pull request with any change; nothing is merged automatically.
 ## Configuration: exclude, ignore, baseline
 
 ```toml
-# pyproject.toml (or the top level of .trustlayer.toml)
-[tool.trustlayer]
+# pyproject.toml (or the top level of .killscore.toml)
+[tool.killscore]
 exclude = ["tests/fixtures", "demo-repos/**", "*.generated.py"]
 ```
 
 ```python
-MODEL = "gemini-2.0-flash"  # trustlayer: ignore[stale-models]
+MODEL = "gemini-2.0-flash"  # killscore: ignore[stale-models]
 ```
 
 `exclude` patterns are matched against repo-relative paths; a directory pattern covers
 everything below it, and excluded manifests are never sent to a registry. An inline
-`trustlayer: ignore[check]` (or `// trustlayer: ignore[check]`) on the finding's own line
+`killscore: ignore[check]` (or `// killscore: ignore[check]`) on the finding's own line
 hides it; `ignore[api-resolution]` covers `api-resolution:python`. An unknown setting is an
 error (exit 3), so `excludes = [...]` cannot silently exclude nothing.
 
-A baseline is the audit's own JSON: `trustlayer audit . --format json > known.json`, then
-`trustlayer audit . --baseline known.json` fails only on findings not in it. Matching uses the
+A baseline is the audit's own JSON: `killscore audit . --format json > known.json`, then
+`killscore audit . --baseline known.json` fails only on findings not in it. Matching uses the
 same line-free identity as `diff`, so a known finding that moved is still known. The run
 database still records every finding.
 
@@ -567,27 +580,27 @@ the CLI's own code. Inputs reach the shell through `env`, never interpolation.
 permissions: { contents: read, security-events: write }
 steps:
   - uses: actions/checkout@v7
-  - uses: Suyash728/trustlayer@v0.2.0
+  - uses: Suyash728/killscore@v0.2.0
     with: { args: --all, fail-on: high }
 ```
 
-**pre-commit.** `.pre-commit-hooks.yaml` defines `trustlayer-audit` and `trustlayer-deps`:
+**pre-commit.** `.pre-commit-hooks.yaml` defines `killscore-audit` and `killscore-deps`:
 
 ```yaml
-- repo: https://github.com/Suyash728/trustlayer
+- repo: https://github.com/Suyash728/killscore
   rev: v0.2.0
   hooks:
-    - id: trustlayer-audit
+    - id: killscore-audit
       args: [--fail-on, high]
 ```
 
-**MCP.** `trustlayer mcp` serves `trustlayer_audit`, `trustlayer_deps` and
-`trustlayer_models` over stdio, so a coding agent can check its own work before it says it is
-done: `claude mcp add trustlayer -- uvx trustlayer mcp`. Results are the same JSON documents
+**MCP.** `killscore mcp` serves `killscore_audit`, `killscore_deps` and
+`killscore_models` over stdio, so a coding agent can check its own work before it says it is
+done: `claude mcp add killscore -- uvx killscore mcp`. Results are the same JSON documents
 plus `exit_code` and `exit_meaning`; a bad request is `exit_code: 3` with an `error`, never a
 clean-looking result. stdout carries JSON-RPC and nothing else — the real fd 1 is handed to
 the transport and fd 1 itself is pointed at stderr, so a stray `print`, a library, or a child
-process cannot corrupt the stream. There is no agent tool: TrustLayer does not let one agent
+process cannot corrupt the stream. There is no agent tool: killscore does not let one agent
 start another.
 
 ## Development

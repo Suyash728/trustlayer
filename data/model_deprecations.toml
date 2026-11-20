@@ -1,11 +1,11 @@
-# TrustLayer model deprecation registry
+# killscore model deprecation registry
 #
 # THIS FILE GOES STALE. It is a hand-maintained snapshot, not a live feed. Vendors retire
 # models on their own schedule; nothing here updates itself. Review it periodically and on
 # every release. See README.md, "Maintaining the model deprecation registry".
 #
 # verified = false means the entry was seeded from a maintainer's note and has NOT been
-# confirmed against a vendor deprecation page. `trustlayer models --list` prints these as
+# confirmed against a vendor deprecation page. `killscore models --list` prints these as
 # UNVERIFIED. Do not treat an unverified row as authoritative: fill in source_url from the
 # official notice and flip verified to true.
 #

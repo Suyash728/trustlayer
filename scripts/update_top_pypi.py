@@ -24,7 +24,7 @@ UPSTREAM_URL = "https://hugovk.github.io/top-pypi-packages/top-pypi-packages.min
 CORPUS_PATH = Path(__file__).resolve().parents[1] / "data" / "top_pypi_packages.json"
 DEFAULT_COUNT = 2000
 TIMEOUT_SECONDS = 60
-USER_AGENT = "trustlayer-corpus-refresh"
+USER_AGENT = "killscore-corpus-refresh"
 
 
 def build_corpus(upstream: dict, existing: dict, today: str, count: int = DEFAULT_COUNT) -> dict:

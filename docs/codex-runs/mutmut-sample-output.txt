@@ -1,4 +1,4 @@
-Created [`demo-repos/pricing-py`](/home/suyash/Projects/TrustLayer/demo-repos/pricing-py) with Python 3.11 venv support and added [`.gitignore`](/home/suyash/Projects/TrustLayer/.gitignore).
+Created [`demo-repos/pricing-py`](/home/suyash/Projects/killscore/demo-repos/pricing-py) with Python 3.11 venv support and added [`.gitignore`](/home/suyash/Projects/killscore/.gitignore).
 
 Final verification:
 
@@ -131,7 +131,7 @@ Final verification:
 ```
 
 
-Implemented [`mutation.py`](/home/suyash/Projects/TrustLayer/apps/api/app/services/mutation.py) and its real-output parser test in [`test_mutation.py`](/home/suyash/Projects/TrustLayer/apps/api/tests/test_mutation.py). Every subprocess call uses a 60-second timeout.
+Implemented [`mutation.py`](/home/suyash/Projects/killscore/apps/api/app/services/mutation.py) and its real-output parser test in [`test_mutation.py`](/home/suyash/Projects/killscore/apps/api/tests/test_mutation.py). Every subprocess call uses a 60-second timeout.
 
 ```text
 .                                                                        [100%]

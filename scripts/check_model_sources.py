@@ -23,7 +23,7 @@ import urllib.request
 REGISTRY_PATH = Path(__file__).resolve().parents[1] / "data" / "model_deprecations.toml"
 TIMEOUT_SECONDS = 30
 # Some vendor pages refuse non-browser agents outright, which would read as "page gone".
-USER_AGENT = "Mozilla/5.0 (compatible; trustlayer-source-check)"
+USER_AGENT = "Mozilla/5.0 (compatible; killscore-source-check)"
 ID_BOUNDARY = r"[A-Za-z0-9._\-]"
 
 

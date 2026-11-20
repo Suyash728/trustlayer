@@ -13,7 +13,7 @@ priority (distribution first) was deferred in favour of widening that differenti
 |---|---|
 | Checks are narrow (api-resolution, stale-models, fail-open, composed) | Stale. `slopsquat` and `deps` had landed after the review was written. |
 | No LICENSE, no `.github/`, no PyPI release, thin `pyproject.toml` metadata | True. Deferred by decision. |
-| "Publish to PyPI as `trustlayer`" | **Impossible.** The name belongs to an unrelated "AI Safety & Risk Intelligence middleware", v0.1.3, four releases Feb 2026. `trust-layer` and `trustlayer-cli` are free. A positioning collision as much as a packaging one. |
+| "Publish to PyPI as `trustlayer`" (the original name) | **Impossible.** The name belongs to an unrelated "AI Safety & Risk Intelligence middleware", v0.1.3, four releases Feb 2026. `trust-layer` and `trustlayer-cli` are free. A positioning collision as much as a packaging one. Resolved 2026-11-20 by renaming the project to `killscore`. |
 | Add a dead-code check | Already covered — `composed` wraps `vulture` and dedupes it against native findings. |
 | Agent cost control is missing | True, and worse than described. See Phase 7. |
 
@@ -83,7 +83,7 @@ deciding whether the positional count satisfies required parameters while keywor
 slots is where an off-by-one becomes a false accusation. A v1 limitation, recorded in
 CLAUDE.md so it is not later "improved" into a false-positive generator.
 
-**Validated against real code, not just fixtures**: scanning all of TrustLayer's own source
+**Validated against real code, not just fixtures**: scanning all of killscore's own source
 (rich, typer, fastapi, anyio, packaging, claude_agent_sdk) produces zero signature findings
 outside the deliberate fixture.
 
@@ -106,7 +106,7 @@ a dollar cost locally.
 ### 5 — The Ollama backend, no-tool path
 
 `deps --explain --backend ollama`. Claude stays the default; the local path is opt-in per
-invocation or via `TRUSTLAYER_BACKEND`, and an **unrecognised backend name falls back to
+invocation or via `KILLSCORE_BACKEND`, and an **unrecognised backend name falls back to
 Claude rather than failing**, so a typo in an environment variable cannot silently route work
 to a different model.
 

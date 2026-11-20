@@ -10,8 +10,8 @@ from pathlib import Path
 
 import pytest
 
-from trustlayer.checks.base import Severity
-from trustlayer.checks.import_effects import CHECK_NAME, check_import_effects
+from killscore.checks.base import Severity
+from killscore.checks.import_effects import CHECK_NAME, check_import_effects
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -183,6 +183,6 @@ def test_a_repo_without_python_skips_with_a_reason(tmp_path):
 
 def test_the_check_runs_by_default():
     """It touches nothing but the AST, so it is not opt-in."""
-    from trustlayer.checks.runner import DEFAULT_CHECKS
+    from killscore.checks.runner import DEFAULT_CHECKS
 
     assert "import-effects" in DEFAULT_CHECKS

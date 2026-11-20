@@ -9,8 +9,8 @@ from pathlib import Path
 
 import pytest
 
-from trustlayer.agent.runtime import DEFAULT_ALLOWED_TOOLS, AgentResult, ToolGate
-from trustlayer.agent.workspace import diff_workspace, workspace
+from killscore.agent.runtime import DEFAULT_ALLOWED_TOOLS, AgentResult, ToolGate
+from killscore.agent.workspace import diff_workspace, workspace
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -204,7 +204,7 @@ def test_agent_result_defaults_to_not_ok():
 
 
 def test_a_failing_generated_test_is_discarded_not_repaired(tmp_path):
-    from trustlayer.agent.verify import count_tests, discard_failing_tests
+    from killscore.agent.verify import count_tests, discard_failing_tests
 
     target = tmp_path / "test_generated.py"
     target.write_text(
@@ -223,7 +223,7 @@ def test_a_failing_generated_test_is_discarded_not_repaired(tmp_path):
 
 
 def test_a_parametrized_failure_removes_the_whole_function(tmp_path):
-    from trustlayer.agent.verify import discard_failing_tests
+    from killscore.agent.verify import discard_failing_tests
 
     target = tmp_path / "test_p.py"
     target.write_text("def test_x(v):\n    assert v\n\n\ndef test_keep():\n    assert True\n")
@@ -235,7 +235,7 @@ def test_a_parametrized_failure_removes_the_whole_function(tmp_path):
 
 
 def test_pytest_failure_lines_are_parsed(tmp_path):
-    from trustlayer.agent.verify import FAILURE_RE
+    from killscore.agent.verify import FAILURE_RE
 
     line = "FAILED tests/test_pricing.py::test_discount - AssertionError: assert 0.15 == 0.1"
     match = FAILURE_RE.match(line)
@@ -245,7 +245,7 @@ def test_pytest_failure_lines_are_parsed(tmp_path):
 
 
 def test_discard_survives_a_syntactically_broken_file(tmp_path):
-    from trustlayer.agent.verify import discard_failing_tests
+    from killscore.agent.verify import discard_failing_tests
 
     target = tmp_path / "test_broken.py"
     target.write_text("def test_x(:\n  pass\n")
@@ -257,8 +257,8 @@ def test_discard_survives_a_syntactically_broken_file(tmp_path):
 
 
 def test_survivors_are_taken_from_different_functions():
-    from trustlayer.agent.harden import pick_survivors
-    from trustlayer.mutation import Survivor
+    from killscore.agent.harden import pick_survivors
+    from killscore.mutation import Survivor
 
     survivors = [
         Survivor(f"pricing.x_apply_discount__mutmut_{n}", "src/pricing.py", n, "") for n in (1, 2, 3)
@@ -273,8 +273,8 @@ def test_survivors_are_taken_from_different_functions():
 
 
 def test_pick_survivors_respects_the_limit():
-    from trustlayer.agent.harden import pick_survivors
-    from trustlayer.mutation import Survivor
+    from killscore.agent.harden import pick_survivors
+    from killscore.mutation import Survivor
 
     survivors = [Survivor(f"m.x_fn{n}__mutmut_1", "a.py", n, "") for n in range(10)]
 
@@ -282,7 +282,7 @@ def test_pick_survivors_respects_the_limit():
 
 
 def test_survivor_exposes_its_function_from_the_mutant_id():
-    from trustlayer.mutation import Survivor
+    from killscore.mutation import Survivor
 
     assert Survivor("pricing.x_apply_volume_discount__mutmut_3", "a.py", 1, "").function == (
         "apply_volume_discount"
@@ -293,7 +293,7 @@ def test_survivor_exposes_its_function_from_the_mutant_id():
 
 
 def test_mutation_score_counts_killed_and_survived():
-    from trustlayer.mutation import _parse_counts, _score
+    from killscore.mutation import _parse_counts, _score
 
     results = (
         "pricing.x_a__mutmut_1: killed\n"
@@ -310,6 +310,6 @@ def test_mutation_score_counts_killed_and_survived():
 
 
 def test_score_is_zero_when_nothing_was_decided():
-    from trustlayer.mutation import _score
+    from killscore.mutation import _score
 
     assert _score(0, 0) == 0.0

@@ -6,7 +6,7 @@
       "column": 13,
       "row": 27
     },
-    "filename": "/home/suyash/Projects/TrustLayer/tests/fixtures/failopen-dirty/app.py",
+    "filename": "/home/suyash/Projects/killscore/tests/fixtures/failopen-dirty/app.py",
     "fix": null,
     "location": {
       "column": 5,
@@ -25,7 +25,7 @@
       "column": 11,
       "row": 33
     },
-    "filename": "/home/suyash/Projects/TrustLayer/tests/fixtures/failopen-dirty/app.py",
+    "filename": "/home/suyash/Projects/killscore/tests/fixtures/failopen-dirty/app.py",
     "fix": null,
     "location": {
       "column": 5,

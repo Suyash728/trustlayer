@@ -9,8 +9,8 @@ from __future__ import annotations
 from pathlib import Path
 import textwrap
 
-from trustlayer.checks.base import Severity
-from trustlayer.checks.gha_refs import Remote, _natural, check_gha_refs
+from killscore.checks.base import Severity
+from killscore.checks.gha_refs import Remote, _natural, check_gha_refs
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -187,6 +187,7 @@ def test_the_repositorys_own_workflows_reference_real_tags():
         metadata=lambda *a: ({"inputs": {
             "python-version": {}, "sarif_file": {}, "category": {}, "fetch-depth": {},
             "command": {}, "sarif-category": {}, "fail-on": {}, "token": {}, "args": {},
+            "node-version": {},
         }}, True),
     )
     assert result.findings == [], result.findings

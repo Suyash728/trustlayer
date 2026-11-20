@@ -13,7 +13,7 @@ import textwrap
 
 import pytest
 
-from trustlayer.checks.lock_drift import check_lock_drift
+from killscore.checks.lock_drift import check_lock_drift
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -96,9 +96,9 @@ def test_a_lock_in_sync_is_silent(tmp_path):
     assert result.findings == []
 
 
-def test_trustlayers_own_lockfiles_are_in_sync():
+def test_killscores_own_lockfiles_are_in_sync():
     """Real-world shapes: this repo's uv.lock and its node helper's package-lock.json."""
-    for path in (ROOT, ROOT / "trustlayer" / "checks" / "node"):
+    for path in (ROOT, ROOT / "killscore" / "checks" / "node"):
         result = check_lock_drift(path)
         assert result.skipped is False
         assert result.findings == [], result.findings
@@ -181,7 +181,7 @@ def test_the_finding_points_at_the_manifest_line(tmp_path):
 
 
 def test_package_lock_drift(tmp_path):
-    source = ROOT / "trustlayer" / "checks" / "node"
+    source = ROOT / "killscore" / "checks" / "node"
     shutil.copy(source / "package.json", tmp_path / "package.json")
     shutil.copy(source / "package-lock.json", tmp_path / "package-lock.json")
     manifest = json.loads((tmp_path / "package.json").read_text())
