@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from trustlayer.checks.api_resolution import check_typescript_apis
+from killscore.checks.api_resolution import check_typescript_apis
 
 
 def _project(tmp_path: Path, layout: str) -> Path:

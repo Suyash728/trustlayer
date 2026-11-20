@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from trustlayer.detect import Dependency, Language, Project, RepoProfile, profile_repository
+from killscore.detect import Dependency, Language, Project, RepoProfile, profile_repository
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -156,7 +156,7 @@ def test_unittest_is_not_reported_just_because_a_tests_directory_exists():
 
 
 def test_nested_project_tests_do_not_leak_into_the_parent_runner_detection():
-    """tests/fixtures/python-unittest is a project root; its runner is not TrustLayer's."""
+    """tests/fixtures/python-unittest is a project root; its runner is not killscore's."""
     repo = profile_repository(FIXTURES.parents[1])
     root = project_at(repo, ".", Language.PYTHON)
 

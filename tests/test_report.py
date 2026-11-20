@@ -9,11 +9,11 @@ import pytest
 from rich.console import Console
 from typer.testing import CliRunner
 
-from trustlayer.checks.base import CheckResult, Finding, Severity
-from trustlayer.checks.fail_open import check_python_fail_open
-from trustlayer.cli import app
-from trustlayer.detect import profile_repository
-from trustlayer.report import (
+from killscore.checks.base import CheckResult, Finding, Severity
+from killscore.checks.fail_open import check_python_fail_open
+from killscore.cli import app
+from killscore.detect import profile_repository
+from killscore.report import (
     EXIT_CLEAN,
     EXIT_ERROR,
     EXIT_HIGH,
@@ -22,16 +22,16 @@ from trustlayer.report import (
     render_text,
     to_dict,
 )
-from trustlayer.suite import SuiteState, inspect_suite
+from killscore.suite import SuiteState, inspect_suite
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
 DEMO_REPO = FIXTURES.parents[1] / "demo-repos" / "pricing-py"
 runner = CliRunner()
 
-# Every `audit` invocation here passes --no-save. `audit` records to ~/.trustlayer/runs.db
+# Every `audit` invocation here passes --no-save. `audit` records to ~/.killscore/runs.db
 # by default, so without it the suite writes fixture runs into the user's real history
-# and they show up in `trustlayer history` and the UI.
+# and they show up in `killscore history` and the UI.
 
 
 def finding(severity, check="c", file="a.py", line=1, verdict="v"):
@@ -263,5 +263,5 @@ def test_the_harden_suggestion_appears_only_below_the_threshold():
     )
     high = build_report(FIXTURES / "report-lowcov", [], SuiteState(1, 1, 90.0, "coverage.xml", []))
 
-    assert "trustlayer harden" in render(low, no_color=True)
-    assert "trustlayer harden" not in render(high, no_color=True)
+    assert "killscore harden" in render(low, no_color=True)
+    assert "killscore harden" not in render(high, no_color=True)

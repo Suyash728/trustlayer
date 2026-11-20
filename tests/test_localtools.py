@@ -10,9 +10,9 @@ from pathlib import Path
 
 import pytest
 
-from trustlayer.agent.localtools import ToolError, execute, resolve_inside, schemas_for
-from trustlayer.agent.ollama import _handle_call
-from trustlayer.agent.runtime import ToolGate
+from killscore.agent.localtools import ToolError, execute, resolve_inside, schemas_for
+from killscore.agent.ollama import _handle_call
+from killscore.agent.runtime import ToolGate
 
 
 def call(name: str, **arguments) -> dict:

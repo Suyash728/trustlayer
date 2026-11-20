@@ -1,4 +1,4 @@
-# TrustLayer as a GitHub Action: run a check, upload SARIF to code scanning, and fail the
+# killscore as a GitHub Action: run a check, upload SARIF to code scanning, and fail the
 # job on the same exit codes the CLI uses (0 clean, 1 medium, 2 high, 3 operational error).
 #
 #   permissions:
@@ -6,14 +6,14 @@
 #     security-events: write   # needed for the SARIF upload
 #   steps:
 #     - uses: actions/checkout@v7
-#     - uses: Suyash728/trustlayer@v0.2.0
+#     - uses: Suyash728/killscore@v0.2.0
 #       with:
 #         args: --all
 #         fail-on: high
 #
 # Action refs below were checked to exist on 2026-11-20.
-name: TrustLayer
-description: Mechanical verification of AI-written code. Every finding carries evidence; no model decides.
+name: killscore
+description: Mechanical checks for AI-written code and mutation-verified tests. No LLM produces a verdict.
 branding:
   icon: check-circle
   color: green
@@ -26,7 +26,7 @@ inputs:
     description: Directory to check, relative to the workspace.
     default: "."
   args:
-    description: Extra CLI arguments, e.g. `--all` or `--only slopsquat` or `--baseline .trustlayer-baseline.json`.
+    description: Extra CLI arguments, e.g. `--all` or `--only slopsquat` or `--baseline .killscore-baseline.json`.
     default: ""
   fail-on:
     description: Lowest severity that fails the job (high|medium|low).
@@ -36,7 +36,7 @@ inputs:
     default: "true"
   sarif-category:
     description: Category for the SARIF upload, to keep several runs apart.
-    default: trustlayer
+    default: killscore
 
 outputs:
   exit-code:
@@ -68,16 +68,16 @@ runs:
           deps) extra=() ;;
           *) echo "::error::command must be audit or deps, got '$TL_COMMAND'"; exit 3 ;;
         esac
-        sarif="$RUNNER_TEMP/trustlayer-$TL_COMMAND.sarif"
+        sarif="$RUNNER_TEMP/killscore-$TL_COMMAND.sarif"
         set +e
         # shellcheck disable=SC2086 # TL_ARGS is a list of arguments on purpose
-        uvx --from "$GITHUB_ACTION_PATH" trustlayer "$TL_COMMAND" "$TL_PATH" "${extra[@]}" \
+        uvx --from "$GITHUB_ACTION_PATH" killscore "$TL_COMMAND" "$TL_PATH" "${extra[@]}" \
           --format sarif --fail-on "$TL_FAIL_ON" $TL_ARGS > "$sarif"
         code=$?
         set -e
         echo "exit-code=$code" >> "$GITHUB_OUTPUT"
         echo "sarif-file=$sarif" >> "$GITHUB_OUTPUT"
-        echo "trustlayer $TL_COMMAND exited $code (0 clean, 1 medium, 2 high, 3 operational error)"
+        echo "killscore $TL_COMMAND exited $code (0 clean, 1 medium, 2 high, 3 operational error)"
 
     # Exit 3 means the tool could not run, so there is no SARIF worth uploading.
     - if: ${{ always() && inputs.upload-sarif == 'true' && steps.run.outputs.exit-code != '3' }}

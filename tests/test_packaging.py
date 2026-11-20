@@ -1,6 +1,6 @@
 """2.4: an installed wheel (uvx) must carry its data and find its helpers outside the repo.
 
-The full proof is `uv build` + install into a clean venv + `trustlayer audit` from another
+The full proof is `uv build` + install into a clean venv + `killscore audit` from another
 directory, which was run by hand on 2026-11-20 (see CLAUDE.md). These pin the configuration
 that makes it work, so it cannot silently regress.
 """
@@ -10,9 +10,9 @@ from __future__ import annotations
 from pathlib import Path
 import tomllib
 
-from trustlayer import __version__, risk
-from trustlayer.checks import node_helper, stale_models
-from trustlayer.checks.node_helper import helper_dir, sync_scripts
+from killscore import __version__, risk
+from killscore.checks import node_helper, stale_models
+from killscore.checks.node_helper import helper_dir, sync_scripts
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,7 +22,7 @@ PYPROJECT = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
 def test_the_wheel_force_includes_the_data_directory():
     include = PYPROJECT["tool"]["hatch"]["build"]["targets"]["wheel"]["force-include"]
 
-    assert include["data"] == "trustlayer/data"
+    assert include["data"] == "killscore/data"
     # Every file the code reads from data/ is in that directory.
     for name in ("model_deprecations.toml", "top_pypi_packages.json"):
         assert (ROOT / "data" / name).is_file()
@@ -30,32 +30,32 @@ def test_the_wheel_force_includes_the_data_directory():
 
 def test_the_version_has_one_source():
     assert "version" in PYPROJECT["project"]["dynamic"]
-    assert PYPROJECT["tool"]["hatch"]["version"]["path"] == "trustlayer/__init__.py"
+    assert PYPROJECT["tool"]["hatch"]["version"]["path"] == "killscore/__init__.py"
     assert __version__.count(".") == 2
 
 
 def test_runtime_imports_are_declared_dependencies():
-    """`trustlayer ui` imports uvicorn; it was only present transitively."""
+    """`killscore ui` imports uvicorn; it was only present transitively."""
     declared = " ".join(PYPROJECT["project"]["dependencies"])
     for name in ("uvicorn", "fastapi", "typer", "packaging"):
         assert name in declared
 
 
 def test_the_entry_point_maps_crashes_to_exit_three():
-    assert PYPROJECT["project"]["scripts"]["trustlayer"] == "trustlayer.cli:main_entry"
-    assert (ROOT / "trustlayer" / "__main__.py").is_file()
+    assert PYPROJECT["project"]["scripts"]["killscore"] == "killscore.cli:main_entry"
+    assert (ROOT / "killscore" / "__main__.py").is_file()
 
 
 def test_no_private_typer_modules_are_imported():
     """`typer._click` changed layout between 0.27 and 0.29 and broke a fresh install."""
-    for path in (ROOT / "trustlayer").rglob("*.py"):
+    for path in (ROOT / "killscore").rglob("*.py"):
         assert "typer._click" not in path.read_text(encoding="utf-8").replace(
             "`typer._click`", ""
         ), path
 
 
 def test_packaged_data_wins_over_a_stray_site_packages_data_dir(tmp_path, monkeypatch):
-    packaged = tmp_path / "trustlayer" / "data" / "model_deprecations.toml"
+    packaged = tmp_path / "killscore" / "data" / "model_deprecations.toml"
     packaged.parent.mkdir(parents=True)
     packaged.write_text("")
     monkeypatch.setattr(stale_models, "PACKAGED_REGISTRY_PATH", packaged)
@@ -99,7 +99,7 @@ def test_no_helper_anywhere_is_a_skip_reason_that_says_how_to_fix_it(monkeypatch
     monkeypatch.setattr(node_helper, "_has_ts_morph", lambda d: False)
 
     assert helper_dir() is None
-    assert "trustlayer setup-node" in node_helper.missing_reason()
+    assert "killscore setup-node" in node_helper.missing_reason()
 
 
 def test_sync_leaves_identical_scripts_alone(tmp_path):

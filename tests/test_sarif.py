@@ -12,11 +12,11 @@ from pathlib import Path
 
 import pytest
 
-from trustlayer import cli
-from trustlayer.checks.base import CheckResult, Finding, Severity
-from trustlayer.config import ConfigError, apply_baseline, load_baseline
-from trustlayer.report import EXIT_CLEAN, EXIT_HIGH, EXIT_MEDIUM, exit_code_for
-from trustlayer.sarif import FINGERPRINT_KEY, fingerprint, to_sarif
+from killscore import cli
+from killscore.checks.base import CheckResult, Finding, Severity
+from killscore.config import ConfigError, apply_baseline, load_baseline
+from killscore.report import EXIT_CLEAN, EXIT_HIGH, EXIT_MEDIUM, exit_code_for
+from killscore.sarif import FINGERPRINT_KEY, fingerprint, to_sarif
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -153,7 +153,7 @@ def test_a_malformed_baseline_is_an_error(tmp_path, content):
 
 
 def _cli(monkeypatch, capsys, *args):
-    monkeypatch.setattr("sys.argv", ["trustlayer", *args])
+    monkeypatch.setattr("sys.argv", ["killscore", *args])
     code = cli.main_entry()
     return code, capsys.readouterr().out
 

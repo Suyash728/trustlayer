@@ -1,4 +1,4 @@
-"""Silence tests for api-resolution false positives found by auditing TrustLayer itself.
+"""Silence tests for api-resolution false positives found by auditing killscore itself.
 
 Each test is a shape of real, correct code that used to be reported as HIGH or MEDIUM.
 """
@@ -9,7 +9,7 @@ from pathlib import Path
 import sys
 import textwrap
 
-from trustlayer.checks.api_resolution import (
+from killscore.checks.api_resolution import (
     check_python_apis,
     collect_python_claims,
     is_first_party,
@@ -210,7 +210,7 @@ def test_an_unknown_404_import_is_still_a_possible_slopsquat(tmp_path):
 
 
 def test_the_alias_table_covers_the_common_traps():
-    from trustlayer.checks.api_resolution import IMPORT_DISTRIBUTIONS
+    from killscore.checks.api_resolution import IMPORT_DISTRIBUTIONS
 
     expected = {
         "cv2": "opencv-python", "PIL": "Pillow", "yaml": "PyYAML", "sklearn": "scikit-learn",

@@ -11,10 +11,10 @@ import shutil
 
 import pytest
 
-from trustlayer.agent.baseline import tooling_interpreter
-from trustlayer.agent.verify import CoverageMeasure, measure_coverage
-from trustlayer.agent.workspace import EXCLUDED
-from trustlayer.cli import _coverage_change
+from killscore.agent.baseline import tooling_interpreter
+from killscore.agent.verify import CoverageMeasure, measure_coverage
+from killscore.agent.workspace import EXCLUDED
+from killscore.cli import _coverage_change
 
 
 DEMO = Path(__file__).resolve().parents[1] / "demo-repos" / "pricing-py"
@@ -76,8 +76,8 @@ def test_no_interpreter_is_a_reason_not_a_zero(tmp_path):
 
 
 def test_an_interpreter_without_coverage_says_so(tmp_path, monkeypatch):
-    from trustlayer.agent import verify
-    from trustlayer.checks.base import ToolRun
+    from killscore.agent import verify
+    from killscore.checks.base import ToolRun
 
     monkeypatch.setattr(
         verify,

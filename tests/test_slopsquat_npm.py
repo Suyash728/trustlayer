@@ -11,17 +11,17 @@ from pathlib import Path
 
 import pytest
 
-from trustlayer import registry
-from trustlayer.checks.base import Severity
-from trustlayer.checks.slopsquat import (
+from killscore import registry
+from killscore.checks.base import Severity
+from killscore.checks.slopsquat import (
     NPM_CHECK_NAME,
     check_slopsquat_all,
     npm_registry_name,
     scan,
     scan_findings,
 )
-from trustlayer.registry import PackageFacts, fetch_many, fetch_npm
-from trustlayer.risk import (
+from killscore.registry import PackageFacts, fetch_many, fetch_npm
+from killscore.risk import (
     MEDIUM_THRESHOLD,
     NPM,
     Corpus,
@@ -349,7 +349,7 @@ def test_notes_land_on_the_ecosystem_they_describe():
 
 
 def test_an_excluded_manifest_leaves_no_note_behind(tmp_path):
-    from trustlayer.config import Config
+    from killscore.config import Config
 
     fixture = tmp_path / "fixtures" / "app"
     fixture.mkdir(parents=True)

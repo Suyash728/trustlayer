@@ -8,8 +8,8 @@ means to import. The defect is in the dependency list, which is exactly the arti
 writes fastest and a reviewer reads slowest.
 
 ```sh
-uv run trustlayer deps demo-repos/slopsquat-demo
-uv run trustlayer audit demo-repos/slopsquat-demo --only pinned-version
+uv run killscore deps demo-repos/slopsquat-demo
+uv run killscore audit demo-repos/slopsquat-demo --only pinned-version
 ```
 
 | Dependency | What it is |
@@ -22,7 +22,7 @@ uv run trustlayer audit demo-repos/slopsquat-demo --only pinned-version
 
 That last row is the one worth understanding. `beautifulsoup` is a genuine PyPI project with
 a genuine owner, so no existence check catches it and calling it malicious would be false.
-TrustLayer scores it 35 — one edit from `beautifulsoup4` (25) plus a single maintainer
+killscore scores it 35 — one edit from `beautifulsoup4` (25) plus a single maintainer
 account (10) — which lands at LOW and reads `unfamiliar-dependency`. Not an accusation. A
 flag that says: you are one character away from the package you meant.
 

@@ -1,1 +1,1 @@
-"""TrustLayer API package."""
+"""killscore API package."""

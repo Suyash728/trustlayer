@@ -14,7 +14,7 @@ import textwrap
 
 import pytest
 
-from trustlayer.checks.fail_open import check_python_fail_open, check_typescript_fail_open
+from killscore.checks.fail_open import check_python_fail_open, check_typescript_fail_open
 
 
 def _python(tmp_path: Path, source: str) -> list[str]:

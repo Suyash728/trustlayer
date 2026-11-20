@@ -957,7 +957,7 @@ wheels = [
 ]
 
 [[package]]
-name = "trustlayer"
+name = "killscore"
 source = { editable = "." }
 dependencies = [
     { name = "anyio" },

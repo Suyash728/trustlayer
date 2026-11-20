@@ -10,9 +10,9 @@ import os
 from pathlib import Path
 import sys
 
-from trustlayer.agent import runtime
-from trustlayer.agent.localtools import execute, repo_test_runner
-from trustlayer.agent.runtime import venv_bin_for, venv_environment
+from killscore.agent import runtime
+from killscore.agent.localtools import execute, repo_test_runner
+from killscore.agent.runtime import venv_bin_for, venv_environment
 
 
 def test_a_bare_pytest_is_pointed_at_the_repo_venv(tmp_path):

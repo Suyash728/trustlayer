@@ -3,9 +3,9 @@ requires = ["hatchling>=1.27"]  # PEP 639 license metadata
 build-backend = "hatchling.build"
 
 [project]
-name = "trustlayer"
+name = "killscore"
 dynamic = ["version"]
-description = "Mechanical verification for AI-written code and tests: no model decides anything."
+description = "Mechanical checks for AI-written code and mutation-verified tests. Hallucinated APIs, slopsquatted dependencies, and assertions that can't fail. No LLM produces a verdict."
 readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"
@@ -36,12 +36,12 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Suyash728/trustlayer"
-Repository = "https://github.com/Suyash728/trustlayer"
-Issues = "https://github.com/Suyash728/trustlayer/issues"
+Homepage = "https://github.com/Suyash728/killscore"
+Repository = "https://github.com/Suyash728/killscore"
+Issues = "https://github.com/Suyash728/killscore/issues"
 
 [project.scripts]
-trustlayer = "trustlayer.cli:main_entry"
+killscore = "killscore.cli:main_entry"
 
 [dependency-groups]
 dev = [
@@ -50,22 +50,22 @@ dev = [
 ]
 
 [tool.hatch.version]
-path = "trustlayer/__init__.py"
+path = "killscore/__init__.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["trustlayer"]
+packages = ["killscore"]
 # node_modules is gitignored, so hatch already leaves it out; this keeps it out explicitly.
-exclude = ["trustlayer/checks/node/node_modules"]
+exclude = ["killscore/checks/node/node_modules"]
 
 # The data files live at the repo root (scripts and the workflow maintain them there) and
-# are copied into the wheel, so `uvx trustlayer` has its registry and corpora. Without this
+# are copied into the wheel, so `uvx killscore` has its registry and corpora. Without this
 # an installed wheel skips stale-models and scores slopsquat with no corpus.
 [tool.hatch.build.targets.wheel.force-include]
-"data" = "trustlayer/data"
+"data" = "killscore/data"
 
 [tool.hatch.build.targets.sdist]
-include = ["trustlayer", "data", "scripts", "tests", "README.md", "LICENSE", "pyproject.toml", "uv.lock"]
-exclude = ["trustlayer/checks/node/node_modules"]
+include = ["killscore", "data", "scripts", "tests", "README.md", "LICENSE", "pyproject.toml", "uv.lock"]
+exclude = ["killscore/checks/node/node_modules"]
 
 # Single pytest config for the whole repo. Do NOT add [tool.pytest.ini_options] to
 # apps/api/pyproject.toml if one is ever added there: pytest uses exactly one config
@@ -79,8 +79,8 @@ pythonpath = [".", "apps/api"]
 norecursedirs = ["tests/fixtures", "demo-repos", ".venv", "node_modules", "mutants"]
 addopts = "-ra"
 
-# Self-audit: these are deliberately broken sample repositories, not TrustLayer's code.
-[tool.trustlayer]
+# Self-audit: these are deliberately broken sample repositories, not killscore's code.
+[tool.killscore]
 exclude = ["tests/fixtures", "demo-repos"]
 
 [tool.ruff]

@@ -1,4 +1,4 @@
-# TrustLayer — Agent Operating Guide
+# killscore — Agent Operating Guide
 
 This file is the single source of truth for stack, commands, scope, and working style.
 It supersedes `AGENTS.md`, which is deprecated and kept only as a pointer.
@@ -41,16 +41,16 @@ the misunderstanding into the suite and everything downstream would inherit it.
 - **CLI**: Typer + Rich, Python 3.12, installed from the root `pyproject.toml`.
 - **Agent runtime**: `claude-agent-sdk` 0.2.128, model `claude-opus-5` by default, with an
   opt-in Ollama backend (default `gpt-oss:20b`, any `tools`-capable model via
-  `TRUSTLAYER_OLLAMA_MODEL`) for local runs. This replaced the Codex CLI
+  `KILLSCORE_OLLAMA_MODEL`) for local runs. This replaced the Codex CLI
   that `AGENTS.md` pinned — see "Decisions that changed".
-- **MCP server**: `mcp` 1.29/1.30 (FastMCP), stdio only (`trustlayer mcp`). Pinned `<2`: mcp 2.x
+- **MCP server**: `mcp` 1.29/1.30 (FastMCP), stdio only (`killscore mcp`). Pinned `<2`: mcp 2.x
   renamed FastMCP to MCPServer, and an unpinned wheel install crashed on it (found 2026-11-20).
 - **Mutation testing**: mutmut 3.6.0 + pytest.
-- **TypeScript checks**: ts-morph 27.0.2 via Node 24 (`trustlayer/checks/node/`).
-- **Persistence**: SQLite at `~/.trustlayer/runs.db`, stdlib `sqlite3`, no ORM.
+- **TypeScript checks**: ts-morph 27.0.2 via Node 24 (`killscore/checks/node/`).
+- **Persistence**: SQLite at `~/.killscore/runs.db`, stdlib `sqlite3`, no ORM.
 - **Local web UI**: FastAPI + Jinja2 on `localhost:7777`, Tailwind and HTMX from CDN.
   One process, no build step, no `node_modules`. Read-only: it cannot trigger a run.
-- **Terminal UI**: Textual 8.2.8 (`trustlayer tui`). No browser, no CDN, works offline.
+- **Terminal UI**: Textual 8.2.8 (`killscore tui`). No browser, no CDN, works offline.
   Unlike the web UI it *may* trigger runs — see the scoping note in Architecture rules.
 - **Not built**: Next.js frontend, SSE streaming, Railway/Vercel deploy, any remote
   surface. `apps/web/` is an empty directory. `apps/api/` holds only the mutmut re-export
@@ -60,24 +60,24 @@ the misunderstanding into the suite and everything downstream would inherit it.
 
 ```sh
 uv sync                                        # install; there is no requirements.txt
-npm install --prefix trustlayer/checks/node    # optional: TS checks (or `trustlayer setup-node`)
+npm install --prefix killscore/checks/node    # optional: TS checks (or `killscore setup-node`)
 uv run ruff check .                            # lint — must be clean
 uv run pytest -q                               # ~625 tests, offline, single root config
-uv run trustlayer audit <path> --all
-uv run trustlayer audit <path> --format sarif --fail-on high --baseline known.json
-uv run trustlayer mcp                          # stdio MCP server for coding agents
+uv run killscore audit <path> --all
+uv run killscore audit <path> --format sarif --fail-on high --baseline known.json
+uv run killscore mcp                          # stdio MCP server for coding agents
 uv run python scripts/update_top_pypi.py       # corpus refresh (also weekly in CI)
 uv run python scripts/update_top_npm.py        # ~10 min: npm rate-limits scoped lookups
 uv run python scripts/check_model_sources.py   # tripwire for the deprecation registry
 uv build                                       # wheel; data/ is force-included
-uv run trustlayer deps <repo>                  # dependency risk scores; --no-network works offline
-uv run trustlayer baseline <repo> --module src/x.py
-uv run trustlayer harden <repo> --target 90 --max-total-cost 5
-uv run trustlayer deps <repo> --explain --backend ollama   # local model writes the prose
-uv run trustlayer history <repo> -n 10
-uv run trustlayer diff <repo>
-uv run trustlayer ui                           # localhost:7777, opens a browser
-uv run trustlayer tui                          # terminal UI; a=audit, h=harden, q=quit
+uv run killscore deps <repo>                  # dependency risk scores; --no-network works offline
+uv run killscore baseline <repo> --module src/x.py
+uv run killscore harden <repo> --target 90 --max-total-cost 5
+uv run killscore deps <repo> --explain --backend ollama   # local model writes the prose
+uv run killscore history <repo> -n 10
+uv run killscore diff <repo>
+uv run killscore ui                           # localhost:7777, opens a browser
+uv run killscore tui                          # terminal UI; a=audit, h=harden, q=quit
 ```
 
 > `ruff format` has **never** been run on this repo — it would reformat 18 of 31 files.
@@ -86,22 +86,22 @@ uv run trustlayer tui                          # terminal UI; a=audit, h=harden,
 
 ## Architecture rules
 
-- **All mutmut parsing lives in `trustlayer/mutation.py`.** It returns
+- **All mutmut parsing lives in `killscore/mutation.py`.** It returns
   `MutationRun(score, killed, survived, total, survivors)`.
   `apps/api/app/services/mutation.py` re-exports it, so the API app depends on the
-  `trustlayer` package and never the reverse. Nothing else parses tool output.
-  Tests must patch `trustlayer.mutation.subprocess.run` — the re-export means patching the
+  `killscore` package and never the reverse. Nothing else parses tool output.
+  Tests must patch `killscore.mutation.subprocess.run` — the re-export means patching the
   `app.services.mutation` namespace intercepts nothing.
-- **All agent invocations go through `trustlayer/agent/runtime.py`.** Never call
+- **All agent invocations go through `killscore/agent/runtime.py`.** Never call
   `claude_agent_sdk.query()` from anywhere else.
 - **Agent tool restriction is enforced by a `PreToolUse` hook, not `allowed_tools`.**
   The SDK forwards `allowed_tools` to the `claude` CLI and enforces nothing itself, and
   `can_use_tool` is silently skipped whenever an allowlist entry allows a whole tool
   (`CanUseToolShadowedWarning`). The hook is consulted for every call. If you touch the
   gate, the denial matrix in `tests/test_agent.py` is the contract.
-- **The risk score is mechanical; the LLM only writes prose.** `trustlayer/risk.py` is pure
-  and does no I/O, `trustlayer/registry.py` fetches, `trustlayer/checks/slopsquat.py` adapts.
-  `trustlayer/explain.py` runs *after* scoring with `allowed_tools=()` and returns a string;
+- **The risk score is mechanical; the LLM only writes prose.** `killscore/risk.py` is pure
+  and does no I/O, `killscore/registry.py` fetches, `killscore/checks/slopsquat.py` adapts.
+  `killscore/explain.py` runs *after* scoring with `allowed_tools=()` and returns a string;
   there is no code path from that string back into a score, a severity, or an exit code. If
   you add a factor, add it to `risk.py` with a `Factor` detail line, or the score stops being
   re-derivable by hand.
@@ -133,7 +133,7 @@ uv run trustlayer tui                          # terminal UI; a=audit, h=harden,
   `tests/test_api_resolution_guards.py` pin both silence and firing.
 - **Empty handlers with a comment still fire `swallowed-exception` — by decision.** Models
   write `except ValueError: pass  # ignore malformed input` when cutting corners, so a comment
-  is not evidence of intent. Deliberate cases use `# trustlayer: ignore[fail-open]`.
+  is not evidence of intent. Deliberate cases use `# killscore: ignore[fail-open]`.
 - **`Dependency.source` is where the version came from; `declared_in` is the manifest that
   names it.** `slopsquat` (a claim about the name) reports at `declared_in`; `pinned-version`
   (a claim about the locked version) keeps `source`. `find_declaration_line` prefers a match
@@ -161,8 +161,8 @@ uv run trustlayer tui                          # terminal UI; a=audit, h=harden,
   second one, and nesting them raises. `run_mutation` blocks on `subprocess.run`, and the
   registry and Ollama clients block on `urllib`. Calling any of them from the UI thread is a
   crash or a multi-minute freeze. Results come back through `app.call_from_thread`.
-- **Suppression is applied once, in `runner.iter_checks`**, from `trustlayer/config.py`
-  (`[tool.trustlayer] exclude` + inline `trustlayer: ignore[check]`). Every surface reports
+- **Suppression is applied once, in `runner.iter_checks`**, from `killscore/config.py`
+  (`[tool.killscore] exclude` + inline `killscore: ignore[check]`). Every surface reports
   the count (`CheckResult.suppressed`); a clean run that hid findings must say so. `deps`
   applies `exclude` to declarations *before* fetching. `--baseline` is applied in the CLI
   after saving, so `runs.db` keeps every finding.
@@ -178,7 +178,7 @@ uv run trustlayer tui                          # terminal UI; a=audit, h=harden,
   canonicalisation (PEP 503 vs exact) and wording; `registry.fetch_many(ecosystem=...)` picks
   the fetcher and the cache key. `check_slopsquat_all` returns one result per ecosystem
   (`slopsquat:pypi`, `slopsquat:npm`); `check_slopsquat` is the PyPI-only legacy shape.
-- **Check dispatch lives in `trustlayer/checks/runner.py`, not in `cli.py`.** `iter_checks`
+- **Check dispatch lives in `killscore/checks/runner.py`, not in `cli.py`.** `iter_checks`
   yields each result as it lands (the TUI shows progress); `run_checks` returns the finished
   list (the CLI). One table — two copies would drift the moment a check is added and the
   surfaces would disagree about what `--all` means.
@@ -186,10 +186,10 @@ uv run trustlayer tui                          # terminal UI; a=audit, h=harden,
   returns nothing, so it cannot influence a score, a discard, a stop reason or an exit code.
   `tests/test_tui.py` runs the loop with and without a listener and asserts identical
   outcomes. Same contract as `explain.py`.
-- **Presentation helpers shared by both UIs live in `trustlayer/presentation.py`.** Two
+- **Presentation helpers shared by both UIs live in `killscore/presentation.py`.** Two
   answers to "did this repository get worse" that disagree is worse than either alone; a test
   asserts the web UI's `_trend`/`_rank` are literally the shared functions.
-- **All SQLite access lives in `trustlayer/store.py`.** `check` is a SQL reserved word,
+- **All SQLite access lives in `killscore/store.py`.** `check` is a SQL reserved word,
   so the column is quoted as `"check"` in every statement — unquoting it anywhere is a
   syntax error at table creation, which `tests/test_store.py` pins.
 - **`audit` records a run by default** (`--no-save` opts out). A failure to record is a
@@ -199,9 +199,9 @@ uv run trustlayer tui                          # terminal UI; a=audit, h=harden,
   *parent* repo's SHA and a dirty tree is not comparable to a commit.
 - **`diff` matches findings on `(check, file, claim, verdict)` — never the line number.**
   A finding that moved because someone added an import is the same finding.
-- **The web UI is read-only, and that rule is scoped to `trustlayer/ui/`** (scoped
+- **The web UI is read-only, and that rule is scoped to `killscore/ui/`** (scoped
   2026-09-09). It renders the database and cannot trigger a run or write to a
-  repository. `trustlayer/tui/` **may** start an audit or a harden run — an interactive
+  repository. `killscore/tui/` **may** start an audit or a harden run — an interactive
   UI that cannot trigger anything is a viewer. Two invariants did **not** move and are
   asserted in `tests/test_tui.py`: the agent still works in a temp copy and the TUI shows
   its diff without any apply path, and no model produces a verdict on either surface.
@@ -223,7 +223,7 @@ uv run trustlayer tui                          # terminal UI; a=audit, h=harden,
   `.coverage` is the user's stale one; reading it reported the same number before and after.
   Unknown renders `n/a (reason)`, never `0%`.
 - **The agent never writes to a real repository.** It works in a temp copy
-  (`trustlayer/agent/workspace.py`); runs end by printing a diff and applying nothing.
+  (`killscore/agent/workspace.py`); runs end by printing a diff and applying nothing.
 - Every subprocess call has an explicit timeout. No exceptions.
 - Severity owns the exit code: `0` clean, `1` medium, `2` high, `3` operational error.
   Operational failures must never exit `2`, or a pre-commit hook cannot tell a bad path
@@ -243,11 +243,11 @@ Built and shipped:
 
 | Layer | What |
 |---|---|
-| L1 | `trustlayer audit` — language/runner/pinned-version detection → `RepoProfile` |
+| L1 | `killscore audit` — language/runner/pinned-version detection → `RepoProfile` |
 | L2 | Four mechanical checks: api-resolution, stale-models, fail-open, composed |
 | L3 | Report layer — grouped findings, severity exit codes, `--json`, suite state |
 | L4 | Agent layer — `run_agent`, `baseline` generation, `harden` mutation loop |
-| L5 | Persistence (`~/.trustlayer/runs.db`), `history`, `diff`, and a local read-only `ui` |
+| L5 | Persistence (`~/.killscore/runs.db`), `history`, `diff`, and a local read-only `ui` |
 | L6 | Slopsquat guard — `slopsquat` check + `deps` command, deterministic risk score, PyPI only |
 | L7 | Check breadth (`import-effects`, `pinned-version`, `call-signature`) + Ollama backend |
 | L8 | Terminal UI — run browser, live audits, live `harden` dashboard |
@@ -269,9 +269,15 @@ integration, arbitrary repo-URL input, or multi-agent orchestration.
 
 ## Decisions that changed since the original guide
 
+- **Renamed TrustLayer → killscore (2026-11-20), still released as v0.2.0.** `trustlayer` on
+  PyPI belongs to an unrelated project (see `docs/v3-build-log.md`), and `detent` was rejected
+  because PyPI's `detent` is a near-identical AI-agent verification tool. Clean break, no shims:
+  nothing was ever published under the old name. Config is `[tool.killscore]` /
+  `.killscore.toml`, inline ignores are `# killscore: ignore[...]`, env vars are `KILLSCORE_*`,
+  data lives in `~/.killscore/`, MCP tools are `killscore_*`.
 - **The agent runtime is no longer Claude-only (reversed 2026-08-28).** CLAUDE.md previously
-  recorded `claude-agent-sdk` as the single backend. `trustlayer/agent/ollama.py` now runs the
-  same work on a local model, opt-in via `--backend ollama` or `TRUSTLAYER_BACKEND`, because
+  recorded `claude-agent-sdk` as the single backend. `killscore/agent/ollama.py` now runs the
+  same work on a local model, opt-in via `--backend ollama` or `KILLSCORE_BACKEND`, because
   this machine already has the models and a local run costs nothing. **The security boundary
   did not move**: `ToolGate` is still the source of truth, still enforced before every tool
   execution, and the denial matrix now runs against both backends. Claude remains the default.
@@ -279,7 +285,7 @@ integration, arbitrary repo-URL input, or multi-agent orchestration.
   `codex exec --json` and `app/services/codex_runner.py`; L4a was built on the Claude Agent
   SDK by instruction. No `codex_runner.py` exists. The `gpt-5.3-codex` placeholder was never
   resolved and is now moot.
-- **`mutation.py` moved** to `trustlayer/mutation.py` and finally returns the
+- **`mutation.py` moved** to `killscore/mutation.py` and finally returns the
   `{score, killed, survived, survivors}` shape the old guide always specified but the code
   never implemented.
 - **Install/run commands changed**: `requirements.txt`, `app.main:app`, and `pnpm` commands
@@ -345,7 +351,7 @@ probe below: `gpt-oss-agent-64k` and qwen2.5-coder are no longer on this machine
 `-agent-*` builds only existed to raise `num_ctx`, which is now sent per request). It is not
 installed here, so a missing model's 404 is turned into a list of installed `tools` models
 (`_missing_model_hint`); nothing is auto-selected. Live tests run against
-`TRUSTLAYER_OLLAMA_MODEL=qwen3.5-9b-uncensored:latest` on this machine (both pass: a plain
+`KILLSCORE_OLLAMA_MODEL=qwen3.5-9b-uncensored:latest` on this machine (both pass: a plain
 answer and a real Read through `ToolGate`).
 
 To be precise about the risk: a text-emitted call is a **reliability** problem, not a gate
@@ -379,7 +385,7 @@ Ollama and ComfyUI cannot both hold a model in VRAM on this machine.
 - **Context length**: the server defaults to `num_ctx=4096` regardless of the model's
   training length, and at 4096 the tool loop demonstrably fails. The `-agent-32k` /
   `-agent-64k` variants set `num_ctx` to 32768 / 65536 in their own Modelfile, which is the
-  entire reason they existed. *Superseded:* TrustLayer now sends `options.num_ctx` itself, so a
+  entire reason they existed. *Superseded:* killscore now sends `options.num_ctx` itself, so a
   stock tag is fine for agent work. The measured cost of 8x the context is about +360 MB of
   VRAM.
 - Observed latency, warm: ~1s for short prose, 6-20s for a tool turn. First call per model

@@ -11,11 +11,11 @@ from pathlib import Path
 
 import pytest
 
-from trustlayer.agent import harden as harden_module
-from trustlayer.agent.harden import DEFAULT_MAX_TOTAL_COST_USD, harden
-from trustlayer.agent.runtime import AgentResult
-from trustlayer.agent.verify import CoverageMeasure
-from trustlayer.mutation import MutationRun, Survivor
+from killscore.agent import harden as harden_module
+from killscore.agent.harden import DEFAULT_MAX_TOTAL_COST_USD, harden
+from killscore.agent.runtime import AgentResult
+from killscore.agent.verify import CoverageMeasure
+from killscore.mutation import MutationRun, Survivor
 
 
 def survivors(count: int) -> list[Survivor]:

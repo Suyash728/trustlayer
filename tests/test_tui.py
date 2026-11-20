@@ -14,23 +14,23 @@ from typing import ClassVar
 import pytest
 from textual.widgets import Switch
 
-from trustlayer.agent.verify import CoverageMeasure
-from trustlayer.checks.base import CheckResult, Finding, Severity
-from trustlayer.checks.runner import ALL_CHECKS, DEFAULT_CHECKS
-from trustlayer.detect import profile_repository
-from trustlayer.presentation import rank, severity_counts, trend
-from trustlayer.report import Report
-from trustlayer.store import list_runs, save_run
-from trustlayer.suite import SuiteState
-from trustlayer.tui import create_app
-from trustlayer.tui.app import (
+from killscore.agent.verify import CoverageMeasure
+from killscore.checks.base import CheckResult, Finding, Severity
+from killscore.checks.runner import ALL_CHECKS, DEFAULT_CHECKS
+from killscore.detect import profile_repository
+from killscore.presentation import rank, severity_counts, trend
+from killscore.report import Report
+from killscore.store import list_runs, save_run
+from killscore.suite import SuiteState
+from killscore.tui import create_app
+from killscore.tui.app import (
     AuditScreen,
     HardenScreen,
     ProjectsScreen,
     RunScreen,
     severity_cell,
 )
-from trustlayer.tui.workers import run_audit
+from killscore.tui.workers import run_audit
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -72,7 +72,7 @@ def seeded(tmp_path: Path, findings=None) -> Path:
 
 def test_both_surfaces_share_one_definition_of_a_trend():
     """Two answers to "did this get worse" that disagree is worse than either alone."""
-    from trustlayer.ui import app as web
+    from killscore.ui import app as web
 
     assert web._trend is trend
     assert web._rank is rank
@@ -208,7 +208,7 @@ async def test_quitting_exits_cleanly(tmp_path):
 
 
 def test_the_tui_command_is_registered():
-    from trustlayer.cli import app as cli
+    from killscore.cli import app as cli
 
     names = {command.name or command.callback.__name__ for command in cli.registered_commands}
     assert "tui" in names
@@ -313,8 +313,8 @@ async def test_the_interface_stays_responsive_while_a_run_is_in_flight(tmp_path)
     """The whole reason the work is threaded. A frozen UI is the failure this prevents."""
     import threading
 
-    from trustlayer.tui import app as tui_app
-    from trustlayer.tui.workers import AuditOutcome
+    from killscore.tui import app as tui_app
+    from killscore.tui.workers import AuditOutcome
 
     release = threading.Event()
 
@@ -348,8 +348,8 @@ async def test_the_interface_stays_responsive_while_a_run_is_in_flight(tmp_path)
 @pytest.mark.anyio
 async def test_all_checks_selects_the_opt_in_ones_too(tmp_path):
     captured = {}
-    from trustlayer.tui import app as tui_app
-    from trustlayer.tui.workers import AuditOutcome
+    from killscore.tui import app as tui_app
+    from killscore.tui.workers import AuditOutcome
 
     def capture(root, selected, **kwargs):
         captured["selected"] = selected
@@ -392,7 +392,7 @@ def test_progress_callbacks_cannot_change_a_verdict(tmp_path):
 
 
 def stub_harden_result(**overrides):
-    from trustlayer.agent.harden import HardenResult, Iteration
+    from killscore.agent.harden import HardenResult, Iteration
 
     defaults = {
         "baseline_score": 61.7,
@@ -410,8 +410,8 @@ def stub_harden_result(**overrides):
 
 @pytest.mark.anyio
 async def test_the_dashboard_renders_iterations_as_events_arrive(tmp_path):
-    from trustlayer.agent.harden import HardenEvent
-    from trustlayer.tui import app as tui_app
+    from killscore.agent.harden import HardenEvent
+    from killscore.tui import app as tui_app
 
     def fake(root, *, on_event=None, **kwargs):
         result = stub_harden_result()
@@ -443,7 +443,7 @@ async def test_the_dashboard_renders_iterations_as_events_arrive(tmp_path):
 @pytest.mark.anyio
 async def test_the_diff_is_shown_for_review_and_never_applied(tmp_path):
     """The agent works in a temp copy. Applying its diff stays a human decision."""
-    from trustlayer.tui import app as tui_app
+    from killscore.tui import app as tui_app
 
     app = create_app(db_path=tmp_path / "runs.db")
     async with app.run_test() as pilot:
@@ -469,7 +469,7 @@ async def test_the_diff_is_shown_for_review_and_never_applied(tmp_path):
 @pytest.mark.anyio
 async def test_the_local_model_toggle_selects_the_ollama_backend(tmp_path):
     captured = {}
-    from trustlayer.tui import app as tui_app
+    from killscore.tui import app as tui_app
 
     def capture(root, *, backend=None, on_event=None, **kwargs):
         captured["backend"] = backend
@@ -495,7 +495,7 @@ async def test_the_local_model_toggle_selects_the_ollama_backend(tmp_path):
 
 @pytest.mark.anyio
 async def test_a_harden_failure_is_reported_rather_than_crashing(tmp_path):
-    from trustlayer.tui import app as tui_app
+    from killscore.tui import app as tui_app
 
     app = create_app(db_path=tmp_path / "runs.db")
     async with app.run_test() as pilot:
@@ -523,9 +523,9 @@ def test_listening_to_events_cannot_change_the_outcome(tmp_path):
     """
     from unittest.mock import patch
 
-    from trustlayer.agent import harden as harden_module
-    from trustlayer.agent.runtime import AgentResult
-    from trustlayer.mutation import MutationRun, Survivor
+    from killscore.agent import harden as harden_module
+    from killscore.agent.runtime import AgentResult
+    from killscore.mutation import MutationRun, Survivor
 
     (tmp_path / "src").mkdir()
     (tmp_path / "src" / "m.py").write_text("def f0():\n    return 1\n")
@@ -568,9 +568,9 @@ def test_listening_to_events_cannot_change_the_outcome(tmp_path):
 
 
 def test_a_bad_config_is_reported_by_the_audit_worker_not_raised(tmp_path):
-    from trustlayer.tui.workers import run_audit
+    from killscore.tui.workers import run_audit
 
-    (tmp_path / ".trustlayer.toml").write_text("excludes = []\n")
+    (tmp_path / ".killscore.toml").write_text("excludes = []\n")
     outcome = run_audit(tmp_path, ["stale-models"], save=False)
 
     assert outcome.report is None

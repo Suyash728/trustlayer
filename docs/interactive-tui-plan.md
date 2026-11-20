@@ -1,4 +1,4 @@
-# Plan — an interactive terminal UI (`trustlayer tui`)
+# Plan — an interactive terminal UI (`killscore tui`)
 
 Status: **phases 1-3 built and shipped** (2026-09-09). Phase 4 deliberately not started —
 it is gated on the first three being used in anger. The read-only rule was scoped as
@@ -6,8 +6,8 @@ recommended below; CLAUDE.md records the change.
 
 ## Context
 
-TrustLayer already has a UI: `trustlayer ui` serves a read-only browser over
-`~/.trustlayer/runs.db` on localhost:7777. So "add a TUI" needs a better reason than "a TUI
+killscore already has a UI: `killscore ui` serves a read-only browser over
+`~/.killscore/runs.db` on localhost:7777. So "add a TUI" needs a better reason than "a TUI
 would be nice", and there are two.
 
 **The web UI is CDN-dependent.** Tailwind and HTMX load from a CDN, which is what "no build
@@ -17,7 +17,7 @@ whose whole pitch is that it works offline and deterministically, having the onl
 surface degrade without a network is an odd shape.
 
 **`harden` is silent for its entire run.** Verified: there is no callback, generator, or
-progress hook anywhere in `trustlayer/agent/`. A `harden` run takes minutes — the local-model
+progress hook anywhere in `killscore/agent/`. A `harden` run takes minutes — the local-model
 run measured 5m47s — and prints nothing at all until it prints everything. During that time
 the mutation loop is baselining, targeting survivors, writing tests, discarding failures and
 re-measuring, and none of it is visible. That is the actual gap, and it is the one a TUI is
@@ -32,9 +32,9 @@ It is still worth building first — it is the cheapest way to prove the shell.
 |---|---|
 | `textual` 8.2.8 is current, and is what mutmut already pulls into the demo venv | One new dependency, no version conflict with the existing toolchain |
 | `rich` is already a declared dependency | Textual is built on Rich, so existing renderables drop straight into widgets |
-| `run_agent` calls `anyio.run()` at [runtime.py:266](../trustlayer/agent/runtime.py#L266) | **It starts its own event loop and cannot be called from inside Textual's.** This dictates the concurrency design below |
+| `run_agent` calls `anyio.run()` at [runtime.py:266](../killscore/agent/runtime.py#L266) | **It starts its own event loop and cannot be called from inside Textual's.** This dictates the concurrency design below |
 | `store.py` already exposes `latest_run_per_repo`, `list_runs`, `get_run`, `run_findings`, `previous_run`, `diff_runs` | The entire browser needs **no new queries** |
-| `_rank` and `_trend` already exist in `trustlayer/ui/app.py` | Both UIs want them; extract rather than copy |
+| `_rank` and `_trend` already exist in `killscore/ui/app.py` | Both UIs want them; extract rather than copy |
 
 ## The decision that needs sign-off
 
@@ -42,7 +42,7 @@ CLAUDE.md states: *"The UI is read-only. It renders the database and cannot trig
 write to a repository."*
 
 An interactive UI that cannot trigger anything is a viewer, not an interactive UI. The
-proposal is to **scope that rule to `trustlayer/ui/` — the web surface — and let the TUI
+proposal is to **scope that rule to `killscore/ui/` — the web surface — and let the TUI
 trigger runs.** It is a real change to a recorded rule, so it is called out rather than
 quietly worked around.
 
@@ -112,11 +112,11 @@ separately.
 
 ### Phase 1 — shell and read-only browser
 
-`trustlayer tui` opens the projects screen; enter drills into a run; the detail pane shows
+`killscore tui` opens the projects screen; enter drills into a run; the detail pane shows
 evidence. No writes, no network, no new store queries. Works with no connection, which is the
 point.
 
-Extract `_rank` and `_trend` out of `trustlayer/ui/app.py` into a shared module and have the
+Extract `_rank` and `_trend` out of `killscore/ui/app.py` into a shared module and have the
 web UI import them from there, so the two surfaces cannot drift apart on what a trend means.
 
 ### Phase 2 — running audits from inside *(needs the decision above)*
@@ -145,17 +145,17 @@ help panel. Only after 1–3 have been used in anger.
 
 **New**
 
-- `trustlayer/tui/__init__.py` — `create_app()`, mirroring `trustlayer/ui/`'s shape
-- `trustlayer/tui/app.py` — the Textual `App`, screens, key bindings
-- `trustlayer/tui/widgets.py` — findings table, evidence pane, iteration table
-- `trustlayer/tui/workers.py` — thread workers wrapping audit / deps / harden
+- `killscore/tui/__init__.py` — `create_app()`, mirroring `killscore/ui/`'s shape
+- `killscore/tui/app.py` — the Textual `App`, screens, key bindings
+- `killscore/tui/widgets.py` — findings table, evidence pane, iteration table
+- `killscore/tui/workers.py` — thread workers wrapping audit / deps / harden
 - `tests/test_tui.py` — headless tests driving the app through Textual's `Pilot`
 
 **Modified**
 
-- `trustlayer/cli.py` — a `tui` command beside `ui`
-- `trustlayer/agent/harden.py`, `baseline.py` — the optional `on_event` callback
-- `trustlayer/ui/app.py` — import `_rank`/`_trend` from the shared module instead of defining them
+- `killscore/cli.py` — a `tui` command beside `ui`
+- `killscore/agent/harden.py`, `baseline.py` — the optional `on_event` callback
+- `killscore/ui/app.py` — import `_rank`/`_trend` from the shared module instead of defining them
 - `pyproject.toml` — `textual>=8.2`
 - `README.md`, `CLAUDE.md` — the new command, and the scoping of the read-only rule
 
@@ -173,12 +173,12 @@ uv sync
 uv run ruff check .
 uv run pytest -q                          # must stay green, 332+ passing
 
-uv run trustlayer tui                     # Phase 1: browser opens, arrows navigate, q quits
-uv run trustlayer tui --no-network        # renders identically; the web UI would be unstyled
+uv run killscore tui                     # Phase 1: browser opens, arrows navigate, q quits
+uv run killscore tui --no-network        # renders identically; the web UI would be unstyled
 
 # Phase 3, the one that justifies the work:
 systemctl --user start ollama
-uv run trustlayer tui                     # drive harden on demo-repos/pricing-py
+uv run killscore tui                     # drive harden on demo-repos/pricing-py
                                           # expect: 61.7% baseline, iterations appearing live,
                                           # score climbing, diff shown and not applied
 ```
@@ -198,5 +198,5 @@ Properties to pin:
 
 Replacing the CLI (`audit` keeps owning exit codes; a TUI has no useful exit status and
 should always exit 0 — CI keeps using `audit`), remote or hosted surfaces, auth, editing
-files from the TUI, applying generated tests, and replacing `trustlayer ui`, which stays as
+files from the TUI, applying generated tests, and replacing `killscore ui`, which stays as
 the read-only web viewer.

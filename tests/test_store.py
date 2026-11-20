@@ -1,6 +1,6 @@
 """Persistence tests.
 
-Every test uses an injected db_path. Nothing here may touch ~/.trustlayer, which is a
+Every test uses an injected db_path. Nothing here may touch ~/.killscore, which is a
 real user directory - one test asserts that explicitly.
 """
 
@@ -9,11 +9,11 @@ from pathlib import Path
 
 import pytest
 
-from trustlayer.checks.base import Finding, Severity, run_tool
-from trustlayer.checks.fail_open import check_python_fail_open
-from trustlayer.detect import profile_repository
-from trustlayer.report import Report
-from trustlayer.store import (
+from killscore.checks.base import Finding, Severity, run_tool
+from killscore.checks.fail_open import check_python_fail_open
+from killscore.detect import profile_repository
+from killscore.report import Report
+from killscore.store import (
     DEFAULT_DB_PATH,
     connect,
     diff_runs,
@@ -25,14 +25,14 @@ from trustlayer.store import (
     run_findings,
     save_run,
 )
-from trustlayer.suite import SuiteState
+from killscore.suite import SuiteState
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
 def report_for(root: Path, findings=None) -> Report:
-    from trustlayer.checks.base import CheckResult
+    from killscore.checks.base import CheckResult
 
     results = [CheckResult("fail-open:python", findings)] if findings is not None else [
         check_python_fail_open(root)
@@ -110,7 +110,7 @@ def test_deleting_a_run_cascades_to_its_findings(tmp_path):
 def _git_repo(tmp_path: Path, *, dirty: bool) -> Path:
     """A real git repository with a known state.
 
-    The previous version of these tests asserted against TrustLayer's own checkout and only
+    The previous version of these tests asserted against killscore's own checkout and only
     passed while it happened to have uncommitted work - so committing made the suite fail.
     A test about dirtiness has to own the tree whose dirtiness it asserts.
     """
@@ -298,7 +298,7 @@ def test_tests_never_write_to_the_real_home_database(_, tmp_path):
 
 def test_the_database_tolerates_a_concurrent_writer(tmp_path):
     """WAL plus a busy timeout: a reader is not refused while another connection writes."""
-    from trustlayer.store import connect
+    from killscore.store import connect
 
     db = tmp_path / "runs.db"
     writer = connect(db)

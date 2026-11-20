@@ -11,7 +11,7 @@ the same score, every run reported +0.0%, and the plateau detector stopped the l
 strength of a number that could not move. Measured on the demo repo: a test that takes the
 score from 61.7% to 63.6% read as 61.7% with the cache intact.
 
-Per CLAUDE.md, subprocess is patched at `trustlayer.mutation.subprocess.run` - patching the
+Per CLAUDE.md, subprocess is patched at `killscore.mutation.subprocess.run` - patching the
 `app.services.mutation` re-export namespace intercepts nothing.
 """
 
@@ -19,7 +19,7 @@ from pathlib import Path
 import subprocess
 from unittest.mock import patch
 
-from trustlayer.mutation import clear_mutmut_state, run_mutation
+from killscore.mutation import clear_mutmut_state, run_mutation
 
 
 RESULTS = "pricing.x_f__mutmut_1: killed\npricing.x_g__mutmut_1: survived\n"
@@ -57,7 +57,7 @@ def seeded(tmp_path: Path) -> Path:
 def test_stale_state_is_cleared_before_a_run(tmp_path):
     repo = seeded(tmp_path)
 
-    with patch("trustlayer.mutation.subprocess.run", side_effect=fake_mutmut):
+    with patch("killscore.mutation.subprocess.run", side_effect=fake_mutmut):
         run_mutation(repo)
 
     assert not (repo / "mutants").exists()
@@ -67,7 +67,7 @@ def test_stale_state_is_cleared_before_a_run(tmp_path):
 def test_clearing_is_the_default_because_a_stale_score_is_worse_than_a_slow_one(tmp_path):
     repo = seeded(tmp_path)
 
-    with patch("trustlayer.mutation.subprocess.run", side_effect=fake_mutmut):
+    with patch("killscore.mutation.subprocess.run", side_effect=fake_mutmut):
         run_mutation(repo)  # no `fresh` argument passed
 
     assert not (repo / "mutants").exists()
@@ -76,7 +76,7 @@ def test_clearing_is_the_default_because_a_stale_score_is_worse_than_a_slow_one(
 def test_the_opt_out_keeps_the_cache(tmp_path):
     repo = seeded(tmp_path)
 
-    with patch("trustlayer.mutation.subprocess.run", side_effect=fake_mutmut):
+    with patch("killscore.mutation.subprocess.run", side_effect=fake_mutmut):
         run_mutation(repo, fresh=False)
 
     assert (repo / "mutants" / "tests" / "test_x.py").is_file()
@@ -93,7 +93,7 @@ def test_the_score_is_still_read_after_clearing(tmp_path):
     """Clearing must not disturb the parsing contract the rest of the tool depends on."""
     repo = seeded(tmp_path)
 
-    with patch("trustlayer.mutation.subprocess.run", side_effect=fake_mutmut):
+    with patch("killscore.mutation.subprocess.run", side_effect=fake_mutmut):
         result = run_mutation(repo)
 
     assert result.killed == 1

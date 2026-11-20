@@ -9,12 +9,12 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 import pytest
 
-from trustlayer.checks.base import CheckResult, Finding, Severity
-from trustlayer.detect import profile_repository
-from trustlayer.report import Report
-from trustlayer.store import save_run
-from trustlayer.suite import SuiteState
-from trustlayer.ui import create_app
+from killscore.checks.base import CheckResult, Finding, Severity
+from killscore.detect import profile_repository
+from killscore.report import Report
+from killscore.store import save_run
+from killscore.suite import SuiteState
+from killscore.ui import create_app
 
 
 FIXTURES = Path(__file__).parent / "fixtures"

@@ -6,8 +6,8 @@ from pathlib import Path
 import subprocess
 import sys
 
-from trustlayer.checks.base import Severity
-from trustlayer.checks.test_tautology import check_test_tautology
+from killscore.checks.base import Severity
+from killscore.checks.test_tautology import check_test_tautology
 
 
 FIXTURES = Path(__file__).parent / "fixtures"

@@ -1,5 +1,5 @@
-# The gate every change passes: lint, tests, workflow lint, and TrustLayer on itself.
-# `[tool.trustlayer] exclude` in pyproject.toml keeps the deliberately broken fixtures out of
+# The gate every change passes: lint, tests, workflow lint, and killscore on itself.
+# `[tool.killscore] exclude` in pyproject.toml keeps the deliberately broken fixtures out of
 # the self-audit. Action refs were checked to exist on 2026-11-20 (setup-uv has no floating
 # v10 tag, so it is pinned exactly).
 name: ci
@@ -28,8 +28,8 @@ jobs:
       - run: uv run pytest -q
       - name: actionlint
         run: uvx --from actionlint-py==1.7.12.25 actionlint
-      - name: TrustLayer on itself, every check
-        run: uv run trustlayer audit . --all --no-save
+      - name: killscore on itself, every check
+        run: uv run killscore audit . --all --no-save
 
   # Dogfood the published Action: SARIF goes to code scanning. Needs security-events, which
   # a pull request from a fork does not get, so it runs on pushes to master only.
@@ -48,4 +48,4 @@ jobs:
       - uses: ./
         with:
           command: deps
-          sarif-category: trustlayer-deps
+          sarif-category: killscore-deps
