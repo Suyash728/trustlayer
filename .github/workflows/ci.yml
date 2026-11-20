@@ -1,7 +1,7 @@
 # The gate every change passes: lint, tests, workflow lint, and killscore on itself.
 # `[tool.killscore] exclude` in pyproject.toml keeps the deliberately broken fixtures out of
 # the self-audit. Action refs were checked to exist on 2026-11-20 (setup-uv has no floating
-# v10 tag, so it is pinned exactly).
+# v10 tag, so it is pinned exactly; setup-node@v7 checked 2026-11-20).
 name: ci
 
 on:
@@ -24,6 +24,11 @@ jobs:
           python-version: "3.12"
       - run: uv lock --check
       - run: uv sync
+      # The TypeScript checks run through ts-morph; without it their tests have nothing to run.
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - run: npm ci --prefix killscore/checks/node
       - run: uv run ruff check .
       - run: uv run pytest -q
       - name: actionlint

@@ -187,6 +187,7 @@ def test_the_repositorys_own_workflows_reference_real_tags():
         metadata=lambda *a: ({"inputs": {
             "python-version": {}, "sarif_file": {}, "category": {}, "fetch-depth": {},
             "command": {}, "sarif-category": {}, "fail-on": {}, "token": {}, "args": {},
+            "node-version": {},
         }}, True),
     )
     assert result.findings == [], result.findings

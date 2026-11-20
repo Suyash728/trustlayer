@@ -242,6 +242,10 @@ def test_coverage_is_read_from_an_existing_cobertura_report():
     assert suite.harden_suggested is True
 
 
+@pytest.mark.skipif(
+    not (DEMO_REPO / ".coverage").is_file() or not (DEMO_REPO / ".venv" / "bin" / "python").exists(),
+    reason="needs the demo repo's own .venv and a local .coverage run (both gitignored)",
+)
 def test_coverage_is_read_from_an_existing_dotcoverage_without_running_tests():
     suite = inspect_suite(DEMO_REPO)
 
