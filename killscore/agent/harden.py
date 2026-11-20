@@ -93,8 +93,9 @@ class HardenResult:
     total_output_tokens: int = 0
     backend: str = "claude"
     error: str | None = None
-    # Shown beside the mutation score on purpose: the demo repo sits at 100% coverage and
-    # a 61.7% mutation score, and the gap between the two numbers is the argument.
+    # Shown beside the mutation score on purpose: a suite can sit at 100% coverage and a
+    # 61.7% mutation score (measured on the pricing module in tests/fixtures/mutmut), and the
+    # gap between the two numbers is the argument.
     coverage_before: CoverageMeasure | None = None
     coverage_after: CoverageMeasure | None = None
 

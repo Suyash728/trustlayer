@@ -4,6 +4,8 @@ import io
 import json
 from pathlib import Path
 import re
+import subprocess
+import sys
 
 import pytest
 from rich.console import Console
@@ -26,7 +28,6 @@ from killscore.suite import SuiteState, inspect_suite
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
-DEMO_REPO = FIXTURES.parents[1] / "demo-repos" / "pricing-py"
 runner = CliRunner()
 
 # Every `audit` invocation here passes --no-save. `audit` records to ~/.killscore/runs.db
@@ -242,12 +243,29 @@ def test_coverage_is_read_from_an_existing_cobertura_report():
     assert suite.harden_suggested is True
 
 
-@pytest.mark.skipif(
-    not (DEMO_REPO / ".coverage").is_file() or not (DEMO_REPO / ".venv" / "bin" / "python").exists(),
-    reason="needs the demo repo's own .venv and a local .coverage run (both gitignored)",
-)
-def test_coverage_is_read_from_an_existing_dotcoverage_without_running_tests():
-    suite = inspect_suite(DEMO_REPO)
+def test_coverage_is_read_from_an_existing_dotcoverage_without_running_tests(tmp_path):
+    """`audit` reads the repo's own `.coverage` through the repo's own interpreter."""
+    (tmp_path / "pyproject.toml").write_text('[tool.coverage.run]\nsource = ["src"]\n')
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "calc.py").write_text("def add(a, b):\n    return a + b\n")
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "tests" / "test_calc.py").write_text(
+        "import sys\nsys.path.insert(0, 'src')\nfrom calc import add\n\n"
+        "def test_add():\n    assert add(1, 2) == 3\n"
+    )
+    # The coverage run that `audit` must read but never repeat.
+    subprocess.run(
+        [sys.executable, "-m", "coverage", "run", "-m", "pytest", "-q", "-p", "no:cacheprovider"],
+        cwd=tmp_path, check=True, capture_output=True, timeout=120,
+    )
+    # A wrapper, not a symlink: a symlinked .venv/bin/python drops the venv's site-packages.
+    venv_python = tmp_path / ".venv" / "bin" / "python"
+    venv_python.parent.mkdir(parents=True)
+    venv_python.write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n')
+    venv_python.chmod(0o755)
+    (tmp_path / "tests" / "test_calc.py").write_text("raise SystemExit('the suite must not run')\n")
+
+    suite = inspect_suite(tmp_path)
 
     assert suite.coverage_percent == 100.0
     assert suite.coverage_source == ".coverage"

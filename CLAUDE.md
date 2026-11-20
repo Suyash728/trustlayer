@@ -9,9 +9,9 @@ A tool that proves whether AI-written tests actually catch bugs. It audits a rep
 mechanically, then uses an agent to raise its mutation score — discarding any generated
 test that does not hold up.
 
-The thesis: line coverage is a vanity metric; mutation score is the oracle. The demo repo
-`demo-repos/pricing-py` sits at **100% line coverage and a 61.7% mutation score**, which is
-the whole argument in one number.
+The thesis: line coverage is a vanity metric; mutation score is the oracle. A small pricing
+module (its source is kept as `tests/fixtures/mutmut/src/pricing.py`) measured **100% line
+coverage and a 61.7% mutation score**, which is the whole argument in one number.
 
 ## The rule everything else serves
 
@@ -234,7 +234,8 @@ uv run killscore tui                          # terminal UI; a=audit, h=harden, 
 
 1. `ruff check .` is clean.
 2. `pytest -q` passes.
-3. The feature runs end-to-end against `demo-repos/pricing-py` with no login.
+3. The feature runs end-to-end against a real repository with no login (the sibling projects
+   in `~/Projects` serve; `demo-repos/` was removed on 2026-11-21).
 4. You ran the verification command yourself and pasted the real output.
 
 ## Scope
@@ -263,14 +264,17 @@ integration, arbitrary repo-URL input, or multi-agent orchestration.
 ## Do-not-touch
 
 - Never commit `.env`, API keys, or `auth.json`.
-- Never edit files under `demo-repos/` unless a task explicitly says to.
 - Never push to main directly; work on a branch.
 - Never auto-apply agent-generated tests to a real repo. Print the diff; let a human decide.
 
 ## Decisions that changed since the original guide
 
+- **`demo-repos/` and `docs/` were removed (2026-11-21).** The mutmut parser test's real
+  recorded output and `pricing.py` moved to `tests/fixtures/mutmut/`; the coverage tests build
+  a project in `tmp_path` and use the suite's own interpreter (`coverage` is in the dev group),
+  so they now run in CI instead of skipping everywhere but one machine.
 - **Renamed TrustLayer → killscore (2026-11-20), still released as v0.2.0.** `trustlayer` on
-  PyPI belongs to an unrelated project (see `docs/v3-build-log.md`), and `detent` was rejected
+  PyPI belongs to an unrelated project, and `detent` was rejected
   because PyPI's `detent` is a near-identical AI-agent verification tool. Clean break, no shims:
   nothing was ever published under the old name. Config is `[tool.killscore]` /
   `.killscore.toml`, inline ignores are `# killscore: ignore[...]`, env vars are `KILLSCORE_*`,
@@ -429,7 +433,7 @@ Ollama and ComfyUI cannot both hold a model in VRAM on this machine.
 
   This silently broke `harden`: every iteration reported the same score, every run reported
   +0.0%, and the plateau detector stopped the loop on a number that could not move. Measured
-  on `pricing-py`, a generated test worth +1.9% read as +0.0%.
+  on the pricing module, a generated test worth +1.9% read as +0.0%.
 
   `run_mutation(fresh=True)` is therefore the default and clears `mutants/` and
   `.mutmut-cache` first. mutmut 3.6.0 has no flag for this — `mutmut run --help` offers only
