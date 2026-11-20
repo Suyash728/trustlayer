@@ -45,6 +45,7 @@ killscore = "killscore.cli:main_entry"
 
 [dependency-groups]
 dev = [
+    "coverage>=7.6",
     "pytest>=8.0",
     "ruff>=0.6",
 ]
@@ -76,17 +77,17 @@ testpaths = ["tests", "apps/api/tests"]
 # "apps/api" is what makes `app` importable. Drop it once apps/api becomes a real
 # pip-installed package, otherwise `app` gets two module identities.
 pythonpath = [".", "apps/api"]
-norecursedirs = ["tests/fixtures", "demo-repos", ".venv", "node_modules", "mutants"]
+norecursedirs = ["tests/fixtures", ".venv", "node_modules", "mutants"]
 addopts = "-ra"
 
 # Self-audit: these are deliberately broken sample repositories, not killscore's code.
 [tool.killscore]
-exclude = ["tests/fixtures", "demo-repos"]
+exclude = ["tests/fixtures"]
 
 [tool.ruff]
 line-length = 100
 # Fixtures are deliberately malformed/unpinned sample repos, not project code.
-extend-exclude = ["tests/fixtures", "demo-repos"]
+extend-exclude = ["tests/fixtures"]
 
 # Matches the import style already used in apps/api: one alphabetical run per section,
 # with `import x` and `from x import y` interleaved by module name.

@@ -8,8 +8,9 @@ the real `tests/` changes.
 That made `harden` unable to observe its own work. A generated test that genuinely killed
 mutants was never copied in, never entered the map, never ran - so every iteration reported
 the same score, every run reported +0.0%, and the plateau detector stopped the loop on the
-strength of a number that could not move. Measured on the demo repo: a test that takes the
-score from 61.7% to 63.6% read as 61.7% with the cache intact.
+strength of a number that could not move. Measured on the pricing module now kept in
+tests/fixtures/mutmut: a test that takes the score from 61.7% to 63.6% read as 61.7% with the
+cache intact.
 
 Per CLAUDE.md, subprocess is patched at `killscore.mutation.subprocess.run` - patching the
 `app.services.mutation` re-export namespace intercepts nothing.

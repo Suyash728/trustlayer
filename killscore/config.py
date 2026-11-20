@@ -4,7 +4,7 @@ Read from `[tool.killscore]` in the audited root's `pyproject.toml`, or from the
 of a `.killscore.toml` (for repositories that are not Python). Only two knobs exist:
 
     [tool.killscore]
-    exclude = ["tests/fixtures", "demo-repos/**", "*.generated.py"]
+    exclude = ["tests/fixtures", "vendor/**", "*.generated.py"]
 
 and an inline comment on the line a finding points at:
 

@@ -27,7 +27,7 @@ def _finding(file: str, line: int = 1, check: str = "stale-models") -> Finding:
         ("tests/fixtures", "tests/fixtures_other/b.py", False),
         ("tests/fixtures", "tests/test_fixtures.py", False),
         ("*.generated.py", "api.generated.py", True),
-        ("demo-*", "demo-repos/x/requirements.txt", True),
+        ("example*", "examples/x/requirements.txt", True),
         ("src", "lib/src/x.py", False),  # anchored at the root, not anywhere in the path
     ],
 )
@@ -131,16 +131,15 @@ def test_the_repository_config_excludes_its_own_fixtures():
     config = load_config(Path(__file__).resolve().parents[1])
 
     assert config.is_excluded("tests/fixtures/models-dirty/client.py")
-    assert config.is_excluded("demo-repos/slopsquat-demo/requirements.txt")
     assert not config.is_excluded("killscore/cli.py")
 
 
 def test_a_note_about_an_excluded_project_is_dropped(tmp_path):
     result = CheckResult(
         "api-resolution:python",
-        notes=["demo-repos/x: not importable: requests", "PyPI unreachable: foo"],
+        notes=["examples/x: not importable: requests", "PyPI unreachable: foo"],
     )
-    filtered = suppress(tmp_path, result, Config(exclude=("demo-repos",)))
+    filtered = suppress(tmp_path, result, Config(exclude=("examples",)))
 
     assert filtered.notes == ["PyPI unreachable: foo"]
 

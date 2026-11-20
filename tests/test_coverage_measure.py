@@ -7,64 +7,96 @@ It used to read 0%: the workspace copy has no venv to summarize `.coverage` with
 from __future__ import annotations
 
 from pathlib import Path
-import shutil
+import sys
+import textwrap
 
 import pytest
 
-from killscore.agent.baseline import tooling_interpreter
 from killscore.agent.verify import CoverageMeasure, measure_coverage
-from killscore.agent.workspace import EXCLUDED
 from killscore.cli import _coverage_change
 
 
-DEMO = Path(__file__).resolve().parents[1] / "demo-repos" / "pricing-py"
-DEMO_PYTHON = tooling_interpreter(DEMO)
+# The suite's own interpreter has coverage and pytest (the dev group), which is exactly what
+# `tooling_interpreter` hands `measure_coverage` from an original repo's .venv.
+INTERPRETER = [sys.executable]
 
-needs_demo_venv = pytest.mark.skipif(
-    DEMO_PYTHON is None, reason="demo-repos/pricing-py has no .venv"
-)
+
+def _write(root: Path, relative: str, text: str) -> None:
+    path = root / relative
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(textwrap.dedent(text), encoding="utf-8")
 
 
 @pytest.fixture
 def workspace_copy(tmp_path):
-    """What `workspace()` hands the agent: a copy with no venv and the user's stale data."""
-    copy = tmp_path / "pricing-py"
-    shutil.copytree(DEMO, copy, ignore=EXCLUDED)
-    return copy
+    """What `workspace()` hands the agent: a project with no venv of its own."""
+    root = tmp_path / "project"
+    _write(root, "pyproject.toml", """
+        [tool.pytest.ini_options]
+        testpaths = ["tests"]
+        pythonpath = ["src"]
+
+        [tool.coverage.run]
+        source = ["src"]
+    """)
+    _write(root, "src/calc.py", """
+        def add(a, b):
+            return a + b
 
 
-@needs_demo_venv
+        def discount(price, percent):
+            if percent >= 100:
+                return 0
+            return price - price * percent / 100
+    """)
+    _write(root, "tests/test_calc.py", """
+        from calc import add, discount
+
+
+        def test_add():
+            assert add(2, 3) == 5
+
+
+        def test_discount():
+            assert discount(200, 50) == 100
+            assert discount(10, 100) == 0
+    """)
+    return root
+
+
 def test_coverage_is_measured_with_the_original_interpreter(workspace_copy):
-    measured = measure_coverage(workspace_copy, DEMO_PYTHON)
+    measured = measure_coverage(workspace_copy, INTERPRETER)
 
     assert measured.reason is None
-    assert measured.percent == 100.0  # the demo repo's whole point: 100% lines, ~62% mutants
+    assert measured.percent == 100.0
 
 
-@needs_demo_venv
 def test_a_stale_coverage_file_in_the_copy_is_never_read(workspace_copy):
     (workspace_copy / ".coverage").write_bytes(b"not a coverage database")
 
-    assert measure_coverage(workspace_copy, DEMO_PYTHON).percent == 100.0
+    assert measure_coverage(workspace_copy, INTERPRETER).percent == 100.0
 
 
-@needs_demo_venv
 def test_measuring_writes_nothing_into_the_workspace(workspace_copy):
     before = sorted(p.relative_to(workspace_copy) for p in workspace_copy.rglob("*"))
-    measure_coverage(workspace_copy, DEMO_PYTHON)
+    measure_coverage(workspace_copy, INTERPRETER)
     after = sorted(p.relative_to(workspace_copy) for p in workspace_copy.rglob("*"))
 
     new = [p for p in after if p not in before and "__pycache__" not in p.parts]
     assert new == []
 
 
-@needs_demo_venv
 def test_coverage_moves_when_tests_are_removed(workspace_copy):
     """After != before is the property the old artifact read could never show."""
-    for test in (workspace_copy / "tests").glob("test_*.py"):
-        test.write_text("def test_nothing():\n    assert True\n")
+    _write(workspace_copy, "tests/test_calc.py", """
+        from calc import add
 
-    measured = measure_coverage(workspace_copy, DEMO_PYTHON)
+
+        def test_add():
+            assert add(2, 3) == 5
+    """)
+
+    measured = measure_coverage(workspace_copy, INTERPRETER)
     assert measured.percent is not None and measured.percent < 100.0
 
 

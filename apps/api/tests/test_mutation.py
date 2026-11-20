@@ -7,8 +7,9 @@ from app.services.mutation import DEFAULT_TIMEOUT_SECONDS, Survivor, get_survivo
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
-SAMPLE_OUTPUT_PATH = REPOSITORY_ROOT / "docs" / "codex-runs" / "mutmut-sample-output.txt"
-PRICING_SOURCE_PATH = REPOSITORY_ROOT / "demo-repos" / "pricing-py" / "src" / "pricing.py"
+MUTMUT_FIXTURE = REPOSITORY_ROOT / "tests" / "fixtures" / "mutmut"
+SAMPLE_OUTPUT_PATH = MUTMUT_FIXTURE / "mutmut-sample-output.txt"
+PRICING_SOURCE_PATH = MUTMUT_FIXTURE / "src" / "pricing.py"
 
 
 def _load_real_mutmut_output() -> tuple[str, str]:
