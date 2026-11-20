@@ -123,3 +123,12 @@ def test_severity_is_never_colour_alone(client, seeded):
 
     assert "mark-high" in text  # the colored mark
     assert "high" in text  # and the word, always
+
+
+def test_a_rebound_hostname_is_refused(tmp_path):
+    """DNS rebinding: a request from an attacker page carries the attacker's Host header."""
+    client = TestClient(create_app(tmp_path / "empty.db"))
+
+    assert client.get("/", headers={"host": "127.0.0.1:7777"}).status_code == 200
+    assert client.get("/", headers={"host": "localhost:7777"}).status_code == 200
+    assert client.get("/", headers={"host": "evil.example:7777"}).status_code == 400

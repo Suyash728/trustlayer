@@ -40,8 +40,11 @@ the misunderstanding into the suite and everything downstream would inherit it.
 
 - **CLI**: Typer + Rich, Python 3.12, installed from the root `pyproject.toml`.
 - **Agent runtime**: `claude-agent-sdk` 0.2.128, model `claude-opus-5` by default, with an
-  opt-in Ollama backend (`gpt-oss-agent-64k`) for local runs. This replaced the Codex CLI
+  opt-in Ollama backend (default `gpt-oss:20b`, any `tools`-capable model via
+  `TRUSTLAYER_OLLAMA_MODEL`) for local runs. This replaced the Codex CLI
   that `AGENTS.md` pinned — see "Decisions that changed".
+- **MCP server**: `mcp` 1.29/1.30 (FastMCP), stdio only (`trustlayer mcp`). Pinned `<2`: mcp 2.x
+  renamed FastMCP to MCPServer, and an unpinned wheel install crashed on it (found 2026-11-20).
 - **Mutation testing**: mutmut 3.6.0 + pytest.
 - **TypeScript checks**: ts-morph 27.0.2 via Node 24 (`trustlayer/checks/node/`).
 - **Persistence**: SQLite at `~/.trustlayer/runs.db`, stdlib `sqlite3`, no ORM.
@@ -57,10 +60,16 @@ the misunderstanding into the suite and everything downstream would inherit it.
 
 ```sh
 uv sync                                        # install; there is no requirements.txt
-npm install --prefix trustlayer/checks/node    # optional: enables the TypeScript checks
+npm install --prefix trustlayer/checks/node    # optional: TS checks (or `trustlayer setup-node`)
 uv run ruff check .                            # lint — must be clean
-uv run pytest -q                               # 126 tests, single config at the repo root
+uv run pytest -q                               # ~590 tests, offline, single root config
 uv run trustlayer audit <path> --all
+uv run trustlayer audit <path> --format sarif --fail-on high --baseline known.json
+uv run trustlayer mcp                          # stdio MCP server for coding agents
+uv run python scripts/update_top_pypi.py       # corpus refresh (also weekly in CI)
+uv run python scripts/update_top_npm.py        # ~10 min: npm rate-limits scoped lookups
+uv run python scripts/check_model_sources.py   # tripwire for the deprecation registry
+uv build                                       # wheel; data/ is force-included
 uv run trustlayer deps <repo>                  # dependency risk scores; --no-network works offline
 uv run trustlayer baseline <repo> --module src/x.py
 uv run trustlayer harden <repo> --target 90 --max-total-cost 5
@@ -135,6 +144,23 @@ uv run trustlayer tui                          # terminal UI; a=audit, h=harden,
   second one, and nesting them raises. `run_mutation` blocks on `subprocess.run`, and the
   registry and Ollama clients block on `urllib`. Calling any of them from the UI thread is a
   crash or a multi-minute freeze. Results come back through `app.call_from_thread`.
+- **Suppression is applied once, in `runner.iter_checks`**, from `trustlayer/config.py`
+  (`[tool.trustlayer] exclude` + inline `trustlayer: ignore[check]`). Every surface reports
+  the count (`CheckResult.suppressed`); a clean run that hid findings must say so. `deps`
+  applies `exclude` to declarations *before* fetching. `--baseline` is applied in the CLI
+  after saving, so `runs.db` keeps every finding.
+- **The exit code is owned by `report.exit_code_for`.** `--fail-on` moves the threshold, a
+  HIGH always exits 2, and `cli.main_entry` (the console script) maps Click usage errors and
+  uncaught exceptions to 3. Typer vendors Click as the private `typer._click`, whose layout
+  changed between 0.27 and 0.29 and broke a fresh wheel install — never import from it;
+  `tests/test_packaging.py` greps for it.
+- **Unknown is a note, not a finding.** "PyPI unreachable", "no node_modules", "repository
+  unreadable" (gha-refs) and "not installed in a borrowed venv" are `CheckResult.notes` or
+  skips. A LOW finding at an invented location is still a false claim.
+- **`slopsquat` scores PyPI and npm through one path.** `risk.Corpus.ecosystem` decides name
+  canonicalisation (PEP 503 vs exact) and wording; `registry.fetch_many(ecosystem=...)` picks
+  the fetcher and the cache key. `check_slopsquat_all` returns one result per ecosystem
+  (`slopsquat:pypi`, `slopsquat:npm`); `check_slopsquat` is the PyPI-only legacy shape.
 - **Check dispatch lives in `trustlayer/checks/runner.py`, not in `cli.py`.** `iter_checks`
   yields each result as it lands (the TUI shows progress); `run_checks` returns the finished
   list (the CLI). One table — two copies would drift the moment a check is added and the
@@ -166,6 +192,19 @@ uv run trustlayer tui                          # terminal UI; a=audit, h=harden,
   coloured mark carries identity, so a colour never means anything on its own. In the
   terminal this matters more, because the palette belongs to the user — `severity_cell`
   always emits the word as well as the mark, and a test asserts it.
+- **The MCP server owns fd 1 at the OS level.** `mcp_server.serve` dups the real stdout for
+  the transport and `dup2`s stderr onto fd 1, so prints, libraries and child processes cannot
+  corrupt JSON-RPC. FastMCP only emits `structuredContent` for a parameterised return type -
+  keep tool returns `dict[str, Any]`, not `dict`. No agent tools over MCP.
+- **The pytest gate allow-lists arguments, not just the command.** `ToolGate` tokenises with
+  shlex and denies `--pastebin`, `--junitxml`, `--basetemp`, `-p <plugin>`, `-c`, `-W` and
+  any path outside the workspace. Extend `PYTEST_FLAGS` / `PYTEST_VALUE_OPTIONS` only with
+  options that cannot write, load code, or reach the network, and add the denial to the
+  shared matrix in `tests/test_localtools.py`.
+- **Coverage in agent runs is measured, never read.** `verify.measure_coverage` runs the suite
+  under the original venv's `coverage run` with the data file in its own temp dir. The copied
+  `.coverage` is the user's stale one; reading it reported the same number before and after.
+  Unknown renders `n/a (reason)`, never `0%`.
 - **The agent never writes to a real repository.** It works in a temp copy
   (`trustlayer/agent/workspace.py`); runs end by printing a diff and applying nothing.
 - Every subprocess call has an explicit timeout. No exceptions.
@@ -195,6 +234,7 @@ Built and shipped:
 | L6 | Slopsquat guard — `slopsquat` check + `deps` command, deterministic risk score, PyPI only |
 | L7 | Check breadth (`import-effects`, `pinned-version`, `call-signature`) + Ollama backend |
 | L8 | Terminal UI — run browser, live audits, live `harden` dashboard |
+| L9 | v0.2: `test-tautology`, `lock-drift`, `gha-refs`, npm in `deps`, exclude/ignore/baseline, `--fail-on`, SARIF, pre-commit, GitHub Action, MCP server, wheel/uvx packaging, measured coverage, Ollama capability probe |
 
 `AGENTS.md` froze scope to a web app (public URL, SSE stream, single run view). **That list
 was superseded by direct instruction** across L1–L5; none of it was built and the CLI was
@@ -239,10 +279,18 @@ integration, arbitrary repo-URL input, or multi-agent orchestration.
   "unavailable", not "zero maintainers".
 - Project age is the **earliest upload across all files of all versions**, not the first key
   of `releases`: a version can exist with an empty file list and would date the project wrong.
-- npm: `registry.npmjs.org/<name>` has `time.created` and `maintainers`, and
-  `api.npmjs.org/downloads/point/last-week/<name>` is an official download endpoint — npm is
-  the one ecosystem where downloads are first-party. Not implemented yet; `PackageFacts` is
-  registry-neutral so it slots in behind the same shape.
+- npm (re-probed 2026-11-20, implemented in `registry.fetch_npm`): scoped names go in the
+  URL as `@scope%2Fname`. 404 body is `{"error":"Not found"}`. **An unpublished package is
+  HTTP 200** with only `{_id, name, time}` and `time.unpublished = {time, versions}`. A package
+  npm seized after removing malware has `dist-tags.latest` like `0.0.1-security` or
+  `1.0.0-security` *and* description "security holding package" - require both. A version's
+  `deprecated: ""` means un-deprecated. Downloads: `api.npmjs.org/downloads/point/last-month/
+  <name>` -> `{downloads, start, end, package}`; the comma-separated bulk form takes up to 128
+  **unscoped** names only. ~600 scoped lookups in a burst (even 2 at a time, 0.3 s apart) get
+  HTTP 429; one a second does not.
+- npm has no first-party popularity ranking. The corpus names come from the
+  `npm-high-impact` package (MIT), `lib/top-download.js` (`export const topDownload = [...]`,
+  15 916 names >= 1M downloads/week, read from its registry tarball).
 - Distance is **Damerau-Levenshtein (OSA), not Levenshtein.** Plain Levenshtein scores a
   transposition as 2, so `reqeusts` would read as far from `requests` as an unrelated
   two-character difference. Transposition is the most common typo and a primary squat vector.
@@ -264,8 +312,24 @@ difference is load-bearing.
   `{"name": "read_file", "arguments": {"path": "config.yaml"}}`. Both the stock and the
   agent-tuned build behave this way, so it is the family, not the Modelfile.
 
-That difference is why the tool-using path is **gpt-oss only**, enforced by
-`supports_tools()` in `trustlayer/agent/ollama.py` rather than left to the caller.
+**Superseded 2026-11-20 (Ollama 0.40.16):** the gate is no longer a `gpt-oss` name prefix.
+`POST /api/show {model}` returns `capabilities` (e.g. `["completion","tools","thinking"]`,
+or `["embedding"]`), `model_info["<arch>.context_length"]` (ignore the
+`.rope.scaling.original_context_length` key), and the Modelfile as text in `parameters`
+(`num_ctx  16384`); an unknown model is HTTP 404. `ollama.tool_loop_refusal` uses it.
+`capabilities` reflects the *template*, not behaviour: qwen3.5-9b returns structured
+`tool_calls` in the gpt-oss shape, while glm-4-9b advertises `tools` and still writes
+`Read\n{"file_path": ...}` as prose and then hallucinates the file. Hence `recover_text_call`
+(only an unambiguous single call) and `looks_like_text_call` (anything else ends the run).
+`options.num_ctx` is sent explicitly on every chat. The installed models changed since the
+probe below: `gpt-oss-agent-64k` and qwen2.5-coder are no longer on this machine;
+`gpt-oss-20b-16k`, `qwen3.5-9b-uncensored`, `qwen3.8-27b`, `glm-4-9b` and
+`deepseek-r1-0528:8b` are. **The default is now the stock `gpt-oss:20b`** (portable, and the
+`-agent-*` builds only existed to raise `num_ctx`, which is now sent per request). It is not
+installed here, so a missing model's 404 is turned into a list of installed `tools` models
+(`_missing_model_hint`); nothing is auto-selected. Live tests run against
+`TRUSTLAYER_OLLAMA_MODEL=qwen3.5-9b-uncensored:latest` on this machine (both pass: a plain
+answer and a real Read through `ToolGate`).
 
 To be precise about the risk: a text-emitted call is a **reliability** problem, not a gate
 bypass. `ToolGate` still evaluates whatever gets parsed, so a mangled call is denied rather
@@ -298,9 +362,9 @@ Ollama and ComfyUI cannot both hold a model in VRAM on this machine.
 - **Context length**: the server defaults to `num_ctx=4096` regardless of the model's
   training length, and at 4096 the tool loop demonstrably fails. The `-agent-32k` /
   `-agent-64k` variants set `num_ctx` to 32768 / 65536 in their own Modelfile, which is the
-  entire reason they exist — never use a stock tag for agent work. `gpt-oss-agent-64k` is
-  this machine's established default and is TrustLayer's default too; the measured cost of
-  8x the context is about +360 MB of VRAM.
+  entire reason they existed. *Superseded:* TrustLayer now sends `options.num_ctx` itself, so a
+  stock tag is fine for agent work. The measured cost of 8x the context is about +360 MB of
+  VRAM.
 - Observed latency, warm: ~1s for short prose, 6-20s for a tool turn. First call per model
   pays a load cost on top.
 

@@ -19,8 +19,13 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from trustlayer.agent.baseline import tooling_interpreter
-from trustlayer.agent.runtime import DEFAULT_ALLOWED_TOOLS, resolve_backend, run_agent
-from trustlayer.agent.verify import count_tests, prune_to_passing
+from trustlayer.agent.runtime import (
+    DEFAULT_ALLOWED_TOOLS,
+    resolve_backend,
+    run_agent,
+    venv_bin_for,
+)
+from trustlayer.agent.verify import CoverageMeasure, count_tests, measure_coverage, prune_to_passing
 from trustlayer.agent.workspace import Workspace, diff_workspace, workspace
 from trustlayer.mutation import MutationRun, Survivor, run_mutation
 
@@ -88,6 +93,10 @@ class HardenResult:
     total_output_tokens: int = 0
     backend: str = "claude"
     error: str | None = None
+    # Shown beside the mutation score on purpose: the demo repo sits at 100% coverage and
+    # a 61.7% mutation score, and the gap between the two numbers is the argument.
+    coverage_before: CoverageMeasure | None = None
+    coverage_after: CoverageMeasure | None = None
 
     @property
     def improvement(self) -> float:
@@ -198,6 +207,7 @@ def _loop(
     mutmut = _mutmut_executable(space.source)
     interpreter = tooling_interpreter(space.source)
     emit("baseline", "measuring the baseline mutation score")
+    coverage_before = measure_coverage(root, interpreter)
     baseline = run_mutation(root, executable=mutmut)
     emit(
         "baseline",
@@ -245,6 +255,7 @@ def _loop(
                 max_budget_usd=max_budget_usd,
                 system_prompt=SYSTEM_PROMPT,
                 backend=backend,
+                venv_bin=venv_bin_for(space.source),
             )
             total_cost += result.cost_usd or 0.0
             total_input_tokens += result.input_tokens
@@ -312,6 +323,8 @@ def _loop(
         total_output_tokens=total_output_tokens,
         backend=resolve_backend(backend),
         total_discarded=total_discarded,
+        coverage_before=coverage_before,
+        coverage_after=measure_coverage(root, interpreter),
     )
 
 

@@ -14,6 +14,7 @@ import pytest
 from trustlayer.agent import harden as harden_module
 from trustlayer.agent.harden import DEFAULT_MAX_TOTAL_COST_USD, harden
 from trustlayer.agent.runtime import AgentResult
+from trustlayer.agent.verify import CoverageMeasure
 from trustlayer.mutation import MutationRun, Survivor
 
 
@@ -35,6 +36,7 @@ def stub_repo(tmp_path, monkeypatch):
 
     monkeypatch.setattr(harden_module, "_mutmut_executable", lambda source: Path("mutmut"))
     monkeypatch.setattr(harden_module, "tooling_interpreter", lambda source: Path("python"))
+    monkeypatch.setattr(harden_module, "measure_coverage", lambda *a, **k: CoverageMeasure(80.0))
     monkeypatch.setattr(
         harden_module,
         "run_mutation",

@@ -1,0 +1,8011 @@
+{
+ "_comment": "THIS FILE GOES STALE. Snapshot of the most-downloaded npm packages, used as the npm typo-adjacency corpus and offline popularity baseline. Names from npm-high-impact (lib/top-download.js), counts from api.npmjs.org last-month. Regenerate with scripts/update_top_npm.py; see README.md, 'Maintaining the top-packages corpus'.",
+ "source": "npm-high-impact 1.13.0 + api.npmjs.org last-month",
+ "upstream_url": "https://www.npmjs.com/package/npm-high-impact",
+ "upstream_version": "1.13.0",
+ "upstream_last_update": "2026-06-08T16:53:09.411Z",
+ "vendored_on": "2026-11-20",
+ "count": 2000,
+ "packages": [
+  {
+   "name": "semver",
+   "downloads": 4884801292
+  },
+  {
+   "name": "minimatch",
+   "downloads": 4041248791
+  },
+  {
+   "name": "debug",
+   "downloads": 3941168743
+  },
+  {
+   "name": "ansi-styles",
+   "downloads": 3836090509
+  },
+  {
+   "name": "brace-expansion",
+   "downloads": 3477463328
+  },
+  {
+   "name": "lru-cache",
+   "downloads": 3334328745
+  },
+  {
+   "name": "commander",
+   "downloads": 3095470204
+  },
+  {
+   "name": "ms",
+   "downloads": 3061343098
+  },
+  {
+   "name": "string-width",
+   "downloads": 2988757286
+  },
+  {
+   "name": "picomatch",
+   "downloads": 2938382429
+  },
+  {
+   "name": "strip-ansi",
+   "downloads": 2931704980
+  },
+  {
+   "name": "ansi-regex",
+   "downloads": 2861647364
+  },
+  {
+   "name": "supports-color",
+   "downloads": 2765079476
+  },
+  {
+   "name": "chalk",
+   "downloads": 2656941896
+  },
+  {
+   "name": "@types/node",
+   "downloads": 2619507874
+  },
+  {
+   "name": "tslib",
+   "downloads": 2613220621
+  },
+  {
+   "name": "wrap-ansi",
+   "downloads": 2515960099
+  },
+  {
+   "name": "emoji-regex",
+   "downloads": 2478129579
+  },
+  {
+   "name": "balanced-match",
+   "downloads": 2367935770
+  },
+  {
+   "name": "glob",
+   "downloads": 2244731899
+  },
+  {
+   "name": "type-fest",
+   "downloads": 2212444087
+  },
+  {
+   "name": "ajv",
+   "downloads": 2186793305
+  },
+  {
+   "name": "eslint-visitor-keys",
+   "downloads": 2155584039
+  },
+  {
+   "name": "readable-stream",
+   "downloads": 2061999896
+  },
+  {
+   "name": "escape-string-regexp",
+   "downloads": 2047622854
+  },
+  {
+   "name": "source-map",
+   "downloads": 2033406028
+  },
+  {
+   "name": "undici-types",
+   "downloads": 2022999508
+  },
+  {
+   "name": "which",
+   "downloads": 2006506155
+  },
+  {
+   "name": "react-is",
+   "downloads": 1994289617
+  },
+  {
+   "name": "entities",
+   "downloads": 1940390516
+  },
+  {
+   "name": "json-schema-traverse",
+   "downloads": 1934595853
+  },
+  {
+   "name": "color-name",
+   "downloads": 1908142693
+  },
+  {
+   "name": "zod",
+   "downloads": 1900571894
+  },
+  {
+   "name": "p-limit",
+   "downloads": 1878715182
+  },
+  {
+   "name": "color-convert",
+   "downloads": 1856869287
+  },
+  {
+   "name": "safe-buffer",
+   "downloads": 1855149491
+  },
+  {
+   "name": "ignore",
+   "downloads": 1797546078
+  },
+  {
+   "name": "yallist",
+   "downloads": 1782881329
+  },
+  {
+   "name": "glob-parent",
+   "downloads": 1777909485
+  },
+  {
+   "name": "find-up",
+   "downloads": 1777516029
+  },
+  {
+   "name": "iconv-lite",
+   "downloads": 1771199999
+  },
+  {
+   "name": "locate-path",
+   "downloads": 1744869484
+  },
+  {
+   "name": "typescript",
+   "downloads": 1744232018
+  },
+  {
+   "name": "isexe",
+   "downloads": 1740306138
+  },
+  {
+   "name": "p-locate",
+   "downloads": 1737286328
+  },
+  {
+   "name": "postcss",
+   "downloads": 1734008672
+  },
+  {
+   "name": "esbuild",
+   "downloads": 1728907395
+  },
+  {
+   "name": "signal-exit",
+   "downloads": 1724099198
+  },
+  {
+   "name": "path-key",
+   "downloads": 1721695914
+  },
+  {
+   "name": "mime-db",
+   "downloads": 1703458375
+  },
+  {
+   "name": "has-flag",
+   "downloads": 1693408854
+  },
+  {
+   "name": "ws",
+   "downloads": 1664080803
+  },
+  {
+   "name": "uuid",
+   "downloads": 1662731803
+  },
+  {
+   "name": "js-yaml",
+   "downloads": 1646625834
+  },
+  {
+   "name": "agent-base",
+   "downloads": 1628593656
+  },
+  {
+   "name": "mime-types",
+   "downloads": 1625949632
+  },
+  {
+   "name": "yargs-parser",
+   "downloads": 1565376509
+  },
+  {
+   "name": "yargs",
+   "downloads": 1563896428
+  },
+  {
+   "name": "nanoid",
+   "downloads": 1554887793
+  },
+  {
+   "name": "https-proxy-agent",
+   "downloads": 1551826452
+  },
+  {
+   "name": "@esbuild/linux-x64",
+   "downloads": 1540910509
+  },
+  {
+   "name": "@babel/types",
+   "downloads": 1536932112
+  },
+  {
+   "name": "string_decoder",
+   "downloads": 1529460331
+  },
+  {
+   "name": "js-tokens",
+   "downloads": 1526180642
+  },
+  {
+   "name": "argparse",
+   "downloads": 1517664558
+  },
+  {
+   "name": "@babel/parser",
+   "downloads": 1515730513
+  },
+  {
+   "name": "@jridgewell/trace-mapping",
+   "downloads": 1515144125
+  },
+  {
+   "name": "magic-string",
+   "downloads": 1506325651
+  },
+  {
+   "name": "isarray",
+   "downloads": 1494386506
+  },
+  {
+   "name": "is-fullwidth-code-point",
+   "downloads": 1493569196
+  },
+  {
+   "name": "content-type",
+   "downloads": 1467876068
+  },
+  {
+   "name": "cliui",
+   "downloads": 1460044176
+  },
+  {
+   "name": "cross-spawn",
+   "downloads": 1453556065
+  },
+  {
+   "name": "@babel/helper-validator-identifier",
+   "downloads": 1439464247
+  },
+  {
+   "name": "acorn",
+   "downloads": 1404571749
+  },
+  {
+   "name": "whatwg-url",
+   "downloads": 1402131591
+  },
+  {
+   "name": "@babel/code-frame",
+   "downloads": 1399783475
+  },
+  {
+   "name": "shebang-command",
+   "downloads": 1398769987
+  },
+  {
+   "name": "shebang-regex",
+   "downloads": 1396119012
+  },
+  {
+   "name": "@jridgewell/sourcemap-codec",
+   "downloads": 1391402896
+  },
+  {
+   "name": "picocolors",
+   "downloads": 1389982754
+  },
+  {
+   "name": "webidl-conversions",
+   "downloads": 1365696138
+  },
+  {
+   "name": "undici",
+   "downloads": 1359746030
+  },
+  {
+   "name": "minipass",
+   "downloads": 1358143358
+  },
+  {
+   "name": "pnpm",
+   "downloads": 1357725728
+  },
+  {
+   "name": "cookie",
+   "downloads": 1354618925
+  },
+  {
+   "name": "globals",
+   "downloads": 1346454103
+  },
+  {
+   "name": "hasown",
+   "downloads": 1344242642
+  },
+  {
+   "name": "tr46",
+   "downloads": 1342831842
+  },
+  {
+   "name": "json5",
+   "downloads": 1332600546
+  },
+  {
+   "name": "path-to-regexp",
+   "downloads": 1330206430
+  },
+  {
+   "name": "detect-libc",
+   "downloads": 1327908585
+  },
+  {
+   "name": "@types/estree",
+   "downloads": 1320068892
+  },
+  {
+   "name": "yaml",
+   "downloads": 1316600783
+  },
+  {
+   "name": "resolve",
+   "downloads": 1309919546
+  },
+  {
+   "name": "resolve-from",
+   "downloads": 1309361452
+  },
+  {
+   "name": "@babel/helper-string-parser",
+   "downloads": 1302430936
+  },
+  {
+   "name": "pretty-format",
+   "downloads": 1280919578
+  },
+  {
+   "name": "path-exists",
+   "downloads": 1269378006
+  },
+  {
+   "name": "fs-extra",
+   "downloads": 1267760892
+  },
+  {
+   "name": "negotiator",
+   "downloads": 1263488619
+  },
+  {
+   "name": "convert-source-map",
+   "downloads": 1254416989
+  },
+  {
+   "name": "@babel/generator",
+   "downloads": 1239051670
+  },
+  {
+   "name": "fast-deep-equal",
+   "downloads": 1237487867
+  },
+  {
+   "name": "function-bind",
+   "downloads": 1230862459
+  },
+  {
+   "name": "tinyglobby",
+   "downloads": 1226962362
+  },
+  {
+   "name": "@babel/traverse",
+   "downloads": 1221876785
+  },
+  {
+   "name": "punycode",
+   "downloads": 1216000725
+  },
+  {
+   "name": "source-map-js",
+   "downloads": 1215033248
+  },
+  {
+   "name": "estree-walker",
+   "downloads": 1214090611
+  },
+  {
+   "name": "estraverse",
+   "downloads": 1213745137
+  },
+  {
+   "name": "inherits",
+   "downloads": 1212755368
+  },
+  {
+   "name": "es-module-lexer",
+   "downloads": 1203502179
+  },
+  {
+   "name": "caniuse-lite",
+   "downloads": 1191752351
+  },
+  {
+   "name": "get-stream",
+   "downloads": 1182758877
+  },
+  {
+   "name": "graceful-fs",
+   "downloads": 1182056576
+  },
+  {
+   "name": "@jridgewell/resolve-uri",
+   "downloads": 1179488879
+  },
+  {
+   "name": "get-intrinsic",
+   "downloads": 1178655681
+  },
+  {
+   "name": "fdir",
+   "downloads": 1175749104
+  },
+  {
+   "name": "is-stream",
+   "downloads": 1175265332
+  },
+  {
+   "name": "es-object-atoms",
+   "downloads": 1174541788
+  },
+  {
+   "name": "es-errors",
+   "downloads": 1171752129
+  },
+  {
+   "name": "node-fetch",
+   "downloads": 1168995862
+  },
+  {
+   "name": "strip-json-comments",
+   "downloads": 1164935075
+  },
+  {
+   "name": "chokidar",
+   "downloads": 1163965110
+  },
+  {
+   "name": "@babel/runtime",
+   "downloads": 1158324937
+  },
+  {
+   "name": "has-symbols",
+   "downloads": 1153726228
+  },
+  {
+   "name": "@jridgewell/gen-mapping",
+   "downloads": 1151150831
+  },
+  {
+   "name": "statuses",
+   "downloads": 1144920550
+  },
+  {
+   "name": "readdirp",
+   "downloads": 1143580912
+  },
+  {
+   "name": "escalade",
+   "downloads": 1140777286
+  },
+  {
+   "name": "gopd",
+   "downloads": 1135307218
+  },
+  {
+   "name": "@babel/template",
+   "downloads": 1122658542
+  },
+  {
+   "name": "es-define-property",
+   "downloads": 1120055832
+  },
+  {
+   "name": "eslint-scope",
+   "downloads": 1118486608
+  },
+  {
+   "name": "path-scurry",
+   "downloads": 1115195632
+  },
+  {
+   "name": "electron-to-chromium",
+   "downloads": 1113797076
+  },
+  {
+   "name": "vite",
+   "downloads": 1108370886
+  },
+  {
+   "name": "yocto-queue",
+   "downloads": 1106593305
+  },
+  {
+   "name": "browserslist",
+   "downloads": 1106378272
+  },
+  {
+   "name": "y18n",
+   "downloads": 1106000074
+  },
+  {
+   "name": "qs",
+   "downloads": 1105998916
+  },
+  {
+   "name": "onetime",
+   "downloads": 1101252313
+  },
+  {
+   "name": "scheduler",
+   "downloads": 1100207802
+  },
+  {
+   "name": "dotenv",
+   "downloads": 1099458454
+  },
+  {
+   "name": "call-bind-apply-helpers",
+   "downloads": 1096506868
+  },
+  {
+   "name": "@oxc-project/types",
+   "downloads": 1091137759
+  },
+  {
+   "name": "node-releases",
+   "downloads": 1090795337
+  },
+  {
+   "name": "dunder-proto",
+   "downloads": 1088615979
+  },
+  {
+   "name": "math-intrinsics",
+   "downloads": 1084807277
+  },
+  {
+   "name": "get-proto",
+   "downloads": 1083965246
+  },
+  {
+   "name": "@babel/core",
+   "downloads": 1062662216
+  },
+  {
+   "name": "react",
+   "downloads": 1062397870
+  },
+  {
+   "name": "is-glob",
+   "downloads": 1057561230
+  },
+  {
+   "name": "side-channel",
+   "downloads": 1055108237
+  },
+  {
+   "name": "baseline-browser-mapping",
+   "downloads": 1041745436
+  },
+  {
+   "name": "jiti",
+   "downloads": 1039312112
+  },
+  {
+   "name": "update-browserslist-db",
+   "downloads": 1035586188
+  },
+  {
+   "name": "camelcase",
+   "downloads": 1024433742
+  },
+  {
+   "name": "lightningcss",
+   "downloads": 1019592929
+  },
+  {
+   "name": "buffer",
+   "downloads": 1017235909
+  },
+  {
+   "name": "@babel/helpers",
+   "downloads": 1016389782
+  },
+  {
+   "name": "jsesc",
+   "downloads": 1015987150
+  },
+  {
+   "name": "@babel/helper-compilation-targets",
+   "downloads": 1015605027
+  },
+  {
+   "name": "is-extglob",
+   "downloads": 1015010661
+  },
+  {
+   "name": "@babel/helper-module-imports",
+   "downloads": 1010454145
+  },
+  {
+   "name": "http-errors",
+   "downloads": 1008926058
+  },
+  {
+   "name": "object-inspect",
+   "downloads": 1008631621
+  },
+  {
+   "name": "@babel/compat-data",
+   "downloads": 1006955199
+  },
+  {
+   "name": "react-dom",
+   "downloads": 998839577
+  },
+  {
+   "name": "safer-buffer",
+   "downloads": 998808987
+  },
+  {
+   "name": "@babel/helper-validator-option",
+   "downloads": 994586570
+  },
+  {
+   "name": "@typescript-eslint/types",
+   "downloads": 993312078
+  },
+  {
+   "name": "@babel/helper-module-transforms",
+   "downloads": 991568629
+  },
+  {
+   "name": "csstype",
+   "downloads": 984126344
+  },
+  {
+   "name": "execa",
+   "downloads": 982542699
+  },
+  {
+   "name": "@babel/helper-globals",
+   "downloads": 982446134
+  },
+  {
+   "name": "parse5",
+   "downloads": 981904658
+  },
+  {
+   "name": "side-channel-list",
+   "downloads": 980277184
+  },
+  {
+   "name": "@radix-ui/react-slot",
+   "downloads": 970459566
+  },
+  {
+   "name": "object-assign",
+   "downloads": 969373599
+  },
+  {
+   "name": "once",
+   "downloads": 964899142
+  },
+  {
+   "name": "minimist",
+   "downloads": 964484332
+  },
+  {
+   "name": "call-bound",
+   "downloads": 960099567
+  },
+  {
+   "name": "aria-query",
+   "downloads": 956440239
+  },
+  {
+   "name": "@types/react",
+   "downloads": 954263795
+  },
+  {
+   "name": "is-number",
+   "downloads": 951683105
+  },
+  {
+   "name": "encodeurl",
+   "downloads": 950502101
+  },
+  {
+   "name": "tinyexec",
+   "downloads": 948436761
+  },
+  {
+   "name": "form-data",
+   "downloads": 948183102
+  },
+  {
+   "name": "wrappy",
+   "downloads": 947007530
+  },
+  {
+   "name": "jose",
+   "downloads": 945557702
+  },
+  {
+   "name": "@typescript-eslint/typescript-estree",
+   "downloads": 943072765
+  },
+  {
+   "name": "base64-js",
+   "downloads": 940951533
+  },
+  {
+   "name": "@typescript-eslint/visitor-keys",
+   "downloads": 938984232
+  },
+  {
+   "name": "accepts",
+   "downloads": 937614186
+  },
+  {
+   "name": "open",
+   "downloads": 937428698
+  },
+  {
+   "name": "ini",
+   "downloads": 933302146
+  },
+  {
+   "name": "keyv",
+   "downloads": 928029330
+  },
+  {
+   "name": "require-from-string",
+   "downloads": 923821479
+  },
+  {
+   "name": "universalify",
+   "downloads": 923031501
+  },
+  {
+   "name": "espree",
+   "downloads": 922292703
+  },
+  {
+   "name": "has-tostringtag",
+   "downloads": 922231600
+  },
+  {
+   "name": "braces",
+   "downloads": 921485161
+  },
+  {
+   "name": "@rolldown/pluginutils",
+   "downloads": 920762698
+  },
+  {
+   "name": "side-channel-weakmap",
+   "downloads": 920747002
+  },
+  {
+   "name": "side-channel-map",
+   "downloads": 920746632
+  },
+  {
+   "name": "fill-range",
+   "downloads": 918666767
+  },
+  {
+   "name": "fast-uri",
+   "downloads": 913234130
+  },
+  {
+   "name": "is-core-module",
+   "downloads": 908886532
+  },
+  {
+   "name": "finalhandler",
+   "downloads": 908510655
+  },
+  {
+   "name": "@typescript-eslint/scope-manager",
+   "downloads": 907663150
+  },
+  {
+   "name": "depd",
+   "downloads": 904413035
+  },
+  {
+   "name": "type-is",
+   "downloads": 902691938
+  },
+  {
+   "name": "npm-run-path",
+   "downloads": 902577674
+  },
+  {
+   "name": "content-disposition",
+   "downloads": 902371658
+  },
+  {
+   "name": "strip-bom",
+   "downloads": 893208110
+  },
+  {
+   "name": "mime",
+   "downloads": 892702528
+  },
+  {
+   "name": "to-regex-range",
+   "downloads": 892187717
+  },
+  {
+   "name": "micromatch",
+   "downloads": 891152570
+  },
+  {
+   "name": "@vitest/spy",
+   "downloads": 890992042
+  },
+  {
+   "name": "util-deprecate",
+   "downloads": 889785196
+  },
+  {
+   "name": "on-finished",
+   "downloads": 889303726
+  },
+  {
+   "name": "media-typer",
+   "downloads": 889101825
+  },
+  {
+   "name": "@radix-ui/react-primitive",
+   "downloads": 888705245
+  },
+  {
+   "name": "lightningcss-linux-x64-gnu",
+   "downloads": 887512049
+  },
+  {
+   "name": "@babel/helper-plugin-utils",
+   "downloads": 885416869
+  },
+  {
+   "name": "@opentelemetry/core",
+   "downloads": 885187204
+  },
+  {
+   "name": "rimraf",
+   "downloads": 885149232
+  },
+  {
+   "name": "get-caller-file",
+   "downloads": 882298696
+  },
+  {
+   "name": "send",
+   "downloads": 879613929
+  },
+  {
+   "name": "raw-body",
+   "downloads": 877680082
+  },
+  {
+   "name": "@jridgewell/remapping",
+   "downloads": 875949303
+  },
+  {
+   "name": "esutils",
+   "downloads": 874524121
+  },
+  {
+   "name": "human-signals",
+   "downloads": 871589291
+  },
+  {
+   "name": "mimic-fn",
+   "downloads": 871468078
+  },
+  {
+   "name": "fast-json-stable-stringify",
+   "downloads": 869008605
+  },
+  {
+   "name": "fast-glob",
+   "downloads": 865306431
+  },
+  {
+   "name": "es-set-tostringtag",
+   "downloads": 864503382
+  },
+  {
+   "name": "eslint",
+   "downloads": 862338139
+  },
+  {
+   "name": "fresh",
+   "downloads": 861873728
+  },
+  {
+   "name": "serve-static",
+   "downloads": 859991305
+  },
+  {
+   "name": "lodash",
+   "downloads": 859549356
+  },
+  {
+   "name": "ipaddr.js",
+   "downloads": 856318026
+  },
+  {
+   "name": "imurmurhash",
+   "downloads": 855675747
+  },
+  {
+   "name": "chai",
+   "downloads": 854416275
+  },
+  {
+   "name": "flatted",
+   "downloads": 854367589
+  },
+  {
+   "name": "@typescript-eslint/utils",
+   "downloads": 854277557
+  },
+  {
+   "name": "@eslint-community/eslint-utils",
+   "downloads": 853773705
+  },
+  {
+   "name": "ajv-formats",
+   "downloads": 853521287
+  },
+  {
+   "name": "flat-cache",
+   "downloads": 852528844
+  },
+  {
+   "name": "whatwg-mimetype",
+   "downloads": 852227869
+  },
+  {
+   "name": "body-parser",
+   "downloads": 850838228
+  },
+  {
+   "name": "gensync",
+   "downloads": 846782809
+  },
+  {
+   "name": "uri-js",
+   "downloads": 844247144
+  },
+  {
+   "name": "cookie-signature",
+   "downloads": 843393127
+  },
+  {
+   "name": "is-wsl",
+   "downloads": 841988225
+  },
+  {
+   "name": "@types/json-schema",
+   "downloads": 841681562
+  },
+  {
+   "name": "eventemitter3",
+   "downloads": 841490230
+  },
+  {
+   "name": "file-entry-cache",
+   "downloads": 840236697
+  },
+  {
+   "name": "http-proxy-agent",
+   "downloads": 836262830
+  },
+  {
+   "name": "pathe",
+   "downloads": 833295007
+  },
+  {
+   "name": "express",
+   "downloads": 826990589
+  },
+  {
+   "name": "ci-info",
+   "downloads": 822717283
+  },
+  {
+   "name": "callsites",
+   "downloads": 815542791
+  },
+  {
+   "name": "@smithy/types",
+   "downloads": 814814294
+  },
+  {
+   "name": "concat-map",
+   "downloads": 813387114
+  },
+  {
+   "name": "enhanced-resolve",
+   "downloads": 812630218
+  },
+  {
+   "name": "setprototypeof",
+   "downloads": 811368279
+  },
+  {
+   "name": "is-docker",
+   "downloads": 810246667
+  },
+  {
+   "name": "@types/react-dom",
+   "downloads": 809112732
+  },
+  {
+   "name": "optionator",
+   "downloads": 804027087
+  },
+  {
+   "name": "std-env",
+   "downloads": 803427784
+  },
+  {
+   "name": "path-parse",
+   "downloads": 802768170
+  },
+  {
+   "name": "range-parser",
+   "downloads": 800443947
+  },
+  {
+   "name": "bytes",
+   "downloads": 799474107
+  },
+  {
+   "name": "prelude-ls",
+   "downloads": 799200211
+  },
+  {
+   "name": "levn",
+   "downloads": 799194416
+  },
+  {
+   "name": "type-check",
+   "downloads": 799029823
+  },
+  {
+   "name": "tough-cookie",
+   "downloads": 796363225
+  },
+  {
+   "name": "esquery",
+   "downloads": 794135086
+  },
+  {
+   "name": "esrecurse",
+   "downloads": 792944054
+  },
+  {
+   "name": "diff",
+   "downloads": 792901852
+  },
+  {
+   "name": "acorn-jsx",
+   "downloads": 792116328
+  },
+  {
+   "name": "strip-final-newline",
+   "downloads": 791543023
+  },
+  {
+   "name": "source-map-support",
+   "downloads": 790103859
+  },
+  {
+   "name": "fastq",
+   "downloads": 789743842
+  },
+  {
+   "name": "fast-levenshtein",
+   "downloads": 789472583
+  },
+  {
+   "name": "supports-preserve-symlinks-flag",
+   "downloads": 788572301
+  },
+  {
+   "name": "import-fresh",
+   "downloads": 788437930
+  },
+  {
+   "name": "natural-compare",
+   "downloads": 788124949
+  },
+  {
+   "name": "@jest/types",
+   "downloads": 785439550
+  },
+  {
+   "name": "parse-json",
+   "downloads": 783888626
+  },
+  {
+   "name": "jsonfile",
+   "downloads": 782254208
+  },
+  {
+   "name": "require-directory",
+   "downloads": 779630800
+  },
+  {
+   "name": "@types/unist",
+   "downloads": 777594448
+  },
+  {
+   "name": "dom-accessibility-api",
+   "downloads": 775491288
+  },
+  {
+   "name": "@opentelemetry/api-logs",
+   "downloads": 775223736
+  },
+  {
+   "name": "normalize-path",
+   "downloads": 774331376
+  },
+  {
+   "name": "merge-descriptors",
+   "downloads": 773350420
+  },
+  {
+   "name": "pako",
+   "downloads": 771376789
+  },
+  {
+   "name": "deep-is",
+   "downloads": 771268357
+  },
+  {
+   "name": "prettier",
+   "downloads": 769557180
+  },
+  {
+   "name": "tapable",
+   "downloads": 769112644
+  },
+  {
+   "name": "playwright-core",
+   "downloads": 765669417
+  },
+  {
+   "name": "@typescript-eslint/parser",
+   "downloads": 764717761
+  },
+  {
+   "name": "postcss-selector-parser",
+   "downloads": 763976357
+  },
+  {
+   "name": "mdn-data",
+   "downloads": 762589646
+  },
+  {
+   "name": "is-plain-obj",
+   "downloads": 762377636
+  },
+  {
+   "name": "@eslint-community/regexpp",
+   "downloads": 762074506
+  },
+  {
+   "name": "reusify",
+   "downloads": 760849875
+  },
+  {
+   "name": "@vitest/pretty-format",
+   "downloads": 760312867
+  },
+  {
+   "name": "toidentifier",
+   "downloads": 758450571
+  },
+  {
+   "name": "@vitest/utils",
+   "downloads": 752656877
+  },
+  {
+   "name": "@eslint/js",
+   "downloads": 750731495
+  },
+  {
+   "name": "@aws-sdk/types",
+   "downloads": 750221150
+  },
+  {
+   "name": "json-stable-stringify-without-jsonify",
+   "downloads": 748467762
+  },
+  {
+   "name": "make-dir",
+   "downloads": 748430358
+  },
+  {
+   "name": "vitest",
+   "downloads": 748116014
+  },
+  {
+   "name": "parent-module",
+   "downloads": 744604584
+  },
+  {
+   "name": "escape-html",
+   "downloads": 743508287
+  },
+  {
+   "name": "word-wrap",
+   "downloads": 742276241
+  },
+  {
+   "name": "tailwindcss",
+   "downloads": 737595964
+  },
+  {
+   "name": "@vitest/mocker",
+   "downloads": 737069031
+  },
+  {
+   "name": "css-tree",
+   "downloads": 736972489
+  },
+  {
+   "name": "@radix-ui/react-compose-refs",
+   "downloads": 736576083
+  },
+  {
+   "name": "@opentelemetry/resources",
+   "downloads": 735214445
+  },
+  {
+   "name": "slash",
+   "downloads": 735139614
+  },
+  {
+   "name": "@typescript-eslint/type-utils",
+   "downloads": 733621649
+  },
+  {
+   "name": "@typescript-eslint/eslint-plugin",
+   "downloads": 732889699
+  },
+  {
+   "name": "tinyrainbow",
+   "downloads": 731203740
+  },
+  {
+   "name": "@typescript-eslint/tsconfig-utils",
+   "downloads": 731202575
+  },
+  {
+   "name": "ansi-escapes",
+   "downloads": 728763528
+  },
+  {
+   "name": "@typescript-eslint/project-service",
+   "downloads": 724754929
+  },
+  {
+   "name": "@jest/schemas",
+   "downloads": 723556421
+  },
+  {
+   "name": "@humanwhocodes/module-importer",
+   "downloads": 723435575
+  },
+  {
+   "name": "cosmiconfig",
+   "downloads": 722817349
+  },
+  {
+   "name": "@nodelib/fs.stat",
+   "downloads": 720574288
+  },
+  {
+   "name": "cli-cursor",
+   "downloads": 720304167
+  },
+  {
+   "name": "restore-cursor",
+   "downloads": 720095890
+  },
+  {
+   "name": "is-unicode-supported",
+   "downloads": 717560406
+  },
+  {
+   "name": "ts-api-utils",
+   "downloads": 714516081
+  },
+  {
+   "name": "is-arrayish",
+   "downloads": 713975792
+  },
+  {
+   "name": "mkdirp",
+   "downloads": 710555124
+  },
+  {
+   "name": "assertion-error",
+   "downloads": 710181609
+  },
+  {
+   "name": "ee-first",
+   "downloads": 707927347
+  },
+  {
+   "name": "@nodelib/fs.walk",
+   "downloads": 707451268
+  },
+  {
+   "name": "@nodelib/fs.scandir",
+   "downloads": 707179619
+  },
+  {
+   "name": "run-parallel",
+   "downloads": 705946958
+  },
+  {
+   "name": "unpipe",
+   "downloads": 705855755
+  },
+  {
+   "name": "etag",
+   "downloads": 704576195
+  },
+  {
+   "name": "queue-microtask",
+   "downloads": 703047825
+  },
+  {
+   "name": "parseurl",
+   "downloads": 700832313
+  },
+  {
+   "name": "proxy-from-env",
+   "downloads": 698603647
+  },
+  {
+   "name": "@eslint/core",
+   "downloads": 698533418
+  },
+  {
+   "name": "ieee754",
+   "downloads": 698094747
+  },
+  {
+   "name": "doctrine",
+   "downloads": 697932984
+  },
+  {
+   "name": "vary",
+   "downloads": 697102214
+  },
+  {
+   "name": "lines-and-columns",
+   "downloads": 696460986
+  },
+  {
+   "name": "clsx",
+   "downloads": 694592085
+  },
+  {
+   "name": "call-bind",
+   "downloads": 691205732
+  },
+  {
+   "name": "playwright",
+   "downloads": 690232474
+  },
+  {
+   "name": "merge2",
+   "downloads": 687730403
+  },
+  {
+   "name": "jest-worker",
+   "downloads": 687083553
+  },
+  {
+   "name": "delayed-stream",
+   "downloads": 686272688
+  },
+  {
+   "name": "@sinclair/typebox",
+   "downloads": 686180876
+  },
+  {
+   "name": "combined-stream",
+   "downloads": 685516696
+  },
+  {
+   "name": "domutils",
+   "downloads": 684326400
+  },
+  {
+   "name": "asynckit",
+   "downloads": 683822270
+  },
+  {
+   "name": "kleur",
+   "downloads": 681947985
+  },
+  {
+   "name": "get-tsconfig",
+   "downloads": 681293746
+  },
+  {
+   "name": "rollup",
+   "downloads": 681168585
+  },
+  {
+   "name": "domhandler",
+   "downloads": 678159187
+  },
+  {
+   "name": "rolldown",
+   "downloads": 674918194
+  },
+  {
+   "name": "has-property-descriptors",
+   "downloads": 674891221
+  },
+  {
+   "name": "sharp",
+   "downloads": 673975564
+  },
+  {
+   "name": "dom-serializer",
+   "downloads": 673452321
+  },
+  {
+   "name": "tinybench",
+   "downloads": 673068890
+  },
+  {
+   "name": "json-buffer",
+   "downloads": 672397191
+  },
+  {
+   "name": "obug",
+   "downloads": 672235795
+  },
+  {
+   "name": "buffer-from",
+   "downloads": 668829328
+  },
+  {
+   "name": "proxy-addr",
+   "downloads": 667858282
+  },
+  {
+   "name": "loose-envify",
+   "downloads": 666902936
+  },
+  {
+   "name": "why-is-node-running",
+   "downloads": 666803401
+  },
+  {
+   "name": "retry",
+   "downloads": 666118811
+  },
+  {
+   "name": "saxes",
+   "downloads": 664968151
+  },
+  {
+   "name": "define-data-property",
+   "downloads": 662776371
+  },
+  {
+   "name": "dequal",
+   "downloads": 658125263
+  },
+  {
+   "name": "tsconfig-paths",
+   "downloads": 654664735
+  },
+  {
+   "name": "@eslint/plugin-kit",
+   "downloads": 654254762
+  },
+  {
+   "name": "expect-type",
+   "downloads": 653867246
+  },
+  {
+   "name": "define-lazy-prop",
+   "downloads": 652862818
+  },
+  {
+   "name": "jest-util",
+   "downloads": 651796047
+  },
+  {
+   "name": "@types/chai",
+   "downloads": 651205183
+  },
+  {
+   "name": "@radix-ui/react-context",
+   "downloads": 650973964
+  },
+  {
+   "name": "jsdom",
+   "downloads": 649817820
+  },
+  {
+   "name": "@humanwhocodes/retry",
+   "downloads": 649802161
+  },
+  {
+   "name": "which-typed-array",
+   "downloads": 645836641
+  },
+  {
+   "name": "@vitest/expect",
+   "downloads": 645795984
+  },
+  {
+   "name": "slice-ansi",
+   "downloads": 645761399
+  },
+  {
+   "name": "@aws-sdk/token-providers",
+   "downloads": 644675229
+  },
+  {
+   "name": "cjs-module-lexer",
+   "downloads": 644513395
+  },
+  {
+   "name": "gaxios",
+   "downloads": 643429009
+  },
+  {
+   "name": "@eslint/config-array",
+   "downloads": 642773106
+  },
+  {
+   "name": "forwarded",
+   "downloads": 642111322
+  },
+  {
+   "name": "@eslint/eslintrc",
+   "downloads": 639947823
+  },
+  {
+   "name": "json-parse-even-better-errors",
+   "downloads": 639591095
+  },
+  {
+   "name": "fflate",
+   "downloads": 638824466
+  },
+  {
+   "name": "tar-stream",
+   "downloads": 637220948
+  },
+  {
+   "name": "@opentelemetry/semantic-conventions",
+   "downloads": 636410356
+  },
+  {
+   "name": "@eslint/config-helpers",
+   "downloads": 635945990
+  },
+  {
+   "name": "lodash.merge",
+   "downloads": 635680937
+  },
+  {
+   "name": "esprima",
+   "downloads": 634654612
+  },
+  {
+   "name": "@eslint/object-schema",
+   "downloads": 634522671
+  },
+  {
+   "name": "@humanfs/node",
+   "downloads": 634248607
+  },
+  {
+   "name": "chownr",
+   "downloads": 634002891
+  },
+  {
+   "name": "@humanfs/core",
+   "downloads": 633439306
+  },
+  {
+   "name": "html-encoding-sniffer",
+   "downloads": 631483879
+  },
+  {
+   "name": "log-symbols",
+   "downloads": 630980355
+  },
+  {
+   "name": "schema-utils",
+   "downloads": 630309827
+  },
+  {
+   "name": "@aws-sdk/core",
+   "downloads": 629969225
+  },
+  {
+   "name": "object-keys",
+   "downloads": 627123367
+  },
+  {
+   "name": "indent-string",
+   "downloads": 625851209
+  },
+  {
+   "name": "@types/deep-eql",
+   "downloads": 622904512
+  },
+  {
+   "name": "set-function-length",
+   "downloads": 619676778
+  },
+  {
+   "name": "use-sync-external-store",
+   "downloads": 615841850
+  },
+  {
+   "name": "define-properties",
+   "downloads": 614171108
+  },
+  {
+   "name": "is-regex",
+   "downloads": 614121886
+  },
+  {
+   "name": "tldts-core",
+   "downloads": 612864422
+  },
+  {
+   "name": "core-util-is",
+   "downloads": 612863393
+  },
+  {
+   "name": "end-of-stream",
+   "downloads": 612263739
+  },
+  {
+   "name": "data-urls",
+   "downloads": 611821589
+  },
+  {
+   "name": "@opentelemetry/instrumentation",
+   "downloads": 611680790
+  },
+  {
+   "name": "extend",
+   "downloads": 611503322
+  },
+  {
+   "name": "domelementtype",
+   "downloads": 609415447
+  },
+  {
+   "name": "is-callable",
+   "downloads": 608781311
+  },
+  {
+   "name": "for-each",
+   "downloads": 607867195
+  },
+  {
+   "name": "axios",
+   "downloads": 607816967
+  },
+  {
+   "name": "jackspeak",
+   "downloads": 607750254
+  },
+  {
+   "name": "anymatch",
+   "downloads": 604180745
+  },
+  {
+   "name": "follow-redirects",
+   "downloads": 603214915
+  },
+  {
+   "name": "@radix-ui/primitive",
+   "downloads": 602518831
+  },
+  {
+   "name": "@smithy/core",
+   "downloads": 602465619
+  },
+  {
+   "name": "async",
+   "downloads": 602444561
+  },
+  {
+   "name": "@swc/helpers",
+   "downloads": 599577496
+  },
+  {
+   "name": "p-try",
+   "downloads": 599211774
+  },
+  {
+   "name": "available-typed-arrays",
+   "downloads": 597366768
+  },
+  {
+   "name": "@smithy/node-http-handler",
+   "downloads": 596521064
+  },
+  {
+   "name": "is-typed-array",
+   "downloads": 595924236
+  },
+  {
+   "name": "@noble/hashes",
+   "downloads": 595703490
+  },
+  {
+   "name": "d3-array",
+   "downloads": 595000002
+  },
+  {
+   "name": "split2",
+   "downloads": 594891091
+  },
+  {
+   "name": "rxjs",
+   "downloads": 594705367
+  },
+  {
+   "name": "foreground-child",
+   "downloads": 594103020
+  },
+  {
+   "name": "xml-name-validator",
+   "downloads": 591404958
+  },
+  {
+   "name": "@opentelemetry/api",
+   "downloads": 590078523
+  },
+  {
+   "name": "@aws-sdk/credential-provider-web-identity",
+   "downloads": 590010562
+  },
+  {
+   "name": "@img/sharp-libvips-linux-x64",
+   "downloads": 589708314
+  },
+  {
+   "name": "@img/sharp-linux-x64",
+   "downloads": 588581446
+  },
+  {
+   "name": "@radix-ui/react-use-layout-effect",
+   "downloads": 587204681
+  },
+  {
+   "name": "htmlparser2",
+   "downloads": 585886107
+  },
+  {
+   "name": "xmlchars",
+   "downloads": 585662409
+  },
+  {
+   "name": "@aws-sdk/credential-provider-node",
+   "downloads": 585610118
+  },
+  {
+   "name": "merge-stream",
+   "downloads": 581604239
+  },
+  {
+   "name": "@floating-ui/dom",
+   "downloads": 579704194
+  },
+  {
+   "name": "write-file-atomic",
+   "downloads": 579088391
+  },
+  {
+   "name": "@aws-sdk/credential-provider-env",
+   "downloads": 578875295
+  },
+  {
+   "name": "@aws-sdk/credential-provider-process",
+   "downloads": 578674492
+  },
+  {
+   "name": "@aws-sdk/credential-provider-sso",
+   "downloads": 578573637
+  },
+  {
+   "name": "@aws-sdk/credential-provider-ini",
+   "downloads": 578426419
+  },
+  {
+   "name": "possible-typed-array-names",
+   "downloads": 578005846
+  },
+  {
+   "name": "safe-regex-test",
+   "downloads": 577919592
+  },
+  {
+   "name": "deepmerge",
+   "downloads": 577328466
+  },
+  {
+   "name": "decimal.js",
+   "downloads": 577175167
+  },
+  {
+   "name": "kind-of",
+   "downloads": 576578042
+  },
+  {
+   "name": "@smithy/util-utf8",
+   "downloads": 576477808
+  },
+  {
+   "name": "env-paths",
+   "downloads": 575470863
+  },
+  {
+   "name": "tsx",
+   "downloads": 575076463
+  },
+  {
+   "name": "sprintf-js",
+   "downloads": 574325794
+  },
+  {
+   "name": "@rolldown/binding-linux-x64-gnu",
+   "downloads": 573985294
+  },
+  {
+   "name": "w3c-xmlserializer",
+   "downloads": 573141848
+  },
+  {
+   "name": "hosted-git-info",
+   "downloads": 572959958
+  },
+  {
+   "name": "object.assign",
+   "downloads": 571541017
+  },
+  {
+   "name": "resolve-pkg-maps",
+   "downloads": 570769870
+  },
+  {
+   "name": "@radix-ui/react-use-controllable-state",
+   "downloads": 568489466
+  },
+  {
+   "name": "@floating-ui/core",
+   "downloads": 567886339
+  },
+  {
+   "name": "events",
+   "downloads": 567693078
+  },
+  {
+   "name": "is-promise",
+   "downloads": 567241592
+  },
+  {
+   "name": "es-abstract",
+   "downloads": 567203359
+  },
+  {
+   "name": "xtend",
+   "downloads": 567195601
+  },
+  {
+   "name": "gcp-metadata",
+   "downloads": 566138610
+  },
+  {
+   "name": "google-auth-library",
+   "downloads": 565607500
+  },
+  {
+   "name": "data-uri-to-buffer",
+   "downloads": 565150755
+  },
+  {
+   "name": "arg",
+   "downloads": 563796194
+  },
+  {
+   "name": "@rollup/rollup-linux-x64-gnu",
+   "downloads": 563598453
+  },
+  {
+   "name": "@floating-ui/utils",
+   "downloads": 563257770
+  },
+  {
+   "name": "ip-address",
+   "downloads": 562733170
+  },
+  {
+   "name": "mute-stream",
+   "downloads": 562315263
+  },
+  {
+   "name": "strip-indent",
+   "downloads": 561791608
+  },
+  {
+   "name": "node-addon-api",
+   "downloads": 559827066
+  },
+  {
+   "name": "@aws-sdk/credential-provider-http",
+   "downloads": 557218319
+  },
+  {
+   "name": "prop-types",
+   "downloads": 556693974
+  },
+  {
+   "name": "lightningcss-linux-x64-musl",
+   "downloads": 555172894
+  },
+  {
+   "name": "is-generator-function",
+   "downloads": 555103274
+  },
+  {
+   "name": "@aws-sdk/nested-clients",
+   "downloads": 554172084
+  },
+  {
+   "name": "@smithy/signature-v4",
+   "downloads": 553759838
+  },
+  {
+   "name": "error-ex",
+   "downloads": 551665714
+  },
+  {
+   "name": "ora",
+   "downloads": 551643413
+  },
+  {
+   "name": "@smithy/fetch-http-handler",
+   "downloads": 549948420
+  },
+  {
+   "name": "@isaacs/cliui",
+   "downloads": 549522915
+  },
+  {
+   "name": "is-date-object",
+   "downloads": 549137319
+  },
+  {
+   "name": "@emnapi/runtime",
+   "downloads": 547296872
+  },
+  {
+   "name": "is-symbol",
+   "downloads": 545394162
+  },
+  {
+   "name": "@aws-sdk/xml-builder",
+   "downloads": 544248656
+  },
+  {
+   "name": "regexp.prototype.flags",
+   "downloads": 543231570
+  },
+  {
+   "name": "globalthis",
+   "downloads": 543134456
+  },
+  {
+   "name": "path-type",
+   "downloads": 542720036
+  },
+  {
+   "name": "sax",
+   "downloads": 542165493
+  },
+  {
+   "name": "long",
+   "downloads": 541792301
+  },
+  {
+   "name": "get-east-asian-width",
+   "downloads": 540833993
+  },
+  {
+   "name": "@vitejs/plugin-react",
+   "downloads": 539427807
+  },
+  {
+   "name": "path-is-absolute",
+   "downloads": 539099817
+  },
+  {
+   "name": "typed-array-buffer",
+   "downloads": 537943982
+  },
+  {
+   "name": "@types/babel__traverse",
+   "downloads": 537687109
+  },
+  {
+   "name": "@csstools/css-tokenizer",
+   "downloads": 536437009
+  },
+  {
+   "name": "pify",
+   "downloads": 535497818
+  },
+  {
+   "name": "is-boolean-object",
+   "downloads": 534791129
+  },
+  {
+   "name": "@vitest/snapshot",
+   "downloads": 534746277
+  },
+  {
+   "name": "is-number-object",
+   "downloads": 533990764
+  },
+  {
+   "name": "is-string",
+   "downloads": 533550503
+  },
+  {
+   "name": "internal-slot",
+   "downloads": 533170891
+  },
+  {
+   "name": "which-boxed-primitive",
+   "downloads": 532753385
+  },
+  {
+   "name": "is-bigint",
+   "downloads": 532572896
+  },
+  {
+   "name": "@ungap/structured-clone",
+   "downloads": 531855544
+  },
+  {
+   "name": "es-to-primitive",
+   "downloads": 531185872
+  },
+  {
+   "name": "fs.realpath",
+   "downloads": 531087496
+  },
+  {
+   "name": "process-nextick-args",
+   "downloads": 531063659
+  },
+  {
+   "name": "string.prototype.trimend",
+   "downloads": 530514905
+  },
+  {
+   "name": "@csstools/css-parser-algorithms",
+   "downloads": 530177912
+  },
+  {
+   "name": "inflight",
+   "downloads": 529763071
+  },
+  {
+   "name": "is-shared-array-buffer",
+   "downloads": 529565237
+  },
+  {
+   "name": "has-bigints",
+   "downloads": 528265222
+  },
+  {
+   "name": "@types/babel__generator",
+   "downloads": 528260275
+  },
+  {
+   "name": "@types/babel__core",
+   "downloads": 527351108
+  },
+  {
+   "name": "marked",
+   "downloads": 525279589
+  },
+  {
+   "name": "@types/babel__template",
+   "downloads": 522766936
+  },
+  {
+   "name": "is-potential-custom-element-name",
+   "downloads": 522713900
+  },
+  {
+   "name": "google-logging-utils",
+   "downloads": 522007424
+  },
+  {
+   "name": "d3-path",
+   "downloads": 521831779
+  },
+  {
+   "name": "d3-shape",
+   "downloads": 521702360
+  },
+  {
+   "name": "functions-have-names",
+   "downloads": 521254799
+  },
+  {
+   "name": "jws",
+   "downloads": 520740586
+  },
+  {
+   "name": "function.prototype.name",
+   "downloads": 520406535
+  },
+  {
+   "name": "is-array-buffer",
+   "downloads": 519695316
+  },
+  {
+   "name": "protobufjs",
+   "downloads": 518654767
+  },
+  {
+   "name": "jwa",
+   "downloads": 518502740
+  },
+  {
+   "name": "array-buffer-byte-length",
+   "downloads": 517000504
+  },
+  {
+   "name": "xmlbuilder",
+   "downloads": 516879687
+  },
+  {
+   "name": "internmap",
+   "downloads": 516010212
+  },
+  {
+   "name": "has-proto",
+   "downloads": 515908379
+  },
+  {
+   "name": "string.prototype.trimstart",
+   "downloads": 515783604
+  },
+  {
+   "name": "cors",
+   "downloads": 515687454
+  },
+  {
+   "name": "@csstools/css-calc",
+   "downloads": 514864554
+  },
+  {
+   "name": "string.prototype.trim",
+   "downloads": 513000225
+  },
+  {
+   "name": "pure-rand",
+   "downloads": 512535546
+  },
+  {
+   "name": "@vitest/runner",
+   "downloads": 512439021
+  },
+  {
+   "name": "unbox-primitive",
+   "downloads": 511876463
+  },
+  {
+   "name": "typed-array-length",
+   "downloads": 511801217
+  },
+  {
+   "name": "@aws-sdk/signature-v4-multi-region",
+   "downloads": 511640349
+  },
+  {
+   "name": "is-weakref",
+   "downloads": 511533538
+  },
+  {
+   "name": "@radix-ui/react-use-callback-ref",
+   "downloads": 511316697
+  },
+  {
+   "name": "get-symbol-description",
+   "downloads": 511272943
+  },
+  {
+   "name": "@types/ms",
+   "downloads": 511252215
+  },
+  {
+   "name": "postcss-value-parser",
+   "downloads": 510831381
+  },
+  {
+   "name": "pump",
+   "downloads": 510656731
+  },
+  {
+   "name": "set-function-name",
+   "downloads": 510359222
+  },
+  {
+   "name": "package-json-from-dist",
+   "downloads": 507620424
+  },
+  {
+   "name": "typed-array-byte-offset",
+   "downloads": 507471930
+  },
+  {
+   "name": "safe-array-concat",
+   "downloads": 506938678
+  },
+  {
+   "name": "@radix-ui/react-presence",
+   "downloads": 506811587
+  },
+  {
+   "name": "date-fns",
+   "downloads": 505133033
+  },
+  {
+   "name": "@opentelemetry/sdk-trace-base",
+   "downloads": 504892385
+  },
+  {
+   "name": "@babel/helper-annotate-as-pure",
+   "downloads": 502541851
+  },
+  {
+   "name": "is-map",
+   "downloads": 501362642
+  },
+  {
+   "name": "is-weakset",
+   "downloads": 500825238
+  },
+  {
+   "name": "is-weakmap",
+   "downloads": 499557505
+  },
+  {
+   "name": "which-collection",
+   "downloads": 499523967
+  },
+  {
+   "name": "eslint-plugin-react-hooks",
+   "downloads": 499259694
+  },
+  {
+   "name": "hermes-parser",
+   "downloads": 498932322
+  },
+  {
+   "name": "is-set",
+   "downloads": 498543065
+  },
+  {
+   "name": "hermes-estree",
+   "downloads": 498192344
+  },
+  {
+   "name": "@tailwindcss/node",
+   "downloads": 497786374
+  },
+  {
+   "name": "html-escaper",
+   "downloads": 497783984
+  },
+  {
+   "name": "@tailwindcss/oxide",
+   "downloads": 497584957
+  },
+  {
+   "name": "is-negative-zero",
+   "downloads": 497552480
+  },
+  {
+   "name": "arraybuffer.prototype.slice",
+   "downloads": 495644909
+  },
+  {
+   "name": "typed-array-byte-length",
+   "downloads": 495437835
+  },
+  {
+   "name": "@csstools/css-color-parser",
+   "downloads": 495090591
+  },
+  {
+   "name": "tar",
+   "downloads": 494112356
+  },
+  {
+   "name": "bl",
+   "downloads": 493872556
+  },
+  {
+   "name": "clone",
+   "downloads": 493507888
+  },
+  {
+   "name": "jest-regex-util",
+   "downloads": 493197665
+  },
+  {
+   "name": "@csstools/color-helpers",
+   "downloads": 491667935
+  },
+  {
+   "name": "eventsource-parser",
+   "downloads": 491047367
+  },
+  {
+   "name": "@radix-ui/react-id",
+   "downloads": 490785990
+  },
+  {
+   "name": "@floating-ui/react-dom",
+   "downloads": 487354774
+  },
+  {
+   "name": "@babel/plugin-syntax-jsx",
+   "downloads": 486557973
+  },
+  {
+   "name": "@smithy/credential-provider-imds",
+   "downloads": 485928893
+  },
+  {
+   "name": "@types/ws",
+   "downloads": 485735157
+  },
+  {
+   "name": "typescript-eslint",
+   "downloads": 485449520
+  },
+  {
+   "name": "@testing-library/dom",
+   "downloads": 485138062
+  },
+  {
+   "name": "cli-spinners",
+   "downloads": 483800828
+  },
+  {
+   "name": "postgres-array",
+   "downloads": 482938947
+  },
+  {
+   "name": "data-view-byte-length",
+   "downloads": 482421373
+  },
+  {
+   "name": "data-view-buffer",
+   "downloads": 482417071
+  },
+  {
+   "name": "data-view-byte-offset",
+   "downloads": 482403395
+  },
+  {
+   "name": "is-data-view",
+   "downloads": 482056655
+  },
+  {
+   "name": "css-select",
+   "downloads": 481973631
+  },
+  {
+   "name": "stop-iteration-iterator",
+   "downloads": 480950037
+  },
+  {
+   "name": "@humanfs/types",
+   "downloads": 480271050
+  },
+  {
+   "name": "@asamuzakjp/css-color",
+   "downloads": 480087651
+  },
+  {
+   "name": "@types/yargs",
+   "downloads": 479919919
+  },
+  {
+   "name": "reflect.getprototypeof",
+   "downloads": 478278910
+  },
+  {
+   "name": "which-builtin-type",
+   "downloads": 477797140
+  },
+  {
+   "name": "ajv-keywords",
+   "downloads": 477499295
+  },
+  {
+   "name": "is-finalizationregistry",
+   "downloads": 477385089
+  },
+  {
+   "name": "is-async-function",
+   "downloads": 477058139
+  },
+  {
+   "name": "@bcoe/v8-coverage",
+   "downloads": 475821867
+  },
+  {
+   "name": "figures",
+   "downloads": 475642432
+  },
+  {
+   "name": "globby",
+   "downloads": 474364257
+  },
+  {
+   "name": "@smithy/util-buffer-from",
+   "downloads": 474326282
+  },
+  {
+   "name": "fast-xml-parser",
+   "downloads": 473932576
+  },
+  {
+   "name": "terser",
+   "downloads": 472699801
+  },
+  {
+   "name": "own-keys",
+   "downloads": 471580085
+  },
+  {
+   "name": "axe-core",
+   "downloads": 468953896
+  },
+  {
+   "name": "router",
+   "downloads": 467893898
+  },
+  {
+   "name": "tmp",
+   "downloads": 467736878
+  },
+  {
+   "name": "cssesc",
+   "downloads": 467670528
+  },
+  {
+   "name": "sisteransi",
+   "downloads": 466597122
+  },
+  {
+   "name": "@radix-ui/react-portal",
+   "downloads": 466421107
+  },
+  {
+   "name": "eastasianwidth",
+   "downloads": 466053336
+  },
+  {
+   "name": "pkg-dir",
+   "downloads": 466035699
+  },
+  {
+   "name": "@radix-ui/react-dismissable-layer",
+   "downloads": 465979487
+  },
+  {
+   "name": "colorette",
+   "downloads": 465705815
+  },
+  {
+   "name": "@smithy/is-array-buffer",
+   "downloads": 465208097
+  },
+  {
+   "name": "import-in-the-middle",
+   "downloads": 464668806
+  },
+  {
+   "name": "pg-protocol",
+   "downloads": 464586056
+  },
+  {
+   "name": "@aws-sdk/credential-provider-login",
+   "downloads": 464258758
+  },
+  {
+   "name": "web-streams-polyfill",
+   "downloads": 464143245
+  },
+  {
+   "name": "siginfo",
+   "downloads": 463911793
+  },
+  {
+   "name": "binary-extensions",
+   "downloads": 462904491
+  },
+  {
+   "name": "istanbul-lib-instrument",
+   "downloads": 462804140
+  },
+  {
+   "name": "ecdsa-sig-formatter",
+   "downloads": 462108764
+  },
+  {
+   "name": "safe-push-apply",
+   "downloads": 461546946
+  },
+  {
+   "name": "set-proto",
+   "downloads": 461231039
+  },
+  {
+   "name": "@babel/plugin-syntax-typescript",
+   "downloads": 460230949
+  },
+  {
+   "name": "buffer-equal-constant-time",
+   "downloads": 459732255
+  },
+  {
+   "name": "micromark-util-symbol",
+   "downloads": 458369182
+  },
+  {
+   "name": "generator-function",
+   "downloads": 458140888
+  },
+  {
+   "name": "dayjs",
+   "downloads": 457003764
+  },
+  {
+   "name": "minizlib",
+   "downloads": 455779973
+  },
+  {
+   "name": "async-function",
+   "downloads": 455686241
+  },
+  {
+   "name": "jest-message-util",
+   "downloads": 454295951
+  },
+  {
+   "name": "tiny-invariant",
+   "downloads": 452920534
+  },
+  {
+   "name": "tailwind-merge",
+   "downloads": 451767260
+  },
+  {
+   "name": "buffer-crc32",
+   "downloads": 448959644
+  },
+  {
+   "name": "confbox",
+   "downloads": 447960587
+  },
+  {
+   "name": "jsonc-parser",
+   "downloads": 447797225
+  },
+  {
+   "name": "lz-string",
+   "downloads": 447019867
+  },
+  {
+   "name": "is-binary-path",
+   "downloads": 446726439
+  },
+  {
+   "name": "cli-width",
+   "downloads": 446647978
+  },
+  {
+   "name": "@grpc/proto-loader",
+   "downloads": 445868609
+  },
+  {
+   "name": "@types/hast",
+   "downloads": 445294042
+  },
+  {
+   "name": "micromark-util-character",
+   "downloads": 444724680
+  },
+  {
+   "name": "@pkgjs/parseargs",
+   "downloads": 444212492
+  },
+  {
+   "name": "@babel/helper-create-class-features-plugin",
+   "downloads": 443591826
+  },
+  {
+   "name": "css-what",
+   "downloads": 443575824
+  },
+  {
+   "name": "@tailwindcss/oxide-linux-x64-gnu",
+   "downloads": 443088026
+  },
+  {
+   "name": "@radix-ui/react-focus-scope",
+   "downloads": 442886133
+  },
+  {
+   "name": "wsl-utils",
+   "downloads": 442084624
+  },
+  {
+   "name": "istanbul-lib-coverage",
+   "downloads": 442017224
+  },
+  {
+   "name": "postgres-interval",
+   "downloads": 441978236
+  },
+  {
+   "name": "d3-interpolate",
+   "downloads": 441251479
+  },
+  {
+   "name": "@babel/helper-member-expression-to-functions",
+   "downloads": 440844710
+  },
+  {
+   "name": "nopt",
+   "downloads": 440561203
+  },
+  {
+   "name": "postgres-date",
+   "downloads": 440203187
+  },
+  {
+   "name": "pirates",
+   "downloads": 440190970
+  },
+  {
+   "name": "@radix-ui/react-focus-guards",
+   "downloads": 439690161
+  },
+  {
+   "name": "@babel/helper-replace-supers",
+   "downloads": 439104582
+  },
+  {
+   "name": "symbol-tree",
+   "downloads": 438957726
+  },
+  {
+   "name": "hono",
+   "downloads": 438606872
+  },
+  {
+   "name": "@types/aria-query",
+   "downloads": 438319662
+  },
+  {
+   "name": "postgres-bytea",
+   "downloads": 438305556
+  },
+  {
+   "name": "react-refresh",
+   "downloads": 437465711
+  },
+  {
+   "name": "@types/debug",
+   "downloads": 437247903
+  },
+  {
+   "name": "d3-color",
+   "downloads": 437226222
+  },
+  {
+   "name": "pg-types",
+   "downloads": 436698798
+  },
+  {
+   "name": "d3-format",
+   "downloads": 435512432
+  },
+  {
+   "name": "unist-util-visit",
+   "downloads": 435110402
+  },
+  {
+   "name": "unist-util-visit-parents",
+   "downloads": 434576249
+  },
+  {
+   "name": "@babel/helper-skip-transparent-expression-wrappers",
+   "downloads": 433619039
+  },
+  {
+   "name": "lilconfig",
+   "downloads": 433168974
+  },
+  {
+   "name": "@babel/helper-optimise-call-expression",
+   "downloads": 432770480
+  },
+  {
+   "name": "@inquirer/type",
+   "downloads": 432617469
+  },
+  {
+   "name": "p-map",
+   "downloads": 430384323
+  },
+  {
+   "name": "pngjs",
+   "downloads": 430290454
+  },
+  {
+   "name": "@aws/lambda-invoke-store",
+   "downloads": 429948872
+  },
+  {
+   "name": "unist-util-is",
+   "downloads": 429868101
+  },
+  {
+   "name": "@ai-sdk/provider",
+   "downloads": 428725644
+  },
+  {
+   "name": "mimic-response",
+   "downloads": 428080960
+  },
+  {
+   "name": "micromark-util-types",
+   "downloads": 427187056
+  },
+  {
+   "name": "acorn-walk",
+   "downloads": 426546867
+  },
+  {
+   "name": "unist-util-stringify-position",
+   "downloads": 424445923
+  },
+  {
+   "name": "is-interactive",
+   "downloads": 423771921
+  },
+  {
+   "name": "d3-time",
+   "downloads": 423506175
+  },
+  {
+   "name": "lodash.isplainobject",
+   "downloads": 423402957
+  },
+  {
+   "name": "@sentry/core",
+   "downloads": 422521953
+  },
+  {
+   "name": "pg-connection-string",
+   "downloads": 421367606
+  },
+  {
+   "name": "strnum",
+   "downloads": 421216421
+  },
+  {
+   "name": "event-target-shim",
+   "downloads": 421118030
+  },
+  {
+   "name": "set-cookie-parser",
+   "downloads": 420918438
+  },
+  {
+   "name": "@protobufjs/utf8",
+   "downloads": 420872439
+  },
+  {
+   "name": "@next/env",
+   "downloads": 420013888
+  },
+  {
+   "name": "istanbul-reports",
+   "downloads": 419219166
+  },
+  {
+   "name": "eventsource",
+   "downloads": 418961051
+  },
+  {
+   "name": "@radix-ui/react-collection",
+   "downloads": 418921193
+  },
+  {
+   "name": "jest-diff",
+   "downloads": 418893127
+  },
+  {
+   "name": "@types/d3-shape",
+   "downloads": 418676200
+  },
+  {
+   "name": "array-includes",
+   "downloads": 418633552
+  },
+  {
+   "name": "@types/mdast",
+   "downloads": 417187933
+  },
+  {
+   "name": "is-plain-object",
+   "downloads": 416600901
+  },
+  {
+   "name": "es-shim-unscopables",
+   "downloads": 416391380
+  },
+  {
+   "name": "dompurify",
+   "downloads": 415708493
+  },
+  {
+   "name": "nth-check",
+   "downloads": 415421455
+  },
+  {
+   "name": "@protobufjs/codegen",
+   "downloads": 414832493
+  },
+  {
+   "name": "@protobufjs/fetch",
+   "downloads": 414684143
+  },
+  {
+   "name": "redent",
+   "downloads": 414665722
+  },
+  {
+   "name": "@protobufjs/eventemitter",
+   "downloads": 414606031
+  },
+  {
+   "name": "@radix-ui/react-direction",
+   "downloads": 414539781
+  },
+  {
+   "name": "d3-time-format",
+   "downloads": 414019411
+  },
+  {
+   "name": "abort-controller",
+   "downloads": 413302387
+  },
+  {
+   "name": "@types/d3-color",
+   "downloads": 412351496
+  },
+  {
+   "name": "object.values",
+   "downloads": 412290956
+  },
+  {
+   "name": "pg-int8",
+   "downloads": 412096805
+  },
+  {
+   "name": "@alloc/quick-lru",
+   "downloads": 411889358
+  },
+  {
+   "name": "istanbul-lib-report",
+   "downloads": 411390383
+  },
+  {
+   "name": "@types/send",
+   "downloads": 411001772
+  },
+  {
+   "name": "abbrev",
+   "downloads": 410447488
+  },
+  {
+   "name": "@types/d3-interpolate",
+   "downloads": 409959259
+  },
+  {
+   "name": "array.prototype.flat",
+   "downloads": 409013564
+  },
+  {
+   "name": "@hono/node-server",
+   "downloads": 408583513
+  },
+  {
+   "name": "shell-quote",
+   "downloads": 407896761
+  },
+  {
+   "name": "whatwg-encoding",
+   "downloads": 407348995
+  },
+  {
+   "name": "@babel/plugin-transform-modules-commonjs",
+   "downloads": 407208410
+  },
+  {
+   "name": "d3-timer",
+   "downloads": 407101640
+  },
+  {
+   "name": "@sindresorhus/is",
+   "downloads": 405490412
+  },
+  {
+   "name": "array.prototype.flatmap",
+   "downloads": 405170523
+  },
+  {
+   "name": "d3-scale",
+   "downloads": 404906981
+  },
+  {
+   "name": "@inquirer/core",
+   "downloads": 403863043
+  },
+  {
+   "name": "@testing-library/jest-dom",
+   "downloads": 403274927
+  },
+  {
+   "name": "vfile-message",
+   "downloads": 402530982
+  },
+  {
+   "name": "bowser",
+   "downloads": 402376216
+  },
+  {
+   "name": "@types/pg",
+   "downloads": 401310002
+  },
+  {
+   "name": "core-js",
+   "downloads": 401269610
+  },
+  {
+   "name": "destroy",
+   "downloads": 401177507
+  },
+  {
+   "name": "express-rate-limit",
+   "downloads": 400933964
+  },
+  {
+   "name": "pg",
+   "downloads": 400729376
+  },
+  {
+   "name": "@types/d3-time",
+   "downloads": 399811667
+  },
+  {
+   "name": "@rollup/pluginutils",
+   "downloads": 399676287
+  },
+  {
+   "name": "@jridgewell/source-map",
+   "downloads": 399075120
+  },
+  {
+   "name": "default-browser",
+   "downloads": 398667512
+  },
+  {
+   "name": "zod-to-json-schema",
+   "downloads": 398595663
+  },
+  {
+   "name": "micromark-factory-space",
+   "downloads": 398333925
+  },
+  {
+   "name": "react-remove-scroll",
+   "downloads": 397589833
+  },
+  {
+   "name": "micromark-util-sanitize-uri",
+   "downloads": 397504938
+  },
+  {
+   "name": "micromark-util-encode",
+   "downloads": 397491004
+  },
+  {
+   "name": "ast-types",
+   "downloads": 397286107
+  },
+  {
+   "name": "vfile",
+   "downloads": 396367348
+  },
+  {
+   "name": "aria-hidden",
+   "downloads": 396255721
+  },
+  {
+   "name": "property-information",
+   "downloads": 396106089
+  },
+  {
+   "name": "unicorn-magic",
+   "downloads": 395491487
+  },
+  {
+   "name": "jest-matcher-utils",
+   "downloads": 395476977
+  },
+  {
+   "name": "object.fromentries",
+   "downloads": 395451784
+  },
+  {
+   "name": "boolbase",
+   "downloads": 394881750
+  },
+  {
+   "name": "node-domexception",
+   "downloads": 394421192
+  },
+  {
+   "name": "min-indent",
+   "downloads": 394353539
+  },
+  {
+   "name": "@opentelemetry/sdk-metrics",
+   "downloads": 394077319
+  },
+  {
+   "name": "@protobufjs/float",
+   "downloads": 393931510
+  },
+  {
+   "name": "@protobufjs/path",
+   "downloads": 393930283
+  },
+  {
+   "name": "@protobufjs/aspromise",
+   "downloads": 393911565
+  },
+  {
+   "name": "@protobufjs/pool",
+   "downloads": 393885106
+  },
+  {
+   "name": "@types/trusted-types",
+   "downloads": 393873731
+  },
+  {
+   "name": "@protobufjs/base64",
+   "downloads": 393805777
+  },
+  {
+   "name": "@types/d3-path",
+   "downloads": 393686344
+  },
+  {
+   "name": "d3-ease",
+   "downloads": 393443574
+  },
+  {
+   "name": "dedent",
+   "downloads": 393361421
+  },
+  {
+   "name": "@types/d3-scale",
+   "downloads": 393154324
+  },
+  {
+   "name": "character-entities",
+   "downloads": 392382694
+  },
+  {
+   "name": "micromark",
+   "downloads": 391918261
+  },
+  {
+   "name": "@radix-ui/react-dialog",
+   "downloads": 391435404
+  },
+  {
+   "name": "safe-stable-stringify",
+   "downloads": 391291400
+  },
+  {
+   "name": "@testing-library/react",
+   "downloads": 391280710
+  },
+  {
+   "name": "@octokit/types",
+   "downloads": 389754254
+  },
+  {
+   "name": "is-inside-container",
+   "downloads": 389611950
+  },
+  {
+   "name": "@radix-ui/react-roving-focus",
+   "downloads": 389080454
+  },
+  {
+   "name": "client-only",
+   "downloads": 387727273
+  },
+  {
+   "name": "pkg-types",
+   "downloads": 387486140
+  },
+  {
+   "name": "immer",
+   "downloads": 386783579
+  },
+  {
+   "name": "default-browser-id",
+   "downloads": 386592669
+  },
+  {
+   "name": "@radix-ui/react-use-size",
+   "downloads": 386399618
+  },
+  {
+   "name": "decamelize",
+   "downloads": 386336513
+  },
+  {
+   "name": "@tanstack/query-core",
+   "downloads": 385597750
+  },
+  {
+   "name": "jest-mock",
+   "downloads": 385588126
+  },
+  {
+   "name": "prompts",
+   "downloads": 385499971
+  },
+  {
+   "name": "character-entities-legacy",
+   "downloads": 384079711
+  },
+  {
+   "name": "cssstyle",
+   "downloads": 383711063
+  },
+  {
+   "name": "run-applescript",
+   "downloads": 382667967
+  },
+  {
+   "name": "mdast-util-from-markdown",
+   "downloads": 382546984
+  },
+  {
+   "name": "@types/d3-array",
+   "downloads": 382348328
+  },
+  {
+   "name": "@rollup/rollup-linux-x64-musl",
+   "downloads": 382164254
+  },
+  {
+   "name": "@radix-ui/react-popper",
+   "downloads": 381587020
+  },
+  {
+   "name": "bundle-name",
+   "downloads": 380033030
+  },
+  {
+   "name": "object.entries",
+   "downloads": 379984467
+  },
+  {
+   "name": "@emnapi/core",
+   "downloads": 379744304
+  },
+  {
+   "name": "mdast-util-to-string",
+   "downloads": 379358398
+  },
+  {
+   "name": "@octokit/openapi-types",
+   "downloads": 378983800
+  },
+  {
+   "name": "process-warning",
+   "downloads": 378798314
+  },
+  {
+   "name": "json-schema-typed",
+   "downloads": 378491550
+  },
+  {
+   "name": "zustand",
+   "downloads": 378259420
+  },
+  {
+   "name": "@sinonjs/fake-timers",
+   "downloads": 378218509
+  },
+  {
+   "name": "@types/express-serve-static-core",
+   "downloads": 377843948
+  },
+  {
+   "name": "pg-pool",
+   "downloads": 377646675
+  },
+  {
+   "name": "archiver-utils",
+   "downloads": 376619019
+  },
+  {
+   "name": "pg-cloudflare",
+   "downloads": 375955616
+  },
+  {
+   "name": "@radix-ui/react-arrow",
+   "downloads": 375907296
+  },
+  {
+   "name": "@colors/colors",
+   "downloads": 375426927
+  },
+  {
+   "name": "json-schema",
+   "downloads": 375339240
+  },
+  {
+   "name": "regenerator-runtime",
+   "downloads": 373588835
+  },
+  {
+   "name": "micromark-core-commonmark",
+   "downloads": 372983054
+  },
+  {
+   "name": "bignumber.js",
+   "downloads": 372828673
+  },
+  {
+   "name": "unified",
+   "downloads": 371804223
+  },
+  {
+   "name": "leven",
+   "downloads": 371064253
+  },
+  {
+   "name": "detect-node-es",
+   "downloads": 370032642
+  },
+  {
+   "name": "devlop",
+   "downloads": 369963977
+  },
+  {
+   "name": "zwitch",
+   "downloads": 369865680
+  },
+  {
+   "name": "@modelcontextprotocol/sdk",
+   "downloads": 369782742
+  },
+  {
+   "name": "is-path-inside",
+   "downloads": 369298070
+  },
+  {
+   "name": "object-hash",
+   "downloads": 369061420
+  },
+  {
+   "name": "@types/express",
+   "downloads": 369032532
+  },
+  {
+   "name": "react-remove-scroll-bar",
+   "downloads": 368899122
+  },
+  {
+   "name": "lodash.isboolean",
+   "downloads": 368702825
+  },
+  {
+   "name": "is-obj",
+   "downloads": 368289471
+  },
+  {
+   "name": "fetch-blob",
+   "downloads": 368275444
+  },
+  {
+   "name": "micromark-util-classify-character",
+   "downloads": 368071632
+  },
+  {
+   "name": "utils-merge",
+   "downloads": 367973761
+  },
+  {
+   "name": "micromark-util-chunked",
+   "downloads": 367925687
+  },
+  {
+   "name": "micromark-util-decode-numeric-character-reference",
+   "downloads": 367312016
+  },
+  {
+   "name": "string.prototype.matchall",
+   "downloads": 367242667
+  },
+  {
+   "name": "micromark-util-resolve-all",
+   "downloads": 366950791
+  },
+  {
+   "name": "axobject-query",
+   "downloads": 366467748
+  },
+  {
+   "name": "micromark-util-html-tag-name",
+   "downloads": 366433609
+  },
+  {
+   "name": "micromark-util-normalize-identifier",
+   "downloads": 366424477
+  },
+  {
+   "name": "micromark-util-subtokenize",
+   "downloads": 366402554
+  },
+  {
+   "name": "micromark-factory-whitespace",
+   "downloads": 366258268
+  },
+  {
+   "name": "micromark-util-combine-extensions",
+   "downloads": 366103861
+  },
+  {
+   "name": "micromark-factory-label",
+   "downloads": 366082721
+  },
+  {
+   "name": "micromark-factory-destination",
+   "downloads": 366078666
+  },
+  {
+   "name": "micromark-factory-title",
+   "downloads": 366054364
+  },
+  {
+   "name": "formdata-polyfill",
+   "downloads": 365578950
+  },
+  {
+   "name": "get-nonce",
+   "downloads": 364937591
+  },
+  {
+   "name": "reselect",
+   "downloads": 364528162
+  },
+  {
+   "name": "ccount",
+   "downloads": 363767544
+  },
+  {
+   "name": "@types/connect",
+   "downloads": 362429673
+  },
+  {
+   "name": "chardet",
+   "downloads": 362335975
+  },
+  {
+   "name": "neo-async",
+   "downloads": 362070867
+  },
+  {
+   "name": "@radix-ui/rect",
+   "downloads": 361939437
+  },
+  {
+   "name": "test-exclude",
+   "downloads": 360892259
+  },
+  {
+   "name": "@xmldom/xmldom",
+   "downloads": 359711227
+  },
+  {
+   "name": "@emnapi/wasi-threads",
+   "downloads": 359663464
+  },
+  {
+   "name": "@testing-library/user-event",
+   "downloads": 357752897
+  },
+  {
+   "name": "space-separated-tokens",
+   "downloads": 357637969
+  },
+  {
+   "name": "@adobe/css-tools",
+   "downloads": 356260239
+  },
+  {
+   "name": "decode-named-character-reference",
+   "downloads": 356258677
+  },
+  {
+   "name": "proc-log",
+   "downloads": 355756497
+  },
+  {
+   "name": "setimmediate",
+   "downloads": 355477109
+  },
+  {
+   "name": "mdast-util-to-markdown",
+   "downloads": 355386720
+  },
+  {
+   "name": "comma-separated-tokens",
+   "downloads": 355221092
+  },
+  {
+   "name": "ansi-colors",
+   "downloads": 355204143
+  },
+  {
+   "name": "process",
+   "downloads": 354843437
+  },
+  {
+   "name": "styled-jsx",
+   "downloads": 354662448
+  },
+  {
+   "name": "@inquirer/figures",
+   "downloads": 353991024
+  },
+  {
+   "name": "jsx-ast-utils",
+   "downloads": 353634014
+  },
+  {
+   "name": "@tanstack/react-query",
+   "downloads": 352925112
+  },
+  {
+   "name": "micromark-util-decode-string",
+   "downloads": 352339000
+  },
+  {
+   "name": "pino-abstract-transport",
+   "downloads": 352165328
+  },
+  {
+   "name": "eslint-import-resolver-node",
+   "downloads": 352118014
+  },
+  {
+   "name": "eslint-module-utils",
+   "downloads": 351826938
+  },
+  {
+   "name": "@grpc/grpc-js",
+   "downloads": 351109919
+  },
+  {
+   "name": "tar-fs",
+   "downloads": 350920496
+  },
+  {
+   "name": "require-in-the-middle",
+   "downloads": 350684820
+  },
+  {
+   "name": "methods",
+   "downloads": 349977806
+  },
+  {
+   "name": "@opentelemetry/sdk-logs",
+   "downloads": 349441044
+  },
+  {
+   "name": "jest-haste-map",
+   "downloads": 348326095
+  },
+  {
+   "name": "unrs-resolver",
+   "downloads": 348159343
+  },
+  {
+   "name": "trough",
+   "downloads": 348144393
+  },
+  {
+   "name": "bail",
+   "downloads": 347950583
+  },
+  {
+   "name": "lodash.camelcase",
+   "downloads": 347856068
+  },
+  {
+   "name": "@inquirer/confirm",
+   "downloads": 347771532
+  },
+  {
+   "name": "@radix-ui/react-visually-hidden",
+   "downloads": 347302455
+  },
+  {
+   "name": "eslint-plugin-react",
+   "downloads": 346588099
+  },
+  {
+   "name": "@types/serve-static",
+   "downloads": 346447262
+  },
+  {
+   "name": "css.escape",
+   "downloads": 346264631
+  },
+  {
+   "name": "real-require",
+   "downloads": 345176283
+  },
+  {
+   "name": "is-alphanumerical",
+   "downloads": 344751891
+  },
+  {
+   "name": "eslint-plugin-import",
+   "downloads": 344728072
+  },
+  {
+   "name": "is-decimal",
+   "downloads": 344679082
+  },
+  {
+   "name": "expect",
+   "downloads": 344622138
+  },
+  {
+   "name": "is-alphabetical",
+   "downloads": 344621756
+  },
+  {
+   "name": "webpack-sources",
+   "downloads": 344240826
+  },
+  {
+   "name": "type-detect",
+   "downloads": 344192865
+  },
+  {
+   "name": "bidi-js",
+   "downloads": 343543402
+  },
+  {
+   "name": "lie",
+   "downloads": 343448657
+  },
+  {
+   "name": "@cspotcode/source-map-support",
+   "downloads": 343179104
+  },
+  {
+   "name": "class-variance-authority",
+   "downloads": 343000182
+  },
+  {
+   "name": "bluebird",
+   "downloads": 342804383
+  },
+  {
+   "name": "mdast-util-to-hast",
+   "downloads": 342484449
+  },
+  {
+   "name": "jsonwebtoken",
+   "downloads": 342335974
+  },
+  {
+   "name": "jest-validate",
+   "downloads": 341614518
+  },
+  {
+   "name": "unist-util-position",
+   "downloads": 341440532
+  },
+  {
+   "name": "napi-postinstall",
+   "downloads": 341287553
+  },
+  {
+   "name": "remark-parse",
+   "downloads": 340481732
+  },
+  {
+   "name": "@next/swc-linux-x64-gnu",
+   "downloads": 339847143
+  },
+  {
+   "name": "unplugin",
+   "downloads": 339060620
+  },
+  {
+   "name": "@types/istanbul-reports",
+   "downloads": 338554472
+  },
+  {
+   "name": "@types/d3-timer",
+   "downloads": 337615190
+  },
+  {
+   "name": "longest-streak",
+   "downloads": 337562594
+  },
+  {
+   "name": "babel-plugin-polyfill-corejs3",
+   "downloads": 336528226
+  },
+  {
+   "name": "parse-entities",
+   "downloads": 335966052
+  },
+  {
+   "name": "@types/qs",
+   "downloads": 335832069
+  },
+  {
+   "name": "@opentelemetry/otlp-transformer",
+   "downloads": 335513785
+  },
+  {
+   "name": "@napi-rs/wasm-runtime",
+   "downloads": 335354889
+  },
+  {
+   "name": "file-type",
+   "downloads": 335232427
+  },
+  {
+   "name": "normalize-package-data",
+   "downloads": 335137307
+  },
+  {
+   "name": "web-vitals",
+   "downloads": 334491849
+  },
+  {
+   "name": "socks",
+   "downloads": 334246486
+  },
+  {
+   "name": "@jest/transform",
+   "downloads": 334224428
+  },
+  {
+   "name": "sonic-boom",
+   "downloads": 334180106
+  },
+  {
+   "name": "@types/d3-ease",
+   "downloads": 334071497
+  },
+  {
+   "name": "@babel/plugin-syntax-import-attributes",
+   "downloads": 333682141
+  },
+  {
+   "name": "is-hexadecimal",
+   "downloads": 333374635
+  },
+  {
+   "name": "character-reference-invalid",
+   "downloads": 333323576
+  },
+  {
+   "name": "magicast",
+   "downloads": 333312812
+  },
+  {
+   "name": "@istanbuljs/schema",
+   "downloads": 333052060
+  },
+  {
+   "name": "node-int64",
+   "downloads": 332618865
+  },
+  {
+   "name": "@types/json5",
+   "downloads": 332356450
+  },
+  {
+   "name": "hast-util-whitespace",
+   "downloads": 331631335
+  },
+  {
+   "name": "@types/istanbul-lib-coverage",
+   "downloads": 331441920
+  },
+  {
+   "name": "mdast-util-phrasing",
+   "downloads": 331349623
+  },
+  {
+   "name": "@babel/plugin-transform-typescript",
+   "downloads": 331252745
+  },
+  {
+   "name": "immediate",
+   "downloads": 331116516
+  },
+  {
+   "name": "bn.js",
+   "downloads": 329858517
+  },
+  {
+   "name": "es-iterator-helpers",
+   "downloads": 329774734
+  },
+  {
+   "name": "istanbul-lib-source-maps",
+   "downloads": 329553007
+  },
+  {
+   "name": "stringify-entities",
+   "downloads": 329043696
+  },
+  {
+   "name": "progress",
+   "downloads": 328747081
+  },
+  {
+   "name": "json-bigint",
+   "downloads": 328682487
+  },
+  {
+   "name": "character-entities-html4",
+   "downloads": 328313155
+  },
+  {
+   "name": "dot-prop",
+   "downloads": 328072639
+  },
+  {
+   "name": "@img/sharp-libvips-linuxmusl-x64",
+   "downloads": 327959578
+  },
+  {
+   "name": "lodash.once",
+   "downloads": 327506042
+  },
+  {
+   "name": "lodash.isstring",
+   "downloads": 327488018
+  },
+  {
+   "name": "extend-shallow",
+   "downloads": 327455482
+  },
+  {
+   "name": "@img/sharp-linuxmusl-x64",
+   "downloads": 327136279
+  },
+  {
+   "name": "@opentelemetry/otlp-exporter-base",
+   "downloads": 326897115
+  },
+  {
+   "name": "@jest/fake-timers",
+   "downloads": 326664239
+  },
+  {
+   "name": "@jest/environment",
+   "downloads": 325283969
+  },
+  {
+   "name": "@types/yargs-parser",
+   "downloads": 324164685
+  },
+  {
+   "name": "array.prototype.tosorted",
+   "downloads": 323932405
+  },
+  {
+   "name": "pino",
+   "downloads": 323591821
+  },
+  {
+   "name": "zod-validation-error",
+   "downloads": 323163264
+  },
+  {
+   "name": "iterator.prototype",
+   "downloads": 321025353
+  },
+  {
+   "name": "b4a",
+   "downloads": 320376692
+  },
+  {
+   "name": "@inquirer/ansi",
+   "downloads": 319506429
+  },
+  {
+   "name": "autoprefixer",
+   "downloads": 318318056
+  },
+  {
+   "name": "@babel/plugin-transform-react-jsx-source",
+   "downloads": 318133033
+  },
+  {
+   "name": "trim-lines",
+   "downloads": 318062937
+  },
+  {
+   "name": "node-gyp-build",
+   "downloads": 317444041
+  },
+  {
+   "name": "crc-32",
+   "downloads": 317163782
+  },
+  {
+   "name": "@csstools/css-syntax-patches-for-csstree",
+   "downloads": 316187979
+  },
+  {
+   "name": "react-router",
+   "downloads": 316149459
+  },
+  {
+   "name": "color-string",
+   "downloads": 315298747
+  },
+  {
+   "name": "watchpack",
+   "downloads": 315288770
+  },
+  {
+   "name": "array.prototype.findlastindex",
+   "downloads": 315011481
+  },
+  {
+   "name": "array.prototype.findlast",
+   "downloads": 314872176
+  },
+  {
+   "name": "array-union",
+   "downloads": 314820195
+  },
+  {
+   "name": "@radix-ui/react-tabs",
+   "downloads": 314559322
+  },
+  {
+   "name": "micromark-extension-gfm-table",
+   "downloads": 314496698
+  },
+  {
+   "name": "style-to-object",
+   "downloads": 314291184
+  },
+  {
+   "name": "babel-plugin-istanbul",
+   "downloads": 314049073
+  },
+  {
+   "name": "webpack",
+   "downloads": 314041360
+  },
+  {
+   "name": "smart-buffer",
+   "downloads": 313620537
+  },
+  {
+   "name": "deep-eql",
+   "downloads": 313533247
+  },
+  {
+   "name": "module-details-from-path",
+   "downloads": 313281129
+  },
+  {
+   "name": "string.prototype.repeat",
+   "downloads": 313237688
+  },
+  {
+   "name": "object.groupby",
+   "downloads": 313124123
+  },
+  {
+   "name": "decompress-response",
+   "downloads": 312315070
+  },
+  {
+   "name": "@types/istanbul-lib-report",
+   "downloads": 312080325
+  },
+  {
+   "name": "@babel/preset-typescript",
+   "downloads": 311839549
+  },
+  {
+   "name": "regjsparser",
+   "downloads": 311738888
+  },
+  {
+   "name": "fast-check",
+   "downloads": 311577754
+  },
+  {
+   "name": "@aws-sdk/middleware-sdk-s3",
+   "downloads": 311424749
+  },
+  {
+   "name": "@jest/expect-utils",
+   "downloads": 310975927
+  },
+  {
+   "name": "inline-style-parser",
+   "downloads": 310969598
+  },
+  {
+   "name": "rfdc",
+   "downloads": 310572282
+  },
+  {
+   "name": "fs-constants",
+   "downloads": 309328176
+  },
+  {
+   "name": "any-promise",
+   "downloads": 308882583
+  },
+  {
+   "name": "@types/body-parser",
+   "downloads": 308324195
+  },
+  {
+   "name": "markdown-table",
+   "downloads": 308322383
+  },
+  {
+   "name": "lodash.includes",
+   "downloads": 308319628
+  },
+  {
+   "name": "defaults",
+   "downloads": 308243997
+  },
+  {
+   "name": "lodash.isnumber",
+   "downloads": 307331364
+  },
+  {
+   "name": "@tailwindcss/oxide-linux-x64-musl",
+   "downloads": 307266116
+  },
+  {
+   "name": "lodash.isinteger",
+   "downloads": 307006132
+  },
+  {
+   "name": "check-error",
+   "downloads": 306418387
+  },
+  {
+   "name": "@radix-ui/number",
+   "downloads": 306060545
+  },
+  {
+   "name": "@unrs/resolver-binding-linux-x64-gnu",
+   "downloads": 306033307
+  },
+  {
+   "name": "@babel/plugin-transform-destructuring",
+   "downloads": 305095325
+  },
+  {
+   "name": "loupe",
+   "downloads": 304790510
+  },
+  {
+   "name": "micromark-extension-gfm-autolink-literal",
+   "downloads": 304319178
+  },
+  {
+   "name": "@types/range-parser",
+   "downloads": 303945857
+  },
+  {
+   "name": "mimic-function",
+   "downloads": 303405179
+  },
+  {
+   "name": "stack-utils",
+   "downloads": 303367588
+  },
+  {
+   "name": "pathval",
+   "downloads": 303327970
+  },
+  {
+   "name": "fast-xml-builder",
+   "downloads": 303109593
+  },
+  {
+   "name": "thread-stream",
+   "downloads": 303095399
+  },
+  {
+   "name": "stylis",
+   "downloads": 302701713
+  },
+  {
+   "name": "@tybys/wasm-util",
+   "downloads": 302667068
+  },
+  {
+   "name": "@aws-sdk/client-s3",
+   "downloads": 302558970
+  },
+  {
+   "name": "streamx",
+   "downloads": 302485805
+  },
+  {
+   "name": "@radix-ui/react-menu",
+   "downloads": 302099672
+  },
+  {
+   "name": "char-regex",
+   "downloads": 301840225
+  },
+  {
+   "name": "validate-npm-package-name",
+   "downloads": 300801523
+  },
+  {
+   "name": "array-flatten",
+   "downloads": 300360732
+  },
+  {
+   "name": "p-timeout",
+   "downloads": 300162437
+  },
+  {
+   "name": "bare-events",
+   "downloads": 299589939
+  },
+  {
+   "name": "@sinonjs/commons",
+   "downloads": 299576839
+  },
+  {
+   "name": "@radix-ui/react-popover",
+   "downloads": 299450478
+  },
+  {
+   "name": "set-blocking",
+   "downloads": 299433198
+  },
+  {
+   "name": "@rtsao/scc",
+   "downloads": 299271722
+  },
+  {
+   "name": "cli-truncate",
+   "downloads": 299004389
+  },
+  {
+   "name": "spdx-expression-parse",
+   "downloads": 298970876
+  },
+  {
+   "name": "p-retry",
+   "downloads": 298901005
+  },
+  {
+   "name": "babel-jest",
+   "downloads": 298531596
+  },
+  {
+   "name": "mdast-util-gfm-strikethrough",
+   "downloads": 298365752
+  },
+  {
+   "name": "yauzl",
+   "downloads": 297593939
+  },
+  {
+   "name": "core-js-compat",
+   "downloads": 297441776
+  },
+  {
+   "name": "mdast-util-gfm-table",
+   "downloads": 297330075
+  },
+  {
+   "name": "mdast-util-find-and-replace",
+   "downloads": 297218298
+  },
+  {
+   "name": "tinyspy",
+   "downloads": 296371276
+  },
+  {
+   "name": "@radix-ui/react-dropdown-menu",
+   "downloads": 295709189
+  },
+  {
+   "name": "micromark-extension-gfm-strikethrough",
+   "downloads": 295430790
+  },
+  {
+   "name": "lodash.debounce",
+   "downloads": 295372702
+  },
+  {
+   "name": "jszip",
+   "downloads": 295327580
+  },
+  {
+   "name": "mdast-util-gfm-task-list-item",
+   "downloads": 295254199
+  },
+  {
+   "name": "babel-preset-jest",
+   "downloads": 295105661
+  },
+  {
+   "name": "@radix-ui/react-use-previous",
+   "downloads": 295067094
+  },
+  {
+   "name": "babel-plugin-jest-hoist",
+   "downloads": 294982979
+  },
+  {
+   "name": "micromark-extension-gfm-task-list-item",
+   "downloads": 294825823
+  },
+  {
+   "name": "jest-environment-node",
+   "downloads": 294795852
+  },
+  {
+   "name": "@types/http-errors",
+   "downloads": 294719232
+  },
+  {
+   "name": "get-package-type",
+   "downloads": 294589319
+  },
+  {
+   "name": "micromark-extension-gfm-footnote",
+   "downloads": 294547839
+  },
+  {
+   "name": "remark-rehype",
+   "downloads": 294520955
+  },
+  {
+   "name": "tree-kill",
+   "downloads": 294441133
+  },
+  {
+   "name": "@jest/test-result",
+   "downloads": 294121256
+  },
+  {
+   "name": "@jest/console",
+   "downloads": 293850936
+  },
+  {
+   "name": "color",
+   "downloads": 293661007
+  },
+  {
+   "name": "graphql",
+   "downloads": 293638398
+  },
+  {
+   "name": "lodash-es",
+   "downloads": 293554598
+  },
+  {
+   "name": "mdast-util-gfm",
+   "downloads": 293513672
+  },
+  {
+   "name": "http-cache-semantics",
+   "downloads": 293446461
+  },
+  {
+   "name": "wcwidth",
+   "downloads": 292881749
+  },
+  {
+   "name": "pino-std-serializers",
+   "downloads": 292516328
+  },
+  {
+   "name": "mdast-util-gfm-autolink-literal",
+   "downloads": 292514499
+  },
+  {
+   "name": "fraction.js",
+   "downloads": 292348270
+  },
+  {
+   "name": "@radix-ui/react-tooltip",
+   "downloads": 292112812
+  },
+  {
+   "name": "micromark-extension-gfm",
+   "downloads": 291347893
+  },
+  {
+   "name": "micromark-extension-gfm-tagfilter",
+   "downloads": 291176353
+  },
+  {
+   "name": "fast-fifo",
+   "downloads": 290892681
+  },
+  {
+   "name": "@smithy/protocol-http",
+   "downloads": 290781008
+  },
+  {
+   "name": "socks-proxy-agent",
+   "downloads": 289828979
+  },
+  {
+   "name": "fast-safe-stringify",
+   "downloads": 289694770
+  },
+  {
+   "name": "thenify",
+   "downloads": 289517362
+  },
+  {
+   "name": "is-extendable",
+   "downloads": 289344379
+  },
+  {
+   "name": "mz",
+   "downloads": 289334178
+  },
+  {
+   "name": "thenify-all",
+   "downloads": 289321678
+  },
+  {
+   "name": "jest-get-type",
+   "downloads": 289293707
+  },
+  {
+   "name": "fb-watchman",
+   "downloads": 288624660
+  },
+  {
+   "name": "string-length",
+   "downloads": 287518531
+  },
+  {
+   "name": "@babel/plugin-transform-classes",
+   "downloads": 287211768
+  },
+  {
+   "name": "on-headers",
+   "downloads": 287187179
+  },
+  {
+   "name": "@ai-sdk/provider-utils",
+   "downloads": 287096006
+  },
+  {
+   "name": "bser",
+   "downloads": 286974148
+  },
+  {
+   "name": "is-buffer",
+   "downloads": 286831887
+  },
+  {
+   "name": "nwsapi",
+   "downloads": 286620568
+  },
+  {
+   "name": "dir-glob",
+   "downloads": 286269162
+  },
+  {
+   "name": "path-browserify",
+   "downloads": 286125796
+  },
+  {
+   "name": "@radix-ui/react-use-escape-keydown",
+   "downloads": 286081256
+  },
+  {
+   "name": "remark-gfm",
+   "downloads": 285637038
+  },
+  {
+   "name": "cac",
+   "downloads": 285401003
+  },
+  {
+   "name": "zip-stream",
+   "downloads": 285393129
+  },
+  {
+   "name": "crc32-stream",
+   "downloads": 285367480
+  },
+  {
+   "name": "compress-commons",
+   "downloads": 285365366
+  },
+  {
+   "name": "yoctocolors",
+   "downloads": 285159296
+  },
+  {
+   "name": "defu",
+   "downloads": 284776474
+  },
+  {
+   "name": "@types/use-sync-external-store",
+   "downloads": 284458670
+  },
+  {
+   "name": "tinypool",
+   "downloads": 284207409
+  },
+  {
+   "name": "@radix-ui/react-select",
+   "downloads": 283911216
+  },
+  {
+   "name": "@types/lodash",
+   "downloads": 283858099
+  },
+  {
+   "name": "archiver",
+   "downloads": 283135188
+  },
+  {
+   "name": "isobject",
+   "downloads": 282876497
+  },
+  {
+   "name": "eslint-config-prettier",
+   "downloads": 282577559
+  },
+  {
+   "name": "loader-utils",
+   "downloads": 282289533
+  },
+  {
+   "name": "@babel/plugin-transform-block-scoping",
+   "downloads": 282225175
+  },
+  {
+   "name": "mdast-util-gfm-footnote",
+   "downloads": 281834397
+  },
+  {
+   "name": "wordwrap",
+   "downloads": 281633775
+  },
+  {
+   "name": "@types/retry",
+   "downloads": 281426677
+  },
+  {
+   "name": "@anthropic-ai/sdk",
+   "downloads": 281294075
+  },
+  {
+   "name": "@babel/helper-define-polyfill-provider",
+   "downloads": 280902578
+  },
+  {
+   "name": "jest-snapshot",
+   "downloads": 280900807
+  },
+  {
+   "name": "remark-stringify",
+   "downloads": 280483033
+  },
+  {
+   "name": "rrweb-cssom",
+   "downloads": 280376732
+  },
+  {
+   "name": "@babel/plugin-syntax-optional-chaining",
+   "downloads": 280035123
+  },
+  {
+   "name": "@babel/helper-create-regexp-features-plugin",
+   "downloads": 279936220
+  },
+  {
+   "name": "@babel/plugin-syntax-nullish-coalescing-operator",
+   "downloads": 279757517
+  },
+  {
+   "name": "ast-types-flow",
+   "downloads": 279134006
+  },
+  {
+   "name": "consola",
+   "downloads": 279022627
+  },
+  {
+   "name": "eslint-plugin-jsx-a11y",
+   "downloads": 278998074
+  },
+  {
+   "name": "regexpu-core",
+   "downloads": 278678448
+  },
+  {
+   "name": "mrmime",
+   "downloads": 278365379
+  },
+  {
+   "name": "@babel/plugin-transform-for-of",
+   "downloads": 277928374
+  },
+  {
+   "name": "damerau-levenshtein",
+   "downloads": 277866166
+  },
+  {
+   "name": "escodegen",
+   "downloads": 277682596
+  },
+  {
+   "name": "require-main-filename",
+   "downloads": 277505691
+  },
+  {
+   "name": "@babel/plugin-transform-parameters",
+   "downloads": 277304925
+  },
+  {
+   "name": "jest-watcher",
+   "downloads": 277286698
+  },
+  {
+   "name": "language-tags",
+   "downloads": 277258324
+  },
+  {
+   "name": "mdast-util-mdx-jsx",
+   "downloads": 276843111
+  },
+  {
+   "name": "jest-resolve",
+   "downloads": 276738770
+  },
+  {
+   "name": "language-subtag-registry",
+   "downloads": 276714874
+  },
+  {
+   "name": "@aws-crypto/util",
+   "downloads": 276648508
+  },
+  {
+   "name": "@opentelemetry/context-async-hooks",
+   "downloads": 276640289
+  },
+  {
+   "name": "@babel/plugin-transform-arrow-functions",
+   "downloads": 276514994
+  },
+  {
+   "name": "estree-util-is-identifier-name",
+   "downloads": 275629647
+  },
+  {
+   "name": "requires-port",
+   "downloads": 275555344
+  },
+  {
+   "name": "eslint-import-resolver-typescript",
+   "downloads": 275319923
+  },
+  {
+   "name": "which-module",
+   "downloads": 274803694
+  },
+  {
+   "name": "recharts",
+   "downloads": 274765443
+  },
+  {
+   "name": "@radix-ui/react-label",
+   "downloads": 274737756
+  },
+  {
+   "name": "smol-toml",
+   "downloads": 273253631
+  },
+  {
+   "name": "@babel/plugin-transform-async-to-generator",
+   "downloads": 273059422
+  },
+  {
+   "name": "@aws-sdk/util-endpoints",
+   "downloads": 272987303
+  },
+  {
+   "name": "@radix-ui/react-separator",
+   "downloads": 272970399
+  },
+  {
+   "name": "@types/geojson",
+   "downloads": 272844973
+  },
+  {
+   "name": "asap",
+   "downloads": 272735882
+  },
+  {
+   "name": "postcss-load-config",
+   "downloads": 272450951
+  },
+  {
+   "name": "pretty-ms",
+   "downloads": 272320771
+  },
+  {
+   "name": "@supabase/postgrest-js",
+   "downloads": 272135477
+  },
+  {
+   "name": "jest-config",
+   "downloads": 271671987
+  },
+  {
+   "name": "@inquirer/external-editor",
+   "downloads": 271537892
+  },
+  {
+   "name": "webpack-virtual-modules",
+   "downloads": 271360418
+  },
+  {
+   "name": "@supabase/auth-js",
+   "downloads": 271282955
+  },
+  {
+   "name": "arrify",
+   "downloads": 271214721
+  },
+  {
+   "name": "@supabase/realtime-js",
+   "downloads": 271169538
+  },
+  {
+   "name": "redux",
+   "downloads": 271001251
+  },
+  {
+   "name": "@supabase/storage-js",
+   "downloads": 270778170
+  },
+  {
+   "name": "@webassemblyjs/helper-wasm-bytecode",
+   "downloads": 270582104
+  },
+  {
+   "name": "ufo",
+   "downloads": 270496069
+  },
+  {
+   "name": "@webassemblyjs/ast",
+   "downloads": 270452834
+  },
+  {
+   "name": "victory-vendor",
+   "downloads": 270368678
+  },
+  {
+   "name": "@supabase/functions-js",
+   "downloads": 270062414
+  },
+  {
+   "name": "@babel/plugin-transform-shorthand-properties",
+   "downloads": 269854172
+  },
+  {
+   "name": "jest-docblock",
+   "downloads": 269539414
+  },
+  {
+   "name": "@jest/globals",
+   "downloads": 269385633
+  },
+  {
+   "name": "@babel/helper-wrap-function",
+   "downloads": 269087475
+  },
+  {
+   "name": "@webassemblyjs/helper-api-error",
+   "downloads": 269080983
+  },
+  {
+   "name": "jest-runtime",
+   "downloads": 269037770
+  },
+  {
+   "name": "@types/stack-utils",
+   "downloads": 268739134
+  },
+  {
+   "name": "@webassemblyjs/wast-printer",
+   "downloads": 268548198
+  },
+  {
+   "name": "@babel/plugin-transform-unicode-regex",
+   "downloads": 268151955
+  },
+  {
+   "name": "@webassemblyjs/leb128",
+   "downloads": 268102070
+  },
+  {
+   "name": "@webassemblyjs/wasm-gen",
+   "downloads": 268054938
+  },
+  {
+   "name": "@webassemblyjs/wasm-parser",
+   "downloads": 268008076
+  },
+  {
+   "name": "@webassemblyjs/ieee754",
+   "downloads": 268001604
+  },
+  {
+   "name": "@webassemblyjs/utf8",
+   "downloads": 267963559
+  },
+  {
+   "name": "@webassemblyjs/wasm-edit",
+   "downloads": 267962548
+  },
+  {
+   "name": "mdast-util-mdx-expression",
+   "downloads": 267921934
+  },
+  {
+   "name": "@webassemblyjs/helper-wasm-section",
+   "downloads": 267863224
+  },
+  {
+   "name": "@babel/helper-remap-async-to-generator",
+   "downloads": 267849246
+  },
+  {
+   "name": "@webassemblyjs/wasm-opt",
+   "downloads": 267843357
+  },
+  {
+   "name": "@webassemblyjs/helper-buffer",
+   "downloads": 267822148
+  },
+  {
+   "name": "@babel/plugin-transform-optional-chaining",
+   "downloads": 267690714
+  },
+  {
+   "name": "mdast-util-mdxjs-esm",
+   "downloads": 267127974
+  },
+  {
+   "name": "@babel/plugin-transform-named-capturing-groups-regex",
+   "downloads": 266888689
+  },
+  {
+   "name": "reflect-metadata",
+   "downloads": 266875634
+  },
+  {
+   "name": "jest-each",
+   "downloads": 266564214
+  },
+  {
+   "name": "@webassemblyjs/floating-point-hex-parser",
+   "downloads": 266488358
+  },
+  {
+   "name": "parse-ms",
+   "downloads": 266430541
+  },
+  {
+   "name": "regenerate-unicode-properties",
+   "downloads": 266418076
+  },
+  {
+   "name": "node-exports-info",
+   "downloads": 266197317
+  },
+  {
+   "name": "minimalistic-assert",
+   "downloads": 266165466
+  },
+  {
+   "name": "@babel/plugin-transform-class-properties",
+   "downloads": 265723045
+  },
+  {
+   "name": "@babel/plugin-transform-template-literals",
+   "downloads": 265685057
+  },
+  {
+   "name": "@jest/source-map",
+   "downloads": 264831469
+  },
+  {
+   "name": "react-hook-form",
+   "downloads": 264814997
+  },
+  {
+   "name": "jest-runner",
+   "downloads": 264788688
+  },
+  {
+   "name": "make-error",
+   "downloads": 264751650
+  },
+  {
+   "name": "node-gyp-build-optional-packages",
+   "downloads": 264671202
+  },
+  {
+   "name": "fast-equals",
+   "downloads": 264652791
+  },
+  {
+   "name": "@js-sdsl/ordered-map",
+   "downloads": 264165414
+  },
+  {
+   "name": "@jest/test-sequencer",
+   "downloads": 264056423
+  },
+  {
+   "name": "@supabase/supabase-js",
+   "downloads": 264052117
+  },
+  {
+   "name": "import-local",
+   "downloads": 264013921
+  },
+  {
+   "name": "jest-leak-detector",
+   "downloads": 263868749
+  },
+  {
+   "name": "decimal.js-light",
+   "downloads": 263790272
+  },
+  {
+   "name": "read-pkg",
+   "downloads": 263592521
+  },
+  {
+   "name": "tagged-tag",
+   "downloads": 263239118
+  },
+  {
+   "name": "@babel/plugin-transform-nullish-coalescing-operator",
+   "downloads": 263163144
+  },
+  {
+   "name": "@radix-ui/react-collapsible",
+   "downloads": 262949693
+  },
+  {
+   "name": "@babel/plugin-transform-regenerator",
+   "downloads": 262872097
+  },
+  {
+   "name": "json-schema-to-ts",
+   "downloads": 262715390
+  },
+  {
+   "name": "spdx-license-ids",
+   "downloads": 262679152
+  },
+  {
+   "name": "@radix-ui/react-toggle",
+   "downloads": 262285133
+  },
+  {
+   "name": "xml2js",
+   "downloads": 261924369
+  },
+  {
+   "name": "chrome-trace-event",
+   "downloads": 261913946
+  },
+  {
+   "name": "@babel/plugin-syntax-object-rest-spread",
+   "downloads": 261731159
+  },
+  {
+   "name": "motion-dom",
+   "downloads": 261366991
+  },
+  {
+   "name": "babel-plugin-polyfill-regenerator",
+   "downloads": 261308303
+  },
+  {
+   "name": "@jest/reporters",
+   "downloads": 261276094
+  },
+  {
+   "name": "atomic-sleep",
+   "downloads": 260706628
+  },
+  {
+   "name": "@babel/plugin-transform-private-methods",
+   "downloads": 260574431
+  },
+  {
+   "name": "@inquirer/prompts",
+   "downloads": 260311380
+  },
+  {
+   "name": "regenerate",
+   "downloads": 260250065
+  },
+  {
+   "name": "resolve-cwd",
+   "downloads": 260005426
+  },
+  {
+   "name": "gtoken",
+   "downloads": 259917220
+  },
+  {
+   "name": "normalize-url",
+   "downloads": 259536757
+  },
+  {
+   "name": "events-universal",
+   "downloads": 259105237
+  },
+  {
+   "name": "babel-plugin-polyfill-corejs2",
+   "downloads": 258660080
+  },
+  {
+   "name": "unicode-match-property-value-ecmascript",
+   "downloads": 258459826
+  },
+  {
+   "name": "@aws-crypto/sha256-js",
+   "downloads": 258455191
+  },
+  {
+   "name": "pend",
+   "downloads": 258016559
+  },
+  {
+   "name": "style-to-js",
+   "downloads": 257981863
+  },
+  {
+   "name": "motion-utils",
+   "downloads": 257857714
+  },
+  {
+   "name": "quick-lru",
+   "downloads": 257378241
+  },
+  {
+   "name": "@tailwindcss/vite",
+   "downloads": 257136056
+  },
+  {
+   "name": "@vitest/coverage-v8",
+   "downloads": 257093495
+  },
+  {
+   "name": "jest",
+   "downloads": 256767387
+  },
+  {
+   "name": "compression",
+   "downloads": 256664834
+  },
+  {
+   "name": "@istanbuljs/load-nyc-config",
+   "downloads": 256595048
+  },
+  {
+   "name": "@babel/plugin-syntax-class-properties",
+   "downloads": 256468823
+  },
+  {
+   "name": "jest-circus",
+   "downloads": 256358778
+  },
+  {
+   "name": "@xtuc/long",
+   "downloads": 256230144
+  },
+  {
+   "name": "@xtuc/ieee754",
+   "downloads": 255578342
+  },
+  {
+   "name": "deep-extend",
+   "downloads": 255425075
+  },
+  {
+   "name": "detect-newline",
+   "downloads": 254795258
+  },
+  {
+   "name": "@babel/plugin-transform-async-generator-functions",
+   "downloads": 254060175
+  },
+  {
+   "name": "emittery",
+   "downloads": 253912202
+  },
+  {
+   "name": "uglify-js",
+   "downloads": 253827626
+  },
+  {
+   "name": "synckit",
+   "downloads": 253696750
+  },
+  {
+   "name": "jest-cli",
+   "downloads": 253688305
+  },
+  {
+   "name": "@smithy/util-middleware",
+   "downloads": 253244228
+  },
+  {
+   "name": "jest-changed-files",
+   "downloads": 253119495
+  },
+  {
+   "name": "jest-resolve-dependencies",
+   "downloads": 253059828
+  },
+  {
+   "name": "@webassemblyjs/helper-numbers",
+   "downloads": 252671215
+  },
+  {
+   "name": "@babel/plugin-syntax-optional-catch-binding",
+   "downloads": 252492925
+  },
+  {
+   "name": "@babel/plugin-syntax-async-generators",
+   "downloads": 252480386
+  },
+  {
+   "name": "@tootallnate/once",
+   "downloads": 252366478
+  },
+  {
+   "name": "@babel/plugin-syntax-numeric-separator",
+   "downloads": 252240327
+  },
+  {
+   "name": "@tailwindcss/postcss",
+   "downloads": 252094250
+  },
+  {
+   "name": "@jest/core",
+   "downloads": 251956002
+  },
+  {
+   "name": "@babel/plugin-syntax-json-strings",
+   "downloads": 251815690
+  },
+  {
+   "name": "is-bun-module",
+   "downloads": 251501391
+  },
+  {
+   "name": "readdir-glob",
+   "downloads": 251411362
+  },
+  {
+   "name": "unicode-property-aliases-ecmascript",
+   "downloads": 251234013
+  },
+  {
+   "name": "@babel/plugin-syntax-top-level-await",
+   "downloads": 250837485
+  },
+  {
+   "name": "clean-stack",
+   "downloads": 250697255
+  },
+  {
+   "name": "ts-node",
+   "downloads": 250622835
+  },
+  {
+   "name": "through",
+   "downloads": 250545004
+  },
+  {
+   "name": "@babel/plugin-transform-private-property-in-object",
+   "downloads": 250518543
+  },
+  {
+   "name": "spdx-exceptions",
+   "downloads": 250334063
+  },
+  {
+   "name": "v8-to-istanbul",
+   "downloads": 250202662
+  },
+  {
+   "name": "@babel/plugin-syntax-import-meta",
+   "downloads": 249999456
+  },
+  {
+   "name": "unicode-canonical-property-names-ecmascript",
+   "downloads": 249693768
+  },
+  {
+   "name": "@babel/plugin-syntax-logical-assignment-operators",
+   "downloads": 249556050
+  },
+  {
+   "name": "@babel/plugin-transform-object-rest-spread",
+   "downloads": 249312129
+  },
+  {
+   "name": "dotenv-expand",
+   "downloads": 249236582
+  },
+  {
+   "name": "@aws-sdk/middleware-user-agent",
+   "downloads": 249102269
+  },
+  {
+   "name": "sucrase",
+   "downloads": 248999548
+  },
+  {
+   "name": "msgpackr",
+   "downloads": 248692296
+  },
+  {
+   "name": "@babel/plugin-transform-optional-catch-binding",
+   "downloads": 248677106
+  },
+  {
+   "name": "serialize-javascript",
+   "downloads": 248556815
+  },
+  {
+   "name": "ejs",
+   "downloads": 248372079
+  },
+  {
+   "name": "html-entities",
+   "downloads": 248356571
+  },
+  {
+   "name": "recast",
+   "downloads": 248224791
+  },
+  {
+   "name": "ret",
+   "downloads": 248080186
+  },
+  {
+   "name": "@babel/plugin-transform-class-static-block",
+   "downloads": 247876953
+  },
+  {
+   "name": "compressible",
+   "downloads": 247402969
+  },
+  {
+   "name": "secure-json-parse",
+   "downloads": 247264273
+  },
+  {
+   "name": "@babel/plugin-transform-logical-assignment-operators",
+   "downloads": 247209168
+  },
+  {
+   "name": "ansis",
+   "downloads": 247017173
+  },
+  {
+   "name": "lazystream",
+   "downloads": 246980711
+  },
+  {
+   "name": "unicode-match-property-ecmascript",
+   "downloads": 246677490
+  },
+  {
+   "name": "@parcel/watcher",
+   "downloads": 246376051
+  },
+  {
+   "name": "glob-to-regexp",
+   "downloads": 246327225
+  },
+  {
+   "name": "@aws-sdk/util-user-agent-node",
+   "downloads": 246170403
+  },
+  {
+   "name": "co",
+   "downloads": 245928418
+  },
+  {
+   "name": "@jest/expect",
+   "downloads": 245759253
+  },
+  {
+   "name": "@babel/plugin-transform-export-namespace-from",
+   "downloads": 245751527
+  },
+  {
+   "name": "pluralize",
+   "downloads": 245554653
+  },
+  {
+   "name": "@swc/core",
+   "downloads": 245516670
+  },
+  {
+   "name": "through2",
+   "downloads": 245141870
+  },
+  {
+   "name": "@radix-ui/react-avatar",
+   "downloads": 245094833
+  },
+  {
+   "name": "log-update",
+   "downloads": 244971355
+  },
+  {
+   "name": "regjsgen",
+   "downloads": 244913391
+  },
+  {
+   "name": "luxon",
+   "downloads": 244912829
+  },
+  {
+   "name": "cookie-es",
+   "downloads": 243988908
+  },
+  {
+   "name": "babel-preset-current-node-syntax",
+   "downloads": 243529463
+  },
+  {
+   "name": "supports-hyperlinks",
+   "downloads": 243484470
+  },
+  {
+   "name": "environment",
+   "downloads": 243225490
+  },
+  {
+   "name": "immutable",
+   "downloads": 243091161
+  },
+  {
+   "name": "big-integer",
+   "downloads": 243006025
+  },
+  {
+   "name": "inquirer",
+   "downloads": 242865616
+  },
+  {
+   "name": "@types/prop-types",
+   "downloads": 242708792
+  },
+  {
+   "name": "@babel/plugin-transform-spread",
+   "downloads": 242687533
+  },
+  {
+   "name": "rc",
+   "downloads": 242416984
+  },
+  {
+   "name": "@inquirer/select",
+   "downloads": 240582930
+  },
+  {
+   "name": "@pkgr/core",
+   "downloads": 240547706
+  },
+  {
+   "name": "react-redux",
+   "downloads": 240415079
+  },
+  {
+   "name": "openai",
+   "downloads": 240177557
+  },
+  {
+   "name": "@types/tough-cookie",
+   "downloads": 239649944
+  },
+  {
+   "name": "@babel/plugin-transform-computed-properties",
+   "downloads": 239220287
+  },
+  {
+   "name": "makeerror",
+   "downloads": 239044716
+  },
+  {
+   "name": "walker",
+   "downloads": 238976044
+  },
+  {
+   "name": "@graphql-tools/utils",
+   "downloads": 238539732
+  },
+  {
+   "name": "tmpl",
+   "downloads": 238434959
+  },
+  {
+   "name": "@aws-sdk/middleware-host-header",
+   "downloads": 238345846
+  },
+  {
+   "name": "@aws-sdk/util-user-agent-browser",
+   "downloads": 238142510
+  },
+  {
+   "name": "@babel/plugin-transform-function-name",
+   "downloads": 237886615
+  },
+  {
+   "name": "@babel/plugin-transform-literals",
+   "downloads": 237656266
+  },
+  {
+   "name": "preact",
+   "downloads": 237650898
+  },
+  {
+   "name": "react-router-dom",
+   "downloads": 237577086
+  },
+  {
+   "name": "@aws-sdk/middleware-logger",
+   "downloads": 237576478
+  },
+  {
+   "name": "@types/jest",
+   "downloads": 237528773
+  },
+  {
+   "name": "handlebars",
+   "downloads": 237156051
+  },
+  {
+   "name": "commondir",
+   "downloads": 236724382
+  },
+  {
+   "name": "sirv",
+   "downloads": 236674188
+  },
+  {
+   "name": "ts-interface-checker",
+   "downloads": 236103461
+  },
+  {
+   "name": "@aws-sdk/middleware-recursion-detection",
+   "downloads": 235757153
+  },
+  {
+   "name": "@jest/pattern",
+   "downloads": 235670588
+  },
+  {
+   "name": "duplexify",
+   "downloads": 235411826
+  },
+  {
+   "name": "exponential-backoff",
+   "downloads": 235373114
+  },
+  {
+   "name": "d3-dispatch",
+   "downloads": 235161622
+  },
+  {
+   "name": "bare-fs",
+   "downloads": 235117771
+  },
+  {
+   "name": "@radix-ui/react-scroll-area",
+   "downloads": 234575807
+  },
+  {
+   "name": "listr2",
+   "downloads": 234512022
+  },
+  {
+   "name": "yn",
+   "downloads": 234479451
+  },
+  {
+   "name": "@babel/plugin-syntax-private-property-in-object",
+   "downloads": 234372738
+  },
+  {
+   "name": "retry-request",
+   "downloads": 234232990
+  },
+  {
+   "name": "ast-v8-to-istanbul",
+   "downloads": 233912805
+  },
+  {
+   "name": "react-markdown",
+   "downloads": 233912334
+  },
+  {
+   "name": "define-property",
+   "downloads": 233858509
+  },
+  {
+   "name": "he",
+   "downloads": 233658180
+  },
+  {
+   "name": "@inquirer/input",
+   "downloads": 233525396
+  },
+  {
+   "name": "diff-sequences",
+   "downloads": 232900242
+  },
+  {
+   "name": "terser-webpack-plugin",
+   "downloads": 232370656
+  },
+  {
+   "name": "widest-line",
+   "downloads": 231640831
+  },
+  {
+   "name": "@radix-ui/react-radio-group",
+   "downloads": 231313155
+  },
+  {
+   "name": "bare-path",
+   "downloads": 231265214
+  },
+  {
+   "name": "@babel/plugin-syntax-class-static-block",
+   "downloads": 231192286
+  },
+  {
+   "name": "create-require",
+   "downloads": 231041908
+  },
+  {
+   "name": "@babel/preset-env",
+   "downloads": 230848238
+  },
+  {
+   "name": "@radix-ui/react-progress",
+   "downloads": 230587265
+  },
+  {
+   "name": "dom-helpers",
+   "downloads": 230515876
+  },
+  {
+   "name": "collect-v8-coverage",
+   "downloads": 230178134
+  },
+  {
+   "name": "@smithy/node-config-provider",
+   "downloads": 230172737
+  },
+  {
+   "name": "bare-stream",
+   "downloads": 229965894
+  },
+  {
+   "name": "is-arguments",
+   "downloads": 229383313
+  },
+  {
+   "name": "memoize-one",
+   "downloads": 228703510
+  },
+  {
+   "name": "@babel/plugin-transform-sticky-regex",
+   "downloads": 228217894
+  },
+  {
+   "name": "@smithy/util-base64",
+   "downloads": 228186844
+  },
+  {
+   "name": "cssom",
+   "downloads": 227809159
+  },
+  {
+   "name": "fs-minipass",
+   "downloads": 227780869
+  },
+  {
+   "name": "json-stringify-safe",
+   "downloads": 227443498
+  },
+  {
+   "name": "is-generator-fn",
+   "downloads": 227177939
+  },
+  {
+   "name": "node-forge",
+   "downloads": 226859327
+  },
+  {
+   "name": "@aws-sdk/region-config-resolver",
+   "downloads": 226297324
+  },
+  {
+   "name": "@radix-ui/react-alert-dialog",
+   "downloads": 226261610
+  },
+  {
+   "name": "@octokit/request-error",
+   "downloads": 226212987
+  },
+  {
+   "name": "@inquirer/password",
+   "downloads": 226147406
+  },
+  {
+   "name": "p-queue",
+   "downloads": 226082678
+  },
+  {
+   "name": "@babel/plugin-transform-block-scoped-functions",
+   "downloads": 225864329
+  },
+  {
+   "name": "@inquirer/editor",
+   "downloads": 225783871
+  },
+  {
+   "name": "tunnel-agent",
+   "downloads": 225770401
+  },
+  {
+   "name": "@babel/plugin-transform-object-super",
+   "downloads": 225756862
+  },
+  {
+   "name": "@tsconfig/node10",
+   "downloads": 225621440
+  },
+  {
+   "name": "lowercase-keys",
+   "downloads": 225615367
+  },
+  {
+   "name": "serialize-error",
+   "downloads": 225256951
+  },
+  {
+   "name": "@tsconfig/node14",
+   "downloads": 224923364
+  },
+  {
+   "name": "@inquirer/search",
+   "downloads": 224696609
+  },
+  {
+   "name": "@babel/plugin-transform-property-literals",
+   "downloads": 224655077
+  },
+  {
+   "name": "@babel/plugin-transform-member-expression-literals",
+   "downloads": 224645505
+  },
+  {
+   "name": "util",
+   "downloads": 224577799
+  },
+  {
+   "name": "find-cache-dir",
+   "downloads": 224321996
+  },
+  {
+   "name": "teeny-request",
+   "downloads": 224147491
+  },
+  {
+   "name": "@smithy/smithy-client",
+   "downloads": 224077724
+  },
+  {
+   "name": "@polka/url",
+   "downloads": 223613547
+  },
+  {
+   "name": "d3-selection",
+   "downloads": 223531131
+  },
+  {
+   "name": "@smithy/middleware-endpoint",
+   "downloads": 223465083
+  },
+  {
+   "name": "@swc/counter",
+   "downloads": 223440344
+  },
+  {
+   "name": "react-transition-group",
+   "downloads": 222880792
+  },
+  {
+   "name": "@inquirer/expand",
+   "downloads": 222744063
+  },
+  {
+   "name": "ohash",
+   "downloads": 222469445
+  },
+  {
+   "name": "d3-geo",
+   "downloads": 222411168
+  },
+  {
+   "name": "@inquirer/rawlist",
+   "downloads": 222188097
+  },
+  {
+   "name": "@types/resolve",
+   "downloads": 221833724
+  },
+  {
+   "name": "resolve.exports",
+   "downloads": 221774181
+  },
+  {
+   "name": "@tsconfig/node16",
+   "downloads": 221463204
+  },
+  {
+   "name": "hoist-non-react-statics",
+   "downloads": 220879638
+  },
+  {
+   "name": "memfs",
+   "downloads": 220649371
+  },
+  {
+   "name": "got",
+   "downloads": 220552055
+  },
+  {
+   "name": "highlight.js",
+   "downloads": 220105812
+  },
+  {
+   "name": "@inquirer/number",
+   "downloads": 219722523
+  },
+  {
+   "name": "@tsconfig/node12",
+   "downloads": 219616289
+  },
+  {
+   "name": "totalist",
+   "downloads": 219543043
+  },
+  {
+   "name": "@radix-ui/react-toggle-group",
+   "downloads": 219213431
+  },
+  {
+   "name": "@smithy/middleware-serde",
+   "downloads": 219179670
+  },
+  {
+   "name": "@smithy/url-parser",
+   "downloads": 219098230
+  },
+  {
+   "name": "v8-compile-cache-lib",
+   "downloads": 218653242
+  },
+  {
+   "name": "@babel/plugin-transform-modules-systemjs",
+   "downloads": 218380095
+  },
+  {
+   "name": "@octokit/request",
+   "downloads": 218379854
+  },
+  {
+   "name": "@babel/plugin-syntax-import-assertions",
+   "downloads": 218362230
+  },
+  {
+   "name": "@swc/types",
+   "downloads": 218065789
+  },
+  {
+   "name": "@opentelemetry/exporter-trace-otlp-http",
+   "downloads": 218051528
+  },
+  {
+   "name": "cluster-key-slot",
+   "downloads": 218041107
+  },
+  {
+   "name": "ts-dedent",
+   "downloads": 217977065
+  },
+  {
+   "name": "@smithy/middleware-stack",
+   "downloads": 217819396
+  },
+  {
+   "name": "@babel/plugin-transform-exponentiation-operator",
+   "downloads": 217778322
+  },
+  {
+   "name": "@babel/plugin-transform-dotall-regex",
+   "downloads": 217627887
+  },
+  {
+   "name": "d3-transition",
+   "downloads": 217591778
+  },
+  {
+   "name": "node-gyp",
+   "downloads": 217045230
+  },
+  {
+   "name": "@babel/plugin-transform-modules-amd",
+   "downloads": 216922445
+  },
+  {
+   "name": "d3-drag",
+   "downloads": 216882432
+  },
+  {
+   "name": "@babel/plugin-transform-modules-umd",
+   "downloads": 216625178
+  },
+  {
+   "name": "@octokit/endpoint",
+   "downloads": 216523648
+  },
+  {
+   "name": "@babel/plugin-transform-typeof-symbol",
+   "downloads": 216408159
+  },
+  {
+   "name": "acorn-import-attributes",
+   "downloads": 216041193
+  },
+  {
+   "name": "@babel/plugin-transform-duplicate-keys",
+   "downloads": 215775145
+  },
+  {
+   "name": "lodash.uniq",
+   "downloads": 215747604
+  },
+  {
+   "name": "string-argv",
+   "downloads": 215637697
+  },
+  {
+   "name": "@babel/plugin-transform-new-target",
+   "downloads": 215612817
+  },
+  {
+   "name": "@fastify/busboy",
+   "downloads": 215144400
+  },
+  {
+   "name": "lower-case",
+   "downloads": 215009440
+  },
+  {
+   "name": "spdx-correct",
+   "downloads": 214924372
+  },
+  {
+   "name": "cross-fetch",
+   "downloads": 214817773
+  },
+  {
+   "name": "moment",
+   "downloads": 214742608
+  },
+  {
+   "name": "@babel/plugin-transform-reserved-words",
+   "downloads": 214718093
+  },
+  {
+   "name": "@smithy/property-provider",
+   "downloads": 214621140
+  },
+  {
+   "name": "@smithy/util-hex-encoding",
+   "downloads": 214231855
+  },
+  {
+   "name": "@babel/plugin-transform-react-jsx",
+   "downloads": 214111294
+  },
+  {
+   "name": "strtok3",
+   "downloads": 213995339
+  },
+  {
+   "name": "stream-shift",
+   "downloads": 213781486
+  },
+  {
+   "name": "d3-zoom",
+   "downloads": 213641402
+  },
+  {
+   "name": "@smithy/util-retry",
+   "downloads": 213175017
+  },
+  {
+   "name": "stable-hash",
+   "downloads": 213174192
+  },
+  {
+   "name": "no-case",
+   "downloads": 213105777
+  },
+  {
+   "name": "@babel/plugin-transform-unicode-escapes",
+   "downloads": 212769122
+  },
+  {
+   "name": "svgo",
+   "downloads": 211898768
+  },
+  {
+   "name": "robust-predicates",
+   "downloads": 211794901
+  },
+  {
+   "name": "@nolyfill/is-core-module",
+   "downloads": 211699305
+  },
+  {
+   "name": "@babel/plugin-proposal-private-property-in-object",
+   "downloads": 211480296
+  },
+  {
+   "name": "@aws-crypto/supports-web-crypto",
+   "downloads": 211327600
+  },
+  {
+   "name": "@babel/plugin-transform-numeric-separator",
+   "downloads": 211113292
+  },
+  {
+   "name": "validate-npm-package-license",
+   "downloads": 211107390
+  },
+  {
+   "name": "@aws-crypto/sha256-browser",
+   "downloads": 210916386
+  },
+  {
+   "name": "@hookform/resolvers",
+   "downloads": 210742299
+  },
+  {
+   "name": "tweetnacl",
+   "downloads": 210443537
+  },
+  {
+   "name": "postcss-import",
+   "downloads": 210407403
+  },
+  {
+   "name": "@emotion/memoize",
+   "downloads": 210323145
+  },
+  {
+   "name": "@opentelemetry/sdk-trace-node",
+   "downloads": 210314465
+  },
+  {
+   "name": "@babel/plugin-bugfix-v8-spread-parameters-in-optional-chaining",
+   "downloads": 210224977
+  },
+  {
+   "name": "run-async",
+   "downloads": 209746971
+  },
+  {
+   "name": "@smithy/util-stream",
+   "downloads": 209604862
+  },
+  {
+   "name": "husky",
+   "downloads": 209493939
+  },
+  {
+   "name": "@smithy/middleware-retry",
+   "downloads": 209167795
+  },
+  {
+   "name": "psl",
+   "downloads": 208999647
+  },
+  {
+   "name": "@types/mime",
+   "downloads": 208875535
+  },
+  {
+   "name": "meow",
+   "downloads": 208655745
+  },
+  {
+   "name": "vite-node",
+   "downloads": 208460705
+  },
+  {
+   "name": "@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression",
+   "downloads": 208000519
+  },
+  {
+   "name": "redux-thunk",
+   "downloads": 207912441
+  },
+  {
+   "name": "ssri",
+   "downloads": 207761113
+  },
+  {
+   "name": "loader-runner",
+   "downloads": 207730461
+  },
+  {
+   "name": "@types/jsonwebtoken",
+   "downloads": 207007085
+  },
+  {
+   "name": "token-types",
+   "downloads": 206995992
+  },
+  {
+   "name": "stdin-discarder",
+   "downloads": 206978685
+  },
+  {
+   "name": "@jest/diff-sequences",
+   "downloads": 206427495
+  },
+  {
+   "name": "url-parse",
+   "downloads": 206000029
+  },
+  {
+   "name": "@babel/preset-modules",
+   "downloads": 205861890
+  },
+  {
+   "name": "async-retry",
+   "downloads": 205405767
+  },
+  {
+   "name": "querystringify",
+   "downloads": 205379038
+  },
+  {
+   "name": "text-table",
+   "downloads": 205330380
+  },
+  {
+   "name": "@radix-ui/react-hover-card",
+   "downloads": 205156662
+  },
+  {
+   "name": "@swc/core-linux-x64-gnu",
+   "downloads": 204998786
+  },
+  {
+   "name": "citty",
+   "downloads": 204655845
+  },
+  {
+   "name": "read-cache",
+   "downloads": 204320844
+  },
+  {
+   "name": "@types/parse-json",
+   "downloads": 204265439
+  },
+  {
+   "name": "p-cancelable",
+   "downloads": 204180158
+  },
+  {
+   "name": "nan",
+   "downloads": 204119036
+  },
+  {
+   "name": "@parcel/watcher-linux-x64-glibc",
+   "downloads": 203918096
+  },
+  {
+   "name": "enquirer",
+   "downloads": 203894317
+  },
+  {
+   "name": "@babel/plugin-transform-react-display-name",
+   "downloads": 203750603
+  },
+  {
+   "name": "eslint-config-next",
+   "downloads": 203522622
+  },
+  {
+   "name": "promise",
+   "downloads": 203208161
+  },
+  {
+   "name": "@octokit/graphql",
+   "downloads": 203170133
+  },
+  {
+   "name": "destr",
+   "downloads": 203145011
+  },
+  {
+   "name": "@smithy/hash-node",
+   "downloads": 203094611
+  },
+  {
+   "name": "postcss-nested",
+   "downloads": 202887895
+  },
+  {
+   "name": "@smithy/shared-ini-file-loader",
+   "downloads": 202866262
+  },
+  {
+   "name": "@smithy/config-resolver",
+   "downloads": 202678850
+  },
+  {
+   "name": "@noble/curves",
+   "downloads": 202621071
+  },
+  {
+   "name": "react-day-picker",
+   "downloads": 202544553
+  },
+  {
+   "name": "universal-user-agent",
+   "downloads": 202321527
+  },
+  {
+   "name": "aggregate-error",
+   "downloads": 202169642
+  },
+  {
+   "name": "@types/uuid",
+   "downloads": 201994665
+  },
+  {
+   "name": "cli-table3",
+   "downloads": 201820030
+  },
+  {
+   "name": "p-finally",
+   "downloads": 201774960
+  },
+  {
+   "name": "@octokit/core",
+   "downloads": 201352691
+  },
+  {
+   "name": "html-void-elements",
+   "downloads": 201344643
+  },
+  {
+   "name": "@reduxjs/toolkit",
+   "downloads": 201219121
+  },
+  {
+   "name": "lodash.memoize",
+   "downloads": 201120527
+  },
+  {
+   "name": "lodash.isequal",
+   "downloads": 201031839
+  },
+  {
+   "name": "hastscript",
+   "downloads": 200845680
+  },
+  {
+   "name": "@smithy/util-defaults-mode-node",
+   "downloads": 200469375
+  },
+  {
+   "name": "lodash.defaults",
+   "downloads": 200462037
+  },
+  {
+   "name": "@smithy/util-defaults-mode-browser",
+   "downloads": 200360543
+  },
+  {
+   "name": "cacheable-request",
+   "downloads": 200110536
+  },
+  {
+   "name": "denque",
+   "downloads": 200004757
+  },
+  {
+   "name": "@octokit/auth-token",
+   "downloads": 199805268
+  },
+  {
+   "name": "classnames",
+   "downloads": 199796166
+  },
+  {
+   "name": "@smithy/invalid-dependency",
+   "downloads": 199571709
+  },
+  {
+   "name": "@octokit/plugin-paginate-rest",
+   "downloads": 199432865
+  },
+  {
+   "name": "linkify-it",
+   "downloads": 199363409
+  },
+  {
+   "name": "prismjs",
+   "downloads": 198875079
+  },
+  {
+   "name": "astral-regex",
+   "downloads": 198772767
+  },
+  {
+   "name": "mitt",
+   "downloads": 198466489
+  },
+  {
+   "name": "@babel/plugin-transform-unicode-property-regex",
+   "downloads": 198310092
+  },
+  {
+   "name": "@babel/plugin-transform-json-strings",
+   "downloads": 198297725
+  },
+  {
+   "name": "@babel/plugin-transform-unicode-sets-regex",
+   "downloads": 198290488
+  },
+  {
+   "name": "hast-util-parse-selector",
+   "downloads": 198037191
+  },
+  {
+   "name": "cmdk",
+   "downloads": 197971492
+  },
+  {
+   "name": "miniflare",
+   "downloads": 197956506
+  },
+  {
+   "name": "npm-package-arg",
+   "downloads": 197720451
+  },
+  {
+   "name": "@babel/plugin-transform-dynamic-import",
+   "downloads": 197654707
+  },
+  {
+   "name": "@radix-ui/react-navigation-menu",
+   "downloads": 197164063
+  },
+  {
+   "name": "@radix-ui/react-context-menu",
+   "downloads": 196798162
+  },
+  {
+   "name": "perfect-debounce",
+   "downloads": 196623747
+  },
+  {
+   "name": "change-case",
+   "downloads": 196568738
+  },
+  {
+   "name": "before-after-hook",
+   "downloads": 196068274
+  },
+  {
+   "name": "@smithy/middleware-content-length",
+   "downloads": 196012137
+  },
+  {
+   "name": "invariant",
+   "downloads": 195946292
+  },
+  {
+   "name": "dlv",
+   "downloads": 195835155
+  },
+  {
+   "name": "graphemer",
+   "downloads": 195635111
+  },
+  {
+   "name": "@types/eslint",
+   "downloads": 195464922
+  },
+  {
+   "name": "@babel/plugin-bugfix-v8-static-class-fields-redefine-readonly",
+   "downloads": 194354604
+  },
+  {
+   "name": "uc.micro",
+   "downloads": 193954908
+  },
+  {
+   "name": "responselike",
+   "downloads": 193385199
+  },
+  {
+   "name": "@types/semver",
+   "downloads": 193322136
+  },
+  {
+   "name": "cli-boxes",
+   "downloads": 192539577
+  },
+  {
+   "name": "@smithy/util-endpoints",
+   "downloads": 192137797
+  },
+  {
+   "name": "cacache",
+   "downloads": 191997199
+  },
+  {
+   "name": "@aws-sdk/util-locate-window",
+   "downloads": 191951958
+  },
+  {
+   "name": "performance-now",
+   "downloads": 191941250
+  },
+  {
+   "name": "concat-stream",
+   "downloads": 191552283
+  },
+  {
+   "name": "fast-diff",
+   "downloads": 191460624
+  },
+  {
+   "name": "ua-parser-js",
+   "downloads": 191457850
+  },
+  {
+   "name": "@smithy/util-uri-escape",
+   "downloads": 191281620
+  },
+  {
+   "name": "duplexer2",
+   "downloads": 191208618
+  },
+  {
+   "name": "@smithy/util-body-length-browser",
+   "downloads": 189317905
+  },
+  {
+   "name": "node-abi",
+   "downloads": 189186824
+  },
+  {
+   "name": "mkdirp-classic",
+   "downloads": 188726692
+  },
+  {
+   "name": "@babel/plugin-transform-react-jsx-development",
+   "downloads": 188522078
+  },
+  {
+   "name": "jest-pnp-resolver",
+   "downloads": 188376579
+  },
+  {
+   "name": "@babel/plugin-bugfix-firefox-class-in-computed-class-key",
+   "downloads": 188355288
+  },
+  {
+   "name": "dot-case",
+   "downloads": 188215295
+  },
+  {
+   "name": "@smithy/querystring-builder",
+   "downloads": 187695413
+  },
+  {
+   "name": "streamsearch",
+   "downloads": 187413130
+  },
+  {
+   "name": "dateformat",
+   "downloads": 186999415
+  },
+  {
+   "name": "unenv",
+   "downloads": 185711774
+  },
+  {
+   "name": "js-cookie",
+   "downloads": 185566666
+  },
+  {
+   "name": "@unrs/resolver-binding-linux-x64-musl",
+   "downloads": 185415285
+  },
+  {
+   "name": "at-least-node",
+   "downloads": 185073506
+  },
+  {
+   "name": "proto3-json-serializer",
+   "downloads": 184733291
+  },
+  {
+   "name": "@radix-ui/react-aspect-ratio",
+   "downloads": 184223956
+  },
+  {
+   "name": "busboy",
+   "downloads": 184170961
+  },
+  {
+   "name": "@smithy/util-body-length-node",
+   "downloads": 183869568
+  },
+  {
+   "name": "@babel/plugin-transform-react-pure-annotations",
+   "downloads": 183617519
+  },
+  {
+   "name": "csso",
+   "downloads": 183388665
+  },
+  {
+   "name": "postcss-js",
+   "downloads": 183214128
+  },
+  {
+   "name": "interpret",
+   "downloads": 183119384
+  },
+  {
+   "name": "camelcase-css",
+   "downloads": 182932917
+  },
+  {
+   "name": "is-typedarray",
+   "downloads": 182880144
+  },
+  {
+   "name": "asn1",
+   "downloads": 182608638
+  },
+  {
+   "name": "component-emitter",
+   "downloads": 182108455
+  },
+  {
+   "name": "@cloudflare/workerd-linux-64",
+   "downloads": 181799617
+  },
+  {
+   "name": "@babel/plugin-bugfix-safari-class-field-initializer-scope",
+   "downloads": 181704365
+  },
+  {
+   "name": "big.js",
+   "downloads": 181588542
+  },
+  {
+   "name": "@radix-ui/react-toast",
+   "downloads": 181213793
+  },
+  {
+   "name": "is-windows",
+   "downloads": 181084769
+  },
+  {
+   "name": "babel-plugin-macros",
+   "downloads": 180793914
+  },
+  {
+   "name": "@radix-ui/react-menubar",
+   "downloads": 180761119
+  },
+  {
+   "name": "@ts-morph/common",
+   "downloads": 180615148
+  },
+  {
+   "name": "sass",
+   "downloads": 180610943
+  },
+  {
+   "name": "fd-slicer",
+   "downloads": 180476031
+  },
+  {
+   "name": "@babel/plugin-transform-explicit-resource-management",
+   "downloads": 180338616
+  },
+  {
+   "name": "ts-morph",
+   "downloads": 179904875
+  },
+  {
+   "name": "@babel/plugin-syntax-unicode-sets-regex",
+   "downloads": 179320861
+  },
+  {
+   "name": "underscore",
+   "downloads": 179030083
+  },
+  {
+   "name": "ioredis",
+   "downloads": 178860451
+  },
+  {
+   "name": "parse5-htmlparser2-tree-adapter",
+   "downloads": 177962816
+  },
+  {
+   "name": "@jest/get-type",
+   "downloads": 177869598
+  },
+  {
+   "name": "@emotion/unitless",
+   "downloads": 177835102
+  },
+  {
+   "name": "didyoumean",
+   "downloads": 177434048
+  },
+  {
+   "name": "@babel/plugin-transform-runtime",
+   "downloads": 177364376
+  },
+  {
+   "name": "pretty-bytes",
+   "downloads": 177162469
+  },
+  {
+   "name": "read-pkg-up",
+   "downloads": 177009908
+  },
+  {
+   "name": "@babel/plugin-transform-regexp-modifiers",
+   "downloads": 176964197
+  },
+  {
+   "name": "is-regexp",
+   "downloads": 176752336
+  },
+  {
+   "name": "@smithy/querystring-parser",
+   "downloads": 175784124
+  },
+  {
+   "name": "mlly",
+   "downloads": 174890276
+  },
+  {
+   "name": "is-node-process",
+   "downloads": 174557792
+  },
+  {
+   "name": "libphonenumber-js",
+   "downloads": 174330194
+  },
+  {
+   "name": "@octokit/plugin-rest-endpoint-methods",
+   "downloads": 174209619
+  },
+  {
+   "name": "cacheable-lookup",
+   "downloads": 173565346
+  },
+  {
+   "name": "yoctocolors-cjs",
+   "downloads": 173239111
+  },
+  {
+   "name": "@smithy/service-error-classification",
+   "downloads": 173051881
+  },
+  {
+   "name": "simple-swizzle",
+   "downloads": 172866300
+  },
+  {
+   "name": "jake",
+   "downloads": 172687483
+  },
+  {
+   "name": "filelist",
+   "downloads": 172617455
+  },
+  {
+   "name": "@vue/shared",
+   "downloads": 171989489
+  },
+  {
+   "name": "rou3",
+   "downloads": 171701448
+  },
+  {
+   "name": "tabbable",
+   "downloads": 171427983
+  },
+  {
+   "name": "lint-staged",
+   "downloads": 171403614
+  },
+  {
+   "name": "@humanwhocodes/config-array",
+   "downloads": 170148991
+  },
+  {
+   "name": "typedarray",
+   "downloads": 169996679
+  },
+  {
+   "name": "mdurl",
+   "downloads": 169035013
+  },
+  {
+   "name": "http2-wrapper",
+   "downloads": 168814790
+  },
+  {
+   "name": "faye-websocket",
+   "downloads": 168745008
+  },
+  {
+   "name": "@npmcli/fs",
+   "downloads": 168341888
+  },
+  {
+   "name": "@asamuzakjp/nwsapi",
+   "downloads": 168135254
+  },
+  {
+   "name": "websocket-driver",
+   "downloads": 167543900
+  },
+  {
+   "name": "map-obj",
+   "downloads": 167420642
+  },
+  {
+   "name": "@babel/plugin-syntax-decorators",
+   "downloads": 167222657
+  },
+  {
+   "name": "joycon",
+   "downloads": 167096937
+  },
+  {
+   "name": "http-parser-js",
+   "downloads": 167018285
+  },
+  {
+   "name": "@esbuild/linux-arm64",
+   "downloads": 166908165
+  },
+  {
+   "name": "is-descriptor",
+   "downloads": 166698316
+  },
+  {
+   "name": "lodash.clonedeep",
+   "downloads": 166097451
+  },
+  {
+   "name": "@types/cors",
+   "downloads": 165873601
+  },
+  {
+   "name": "@hapi/hoek",
+   "downloads": 165820723
+  },
+  {
+   "name": "stackframe",
+   "downloads": 165785151
+  },
+  {
+   "name": "image-size",
+   "downloads": 165711977
+  },
+  {
+   "name": "@humanwhocodes/object-schema",
+   "downloads": 165695289
+  },
+  {
+   "name": "markdown-it",
+   "downloads": 165398153
+  },
+  {
+   "name": "@aws-crypto/crc32",
+   "downloads": 165268480
+  },
+  {
+   "name": "@emotion/hash",
+   "downloads": 165058056
+  },
+  {
+   "name": "error-stack-parser",
+   "downloads": 165022417
+  },
+  {
+   "name": "@ampproject/remapping",
+   "downloads": 164984303
+  },
+  {
+   "name": "is-reference",
+   "downloads": 164742660
+  },
+  {
+   "name": "punycode.js",
+   "downloads": 164707505
+  },
+  {
+   "name": "crypto-random-string",
+   "downloads": 164625743
+  },
+  {
+   "name": "whatwg-fetch",
+   "downloads": 164472612
+  },
+  {
+   "name": "boxen",
+   "downloads": 163574321
+  },
+  {
+   "name": "fsevents",
+   "downloads": 163539637
+  },
+  {
+   "name": "@babel/plugin-proposal-decorators",
+   "downloads": 163331236
+  },
+  {
+   "name": "base64-arraybuffer",
+   "downloads": 163159646
+  },
+  {
+   "name": "stringify-object",
+   "downloads": 163109735
+  },
+  {
+   "name": "stack-trace",
+   "downloads": 163057194
+  },
+  {
+   "name": "rechoir",
+   "downloads": 162972416
+  },
+  {
+   "name": "file-uri-to-path",
+   "downloads": 162967550
+  },
+  {
+   "name": "unique-string",
+   "downloads": 162819292
+  },
+  {
+   "name": "h3",
+   "downloads": 162642563
+  },
+  {
+   "name": "websocket-extensions",
+   "downloads": 162549255
+  },
+  {
+   "name": "@types/graceful-fs",
+   "downloads": 162493706
+  },
+  {
+   "name": "form-data-encoder",
+   "downloads": 161262963
+  },
+  {
+   "name": "socket.io-parser",
+   "downloads": 161242639
+  },
+  {
+   "name": "make-fetch-happen",
+   "downloads": 160781641
+  },
+  {
+   "name": "redis-errors",
+   "downloads": 159990010
+  },
+  {
+   "name": "@cloudflare/kv-asset-handler",
+   "downloads": 159593023
+  },
+  {
+   "name": "@azure/abort-controller",
+   "downloads": 159466868
+  },
+  {
+   "name": "simple-get",
+   "downloads": 158741728
+  },
+  {
+   "name": "@smithy/util-config-provider",
+   "downloads": 158483760
+  },
+  {
+   "name": "@vue/compiler-core",
+   "downloads": 158337935
+  },
+  {
+   "name": "eslint-plugin-prettier",
+   "downloads": 158158314
+  },
+  {
+   "name": "@vue/compiler-dom",
+   "downloads": 157768471
+  },
+  {
+   "name": "exit",
+   "downloads": 157665822
+  },
+  {
+   "name": "bindings",
+   "downloads": 157402994
+  },
+  {
+   "name": "randombytes",
+   "downloads": 157173405
+  },
+  {
+   "name": "camel-case",
+   "downloads": 156755549
+  },
+  {
+   "name": "minipass-fetch",
+   "downloads": 156143161
+  },
+  {
+   "name": "deep-equal",
+   "downloads": 156129356
+  },
+  {
+   "name": "object-is",
+   "downloads": 156046905
+  },
+  {
+   "name": "youch",
+   "downloads": 155319245
+  },
+  {
+   "name": "@szmarczak/http-timer",
+   "downloads": 155286718
+  },
+  {
+   "name": "simple-concat",
+   "downloads": 154809779
+  },
+  {
+   "name": "@types/eslint-scope",
+   "downloads": 154766552
+  },
+  {
+   "name": "@emotion/is-prop-valid",
+   "downloads": 154710120
+  },
+  {
+   "name": "global-prefix",
+   "downloads": 154509457
+  },
+  {
+   "name": "fast-copy",
+   "downloads": 152597636
+  },
+  {
+   "name": "winston",
+   "downloads": 152497335
+  },
+  {
+   "name": "@opentelemetry/instrumentation-http",
+   "downloads": 152438252
+  },
+  {
+   "name": "flat",
+   "downloads": 152285141
+  },
+  {
+   "name": "@types/node-fetch",
+   "downloads": 151987061
+  },
+  {
+   "name": "@babel/preset-react",
+   "downloads": 151750510
+  },
+  {
+   "name": "get-port",
+   "downloads": 151662119
+  },
+  {
+   "name": "css-loader",
+   "downloads": 151193373
+  },
+  {
+   "name": "err-code",
+   "downloads": 150767804
+  },
+  {
+   "name": "idb",
+   "downloads": 150619343
+  },
+  {
+   "name": "param-case",
+   "downloads": 150399250
+  },
+  {
+   "name": "detect-node",
+   "downloads": 149902005
+  },
+  {
+   "name": "strip-literal",
+   "downloads": 149509315
+  },
+  {
+   "name": "fastest-levenshtein",
+   "downloads": 149225251
+  },
+  {
+   "name": "prettier-linter-helpers",
+   "downloads": 149180712
+  },
+  {
+   "name": "cheerio",
+   "downloads": 148935630
+  },
+  {
+   "name": "react-fast-compare",
+   "downloads": 148590425
+  },
+  {
+   "name": "validator",
+   "downloads": 148338072
+  },
+  {
+   "name": "@types/http-cache-semantics",
+   "downloads": 148212071
+  },
+  {
+   "name": "logform",
+   "downloads": 148028213
+  },
+  {
+   "name": "is-installed-globally",
+   "downloads": 147844980
+  },
+  {
+   "name": "cross-env",
+   "downloads": 147760475
+  },
+  {
+   "name": "winston-transport",
+   "downloads": 147530803
+  },
+  {
+   "name": "fecha",
+   "downloads": 147347500
+  },
+  {
+   "name": "@mswjs/interceptors",
+   "downloads": 147265480
+  },
+  {
+   "name": "outvariant",
+   "downloads": 147197744
+  },
+  {
+   "name": "@smithy/abort-controller",
+   "downloads": 147062157
+  },
+  {
+   "name": "promise-retry",
+   "downloads": 146924189
+  },
+  {
+   "name": "global-modules",
+   "downloads": 145521263
+  },
+  {
+   "name": "resolve-alpn",
+   "downloads": 145256708
+  },
+  {
+   "name": "minipass-collect",
+   "downloads": 144947078
+  },
+  {
+   "name": "triple-beam",
+   "downloads": 144896494
+  },
+  {
+   "name": "asn1.js",
+   "downloads": 144887187
+  },
+  {
+   "name": "@protobufjs/inquire",
+   "downloads": 144414133
+  },
+  {
+   "name": "formidable",
+   "downloads": 144337323
+  },
+  {
+   "name": "@types/normalize-package-data",
+   "downloads": 144326514
+  },
+  {
+   "name": "debounce",
+   "downloads": 144155857
+  },
+  {
+   "name": "@vue/compiler-sfc",
+   "downloads": 144089914
+  },
+  {
+   "name": "next-themes",
+   "downloads": 143906019
+  },
+  {
+   "name": "youch-core",
+   "downloads": 143882946
+  },
+  {
+   "name": "config-chain",
+   "downloads": 143777291
+  },
+  {
+   "name": "agentkeepalive",
+   "downloads": 143751421
+  },
+  {
+   "name": "pascal-case",
+   "downloads": 143652934
+  },
+  {
+   "name": "proto-list",
+   "downloads": 143432680
+  },
+  {
+   "name": "redis-parser",
+   "downloads": 143030944
+  },
+  {
+   "name": "engine.io-parser",
+   "downloads": 142861785
+  },
+  {
+   "name": "vscode-uri",
+   "downloads": 142642776
+  },
+  {
+   "name": "ts-jest",
+   "downloads": 142599262
+  },
+  {
+   "name": "joi",
+   "downloads": 142137512
+  },
+  {
+   "name": "get-uri",
+   "downloads": 142039816
+  },
+  {
+   "name": "decode-uri-component",
+   "downloads": 141969514
+  },
+  {
+   "name": "npm-normalize-package-bin",
+   "downloads": 141814436
+  },
+  {
+   "name": "@formatjs/intl-localematcher",
+   "downloads": 141682659
+  },
+  {
+   "name": "detect-indent",
+   "downloads": 141596391
+  },
+  {
+   "name": "mri",
+   "downloads": 141572005
+  },
+  {
+   "name": "pac-resolver",
+   "downloads": 141234794
+  },
+  {
+   "name": "degenerator",
+   "downloads": 140983610
+  },
+  {
+   "name": "postcss-modules-local-by-default",
+   "downloads": 140729472
+  },
+  {
+   "name": "pac-proxy-agent",
+   "downloads": 140710249
+  },
+  {
+   "name": "acorn-import-phases",
+   "downloads": 140646450
+  },
+  {
+   "name": "netmask",
+   "downloads": 140638235
+  },
+  {
+   "name": "@aws-sdk/middleware-flexible-checksums",
+   "downloads": 140410944
+  },
+  {
+   "name": "fs-monkey",
+   "downloads": 140308511
+  },
+  {
+   "name": "snake-case",
+   "downloads": 140201239
+  },
+  {
+   "name": "postcss-modules-scope",
+   "downloads": 140044973
+  },
+  {
+   "name": "strict-event-emitter",
+   "downloads": 139879545
+  },
+  {
+   "name": "aws4",
+   "downloads": 139853554
+  },
+  {
+   "name": "@smithy/util-waiter",
+   "downloads": 139751646
+  },
+  {
+   "name": "duplexer",
+   "downloads": 139686507
+  },
+  {
+   "name": "proxy-agent",
+   "downloads": 139540076
+  },
+  {
+   "name": "postcss-modules-extract-imports",
+   "downloads": 138300267
+  },
+  {
+   "name": "defer-to-connect",
+   "downloads": 138113032
+  },
+  {
+   "name": "@hapi/topo",
+   "downloads": 138025207
+  },
+  {
+   "name": "ansi-align",
+   "downloads": 137910802
+  },
+  {
+   "name": "@types/triple-beam",
+   "downloads": 137845516
+  },
+  {
+   "name": "basic-ftp",
+   "downloads": 137711996
+  },
+  {
+   "name": "http-proxy",
+   "downloads": 137675912
+  },
+  {
+   "name": "common-tags",
+   "downloads": 137380846
+  },
+  {
+   "name": "loglevel",
+   "downloads": 137260910
+  },
+  {
+   "name": "@smithy/eventstream-codec",
+   "downloads": 137078473
+  },
+  {
+   "name": "@emotion/weak-memoize",
+   "downloads": 137061293
+  },
+  {
+   "name": "minipass-flush",
+   "downloads": 137015377
+  },
+  {
+   "name": "superagent",
+   "downloads": 136197342
+  },
+  {
+   "name": "@emotion/utils",
+   "downloads": 135972950
+  },
+  {
+   "name": "dezalgo",
+   "downloads": 135934015
+  },
+  {
+   "name": "icss-utils",
+   "downloads": 135743406
+  },
+  {
+   "name": "clone-deep",
+   "downloads": 135505094
+  },
+  {
+   "name": "shallow-clone",
+   "downloads": 135425035
+  },
+  {
+   "name": "enabled",
+   "downloads": 135010752
+  },
+  {
+   "name": "kuler",
+   "downloads": 134942770
+  },
+  {
+   "name": "node-abort-controller",
+   "downloads": 134821180
+  },
+  {
+   "name": "encoding",
+   "downloads": 134365424
+  },
+  {
+   "name": "one-time",
+   "downloads": 134307984
+  },
+  {
+   "name": "@emotion/serialize",
+   "downloads": 134175447
+  },
+  {
+   "name": "minipass-pipeline",
+   "downloads": 133989978
+  },
+  {
+   "name": "@emotion/cache",
+   "downloads": 133879434
+  },
+  {
+   "name": "text-hex",
+   "downloads": 133786070
+  },
+  {
+   "name": "react-resizable-panels",
+   "downloads": 133725264
+  },
+  {
+   "name": "@popperjs/core",
+   "downloads": 133611478
+  },
+  {
+   "name": "@smithy/eventstream-serde-node",
+   "downloads": 133562199
+  },
+  {
+   "name": "postcss-modules-values",
+   "downloads": 133525305
+  },
+  {
+   "name": "prebuild-install",
+   "downloads": 132932894
+  },
+  {
+   "name": "emojis-list",
+   "downloads": 132686387
+  },
+  {
+   "name": "fn.name",
+   "downloads": 132404952
+  },
+  {
+   "name": "napi-build-utils",
+   "downloads": 132270528
+  },
+  {
+   "name": "minipass-sized",
+   "downloads": 132261950
+  },
+  {
+   "name": "eslint-plugin-react-refresh",
+   "downloads": 132200202
+  },
+  {
+   "name": "terminal-link",
+   "downloads": 131862645
+  },
+  {
+   "name": "registry-auth-token",
+   "downloads": 131744389
+  },
+  {
+   "name": "@aws-sdk/client-sso",
+   "downloads": 131576501
+  },
+  {
+   "name": "expand-template",
+   "downloads": 131047153
+  },
+  {
+   "name": "@emotion/sheet",
+   "downloads": 130981847
+  },
+  {
+   "name": "jsbn",
+   "downloads": 130840767
+  },
+  {
+   "name": "@babel/plugin-syntax-flow",
+   "downloads": 130806819
+  },
+  {
+   "name": "typedarray-to-buffer",
+   "downloads": 130595325
+  },
+  {
+   "name": "@opentelemetry/instrumentation-pg",
+   "downloads": 130397187
+  },
+  {
+   "name": "globrex",
+   "downloads": 129556774
+  },
+  {
+   "name": "@babel/plugin-syntax-dynamic-import",
+   "downloads": 129400685
+  },
+  {
+   "name": "http-proxy-middleware",
+   "downloads": 129011616
+  },
+  {
+   "name": "jest-environment-jsdom",
+   "downloads": 128817007
+  },
+  {
+   "name": "@types/yauzl",
+   "downloads": 128243368
+  },
+  {
+   "name": "humanize-ms",
+   "downloads": 128107463
+  },
+  {
+   "name": "vitefu",
+   "downloads": 127716945
+  },
+  {
+   "name": "launch-editor",
+   "downloads": 127512424
+  },
+  {
+   "name": "colors",
+   "downloads": 126936522
+  },
+  {
+   "name": "bs-logger",
+   "downloads": 126242418
+  },
+  {
+   "name": "embla-carousel",
+   "downloads": 126026636
+  },
+  {
+   "name": "unique-slug",
+   "downloads": 125982689
+  },
+  {
+   "name": "unique-filename",
+   "downloads": 125963339
+  },
+  {
+   "name": "query-string",
+   "downloads": 125389947
+  },
+  {
+   "name": "jsonpointer",
+   "downloads": 125181626
+  },
+  {
+   "name": "url",
+   "downloads": 125086494
+  },
+  {
+   "name": "@smithy/eventstream-serde-browser",
+   "downloads": 124657140
+  },
+  {
+   "name": "@aws-sdk/middleware-bucket-endpoint",
+   "downloads": 124533723
+  },
+  {
+   "name": "@aws-sdk/middleware-expect-continue",
+   "downloads": 124441427
+  },
+  {
+   "name": "@aws-sdk/middleware-location-constraint",
+   "downloads": 124284121
+  },
+  {
+   "name": "@aws-sdk/middleware-ssec",
+   "downloads": 124276026
+  },
+  {
+   "name": "@smithy/eventstream-serde-config-resolver",
+   "downloads": 123873056
+  },
+  {
+   "name": "@types/aws-lambda",
+   "downloads": 123843259
+  },
+  {
+   "name": "extsprintf",
+   "downloads": 123353553
+  },
+  {
+   "name": "tsconfck",
+   "downloads": 122092294
+  },
+  {
+   "name": "cookiejar",
+   "downloads": 121799821
+  },
+  {
+   "name": "embla-carousel-reactive-utils",
+   "downloads": 121140790
+  },
+  {
+   "name": "webpack-dev-middleware",
+   "downloads": 120245165
+  },
+  {
+   "name": "@emotion/babel-plugin",
+   "downloads": 120065292
+  },
+  {
+   "name": "cheerio-select",
+   "downloads": 120063323
+  },
+  {
+   "name": "@smithy/md5-js",
+   "downloads": 119961374
+  },
+  {
+   "name": "stream-browserify",
+   "downloads": 119907881
+  },
+  {
+   "name": "hash.js",
+   "downloads": 119852596
+  },
+  {
+   "name": "raf",
+   "downloads": 119630757
+  },
+  {
+   "name": "babel-loader",
+   "downloads": 119356656
+  },
+  {
+   "name": "urlpattern-polyfill",
+   "downloads": 119118986
+  },
+  {
+   "name": "domexception",
+   "downloads": 119055366
+  },
+  {
+   "name": "builtin-modules",
+   "downloads": 119045965
+  },
+  {
+   "name": "load-json-file",
+   "downloads": 118561530
+  },
+  {
+   "name": "extract-zip",
+   "downloads": 118256767
+  },
+  {
+   "name": "browserify-zlib",
+   "downloads": 118196853
+  },
+  {
+   "name": "@babel/highlight",
+   "downloads": 117932139
+  },
+  {
+   "name": "os-tmpdir",
+   "downloads": 117764469
+  },
+  {
+   "name": "@opentelemetry/instrumentation-undici",
+   "downloads": 117736881
+  },
+  {
+   "name": "jsonparse",
+   "downloads": 117274707
+  },
+  {
+   "name": "@emotion/react",
+   "downloads": 116874796
+  },
+  {
+   "name": "@types/pg-pool",
+   "downloads": 116762006
+  },
+  {
+   "name": "input-otp",
+   "downloads": 116241400
+  },
+  {
+   "name": "embla-carousel-react",
+   "downloads": 116125994
+  },
+  {
+   "name": "@opentelemetry/instrumentation-mongodb",
+   "downloads": 116014706
+  },
+  {
+   "name": "assert-plus",
+   "downloads": 115436294
+  },
+  {
+   "name": "@emotion/use-insertion-effect-with-fallbacks",
+   "downloads": 115409785
+  },
+  {
+   "name": "table",
+   "downloads": 115269395
+  },
+  {
+   "name": "upath",
+   "downloads": 114670626
+  },
+  {
+   "name": "abab",
+   "downloads": 114147443
+  },
+  {
+   "name": "style-loader",
+   "downloads": 114146798
+  },
+  {
+   "name": "filter-obj",
+   "downloads": 114133108
+  },
+  {
+   "name": "@opentelemetry/redis-common",
+   "downloads": 114130278
+  },
+  {
+   "name": "acorn-globals",
+   "downloads": 113571096
+  },
+  {
+   "name": "@opentelemetry/instrumentation-mysql",
+   "downloads": 113550238
+  },
+  {
+   "name": "to-buffer",
+   "downloads": 112448810
+  },
+  {
+   "name": "fork-ts-checker-webpack-plugin",
+   "downloads": 112151580
+  },
+  {
+   "name": "temp-dir",
+   "downloads": 111530503
+  },
+  {
+   "name": "symbol-observable",
+   "downloads": 111521071
+  },
+  {
+   "name": "lodash.sortby",
+   "downloads": 111184867
+  },
+  {
+   "name": "@openai/codex",
+   "downloads": 111083435
+  },
+  {
+   "name": "@opentelemetry/instrumentation-ioredis",
+   "downloads": 110810889
+  },
+  {
+   "name": "clean-css",
+   "downloads": 110377067
+  },
+  {
+   "name": "vite-tsconfig-paths",
+   "downloads": 110288765
+  },
+  {
+   "name": "caseless",
+   "downloads": 110057591
+  },
+  {
+   "name": "create-jest",
+   "downloads": 109899677
+  },
+  {
+   "name": "external-editor",
+   "downloads": 109893357
+  },
+  {
+   "name": "webpack-merge",
+   "downloads": 109848631
+  },
+  {
+   "name": "@opentelemetry/instrumentation-graphql",
+   "downloads": 109707989
+  },
+  {
+   "name": "hash-base",
+   "downloads": 108878424
+  },
+  {
+   "name": "clone-response",
+   "downloads": 108699305
+  },
+  {
+   "name": "gzip-size",
+   "downloads": 108683636
+  },
+  {
+   "name": "registry-url",
+   "downloads": 108642180
+  },
+  {
+   "name": "@opentelemetry/instrumentation-express",
+   "downloads": 108618359
+  },
+  {
+   "name": "parse5-parser-stream",
+   "downloads": 108135389
+  },
+  {
+   "name": "pidtree",
+   "downloads": 107792802
+  },
+  {
+   "name": "@aws-sdk/util-arn-parser",
+   "downloads": 107454588
+  },
+  {
+   "name": "json-parse-better-errors",
+   "downloads": 107451313
+  },
+  {
+   "name": "@opentelemetry/instrumentation-mongoose",
+   "downloads": 107434713
+  },
+  {
+   "name": "@opentelemetry/instrumentation-koa",
+   "downloads": 106950144
+  },
+  {
+   "name": "@opentelemetry/instrumentation-mysql2",
+   "downloads": 106845350
+  },
+  {
+   "name": "@opentelemetry/instrumentation-hapi",
+   "downloads": 106466895
+  },
+  {
+   "name": "@opentelemetry/instrumentation-connect",
+   "downloads": 106358674
+  },
+  {
+   "name": "xml",
+   "downloads": 106266463
+  },
+  {
+   "name": "@opentelemetry/instrumentation-dataloader",
+   "downloads": 105619422
+  },
+  {
+   "name": "normalize-range",
+   "downloads": 105429920
+  },
+  {
+   "name": "@opentelemetry/instrumentation-generic-pool",
+   "downloads": 105408900
+  },
+  {
+   "name": "@opentelemetry/instrumentation-amqplib",
+   "downloads": 105346069
+  },
+  {
+   "name": "@opentelemetry/instrumentation-fs",
+   "downloads": 105262333
+  },
+  {
+   "name": "@opentelemetry/instrumentation-knex",
+   "downloads": 105164308
+  },
+  {
+   "name": "verror",
+   "downloads": 105125752
+  },
+  {
+   "name": "@opentelemetry/instrumentation-lru-memoizer",
+   "downloads": 105074511
+  },
+  {
+   "name": "@opentelemetry/instrumentation-tedious",
+   "downloads": 104643814
+  },
+  {
+   "name": "@smithy/hash-stream-node",
+   "downloads": 104548750
+  },
+  {
+   "name": "@smithy/hash-blob-browser",
+   "downloads": 104488574
+  },
+  {
+   "name": "@smithy/eventstream-serde-universal",
+   "downloads": 104339727
+  },
+  {
+   "name": "@types/react-transition-group",
+   "downloads": 104006118
+  },
+  {
+   "name": "delegates",
+   "downloads": 103204937
+  },
+  {
+   "name": "camelcase-keys",
+   "downloads": 102439159
+  },
+  {
+   "name": "color-support",
+   "downloads": 102228941
+  },
+  {
+   "name": "void-elements",
+   "downloads": 101969137
+  },
+  {
+   "name": "is-ci",
+   "downloads": 101600163
+  },
+  {
+   "name": "@types/minimatch",
+   "downloads": 101137086
+  },
+  {
+   "name": "tailwindcss-animate",
+   "downloads": 100103992
+  },
+  {
+   "name": "global-dirs",
+   "downloads": 99936056
+  },
+  {
+   "name": "repeat-string",
+   "downloads": 99928388
+  },
+  {
+   "name": "http-signature",
+   "downloads": 99638349
+  },
+  {
+   "name": "aproba",
+   "downloads": 98731421
+  },
+  {
+   "name": "html-minifier-terser",
+   "downloads": 98682671
+  },
+  {
+   "name": "obuf",
+   "downloads": 98478571
+  },
+  {
+   "name": "@smithy/uuid",
+   "downloads": 98362745
+  },
+  {
+   "name": "isstream",
+   "downloads": 97425238
+  },
+  {
+   "name": "selfsigned",
+   "downloads": 96252716
+  },
+  {
+   "name": "postcss-loader",
+   "downloads": 96002127
+  },
+  {
+   "name": "postcss-discard-duplicates",
+   "downloads": 95777613
+  },
+  {
+   "name": "remove-trailing-separator",
+   "downloads": 95687522
+  },
+  {
+   "name": "sshpk",
+   "downloads": 95670501
+  },
+  {
+   "name": "gauge",
+   "downloads": 95414734
+  },
+  {
+   "name": "encoding-sniffer",
+   "downloads": 95410003
+  },
+  {
+   "name": "envinfo",
+   "downloads": 95011145
+  },
+  {
+   "name": "npmlog",
+   "downloads": 94541246
+  },
+  {
+   "name": "are-we-there-yet",
+   "downloads": 94493631
+  },
+  {
+   "name": "jsprim",
+   "downloads": 94225685
+  },
+  {
+   "name": "is-accessor-descriptor",
+   "downloads": 93971852
+  },
+  {
+   "name": "map-cache",
+   "downloads": 93752867
+  },
+  {
+   "name": "wildcard",
+   "downloads": 93659786
+  },
+  {
+   "name": "postcss-discard-empty",
+   "downloads": 93542614
+  },
+  {
+   "name": "postcss-minify-selectors",
+   "downloads": 93235796
+  },
+  {
+   "name": "@babel/helper-split-export-declaration",
+   "downloads": 92766863
+  },
+  {
+   "name": "dashdash",
+   "downloads": 92668009
+  },
+  {
+   "name": "lodash.isarguments",
+   "downloads": 92622470
+  },
+  {
+   "name": "is-data-descriptor",
+   "downloads": 92335213
+  },
+  {
+   "name": "postcss-merge-rules",
+   "downloads": 92091151
+  },
+  {
+   "name": "getpass",
+   "downloads": 92073569
+  },
+  {
+   "name": "@jridgewell/set-array",
+   "downloads": 91669674
+  },
+  {
+   "name": "lodash.get",
+   "downloads": 91373372
+  },
+  {
+   "name": "@types/http-proxy",
+   "downloads": 90357992
+  },
+  {
+   "name": "aws-sign2",
+   "downloads": 89811296
+  },
+  {
+   "name": "@types/mysql",
+   "downloads": 89659614
+  },
+  {
+   "name": "to-fast-properties",
+   "downloads": 89042613
+  },
+  {
+   "name": "@sentry-internal/feedback",
+   "downloads": 88705684
+  },
+  {
+   "name": "@sentry-internal/replay-canvas",
+   "downloads": 88393655
+  },
+  {
+   "name": "forever-agent",
+   "downloads": 87908493
+  },
+  {
+   "name": "has-values",
+   "downloads": 87697880
+  },
+  {
+   "name": "has-value",
+   "downloads": 87036495
+  },
+  {
+   "name": "tsutils",
+   "downloads": 86603593
+  },
+  {
+   "name": "connect-history-api-fallback",
+   "downloads": 86174365
+  },
+  {
+   "name": "webpack-dev-server",
+   "downloads": 85750687
+  },
+  {
+   "name": "for-in",
+   "downloads": 83522888
+  },
+  {
+   "name": "eslint-utils",
+   "downloads": 82851812
+  },
+  {
+   "name": "wide-align",
+   "downloads": 81714299
+  },
+  {
+   "name": "filesize",
+   "downloads": 78424006
+  },
+  {
+   "name": "@smithy/chunked-blob-reader",
+   "downloads": 77336963
+  },
+  {
+   "name": "@smithy/chunked-blob-reader-native",
+   "downloads": 77262993
+  },
+  {
+   "name": "@types/glob",
+   "downloads": 75881907
+  },
+  {
+   "name": "get-stdin",
+   "downloads": 75135811
+  },
+  {
+   "name": "jquery",
+   "downloads": 74593640
+  },
+  {
+   "name": "@babel/helper-simple-access",
+   "downloads": 67395812
+  },
+  {
+   "name": "arr-diff",
+   "downloads": 66492327
+  },
+  {
+   "name": "@isaacs/balanced-match",
+   "downloads": 52237535
+  },
+  {
+   "name": "is-lambda",
+   "downloads": 48556145
+  },
+  {
+   "name": "lodash.castarray",
+   "downloads": 18659583
+  }
+ ]
+}

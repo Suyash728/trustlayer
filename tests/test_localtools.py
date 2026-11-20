@@ -41,12 +41,32 @@ DENIED_CALLS = [
     ("a write escaping the workspace", "Write", {"file_path": "/etc/passwd", "content": "x"}),
     ("a read escaping the workspace", "Read", {"file_path": "/etc/shadow"}),
     ("a traversal escape", "Read", {"file_path": "../../../../etc/passwd"}),
+    # pytest is allowed, but only with arguments that cannot reach outside the workspace.
+    ("pytest uploading output to a paste service", "Bash", {"command": "pytest --pastebin=all"}),
+    ("pytest writing a report anywhere", "Bash", {"command": "pytest --junitxml=/tmp/x.xml"}),
+    ("pytest writing a report, split form", "Bash", {"command": "pytest --junit-xml /tmp/x"}),
+    ("pytest relocating its temp dir", "Bash", {"command": "pytest --basetemp=/tmp/x"}),
+    ("pytest writing a debug log", "Bash", {"command": "pytest --debug=/tmp/x.log"}),
+    ("pytest overriding ini options", "Bash", {"command": "pytest -o cache_dir=/tmp/x"}),
+    ("pytest loading a plugin", "Bash", {"command": "pytest -p evil_plugin"}),
+    ("pytest loading a plugin, glued", "Bash", {"command": "pytest -pevil_plugin"}),
+    ("pytest importing via a warning category", "Bash", {"command": "pytest -W error::evil.X"}),
+    ("pytest with another config", "Bash", {"command": "pytest -c /etc/pytest.ini"}),
+    ("pytest with another rootdir", "Bash", {"command": "pytest --rootdir=/"}),
+    ("pytest on an absolute outside path", "Bash", {"command": "pytest /home"}),
+    ("pytest on a traversal path", "Bash", {"command": "pytest ../../other/tests"}),
+    ("pytest on a home path", "Bash", {"command": "pytest ~/project"}),
+    ("pytest with a non-numeric maxfail", "Bash", {"command": "pytest --maxfail=x"}),
+    ("an absolute glob", "Glob", {"pattern": "/etc/*"}),
 ]
 
 ALLOWED_CALLS = [
     ("the test runner", "Bash", {"command": "pytest"}),
     ("the test runner with args", "Bash", {"command": "pytest -q tests/test_x.py"}),
     ("python -m pytest", "Bash", {"command": "python -m pytest"}),
+    ("everyday pytest options", "Bash", {"command": "pytest -q -x --tb=short -ra tests/"}),
+    ("a node id", "Bash", {"command": "pytest tests/test_x.py::test_a -k 'a and not b'"}),
+    ("combined short flags", "Bash", {"command": "pytest -qx --maxfail 2 -p no:cacheprovider"}),
     ("a read inside the workspace", "Read", {"file_path": "seed.txt"}),
     ("a write inside the workspace", "Write", {"file_path": "out.txt", "content": "hi"}),
 ]

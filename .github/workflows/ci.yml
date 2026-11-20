@@ -1,0 +1,51 @@
+# The gate every change passes: lint, tests, workflow lint, and TrustLayer on itself.
+# `[tool.trustlayer] exclude` in pyproject.toml keeps the deliberately broken fixtures out of
+# the self-audit. Action refs were checked to exist on 2026-11-20 (setup-uv has no floating
+# v10 tag, so it is pinned exactly).
+name: ci
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          python-version: "3.12"
+      - run: uv lock --check
+      - run: uv sync
+      - run: uv run ruff check .
+      - run: uv run pytest -q
+      - name: actionlint
+        run: uvx --from actionlint-py==1.7.12.25 actionlint
+      - name: TrustLayer on itself, every check
+        run: uv run trustlayer audit . --all --no-save
+
+  # Dogfood the published Action: SARIF goes to code scanning. Needs security-events, which
+  # a pull request from a fork does not get, so it runs on pushes to master only.
+  action:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./
+        with:
+          args: --all
+      - uses: ./
+        with:
+          command: deps
+          sarif-category: trustlayer-deps

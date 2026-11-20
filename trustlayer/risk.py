@@ -32,6 +32,22 @@ from trustlayer.registry import PackageFacts
 
 DEFAULT_CORPUS_PATH = Path(__file__).resolve().parents[1] / "data" / "top_pypi_packages.json"
 PACKAGED_CORPUS_PATH = Path(__file__).resolve().parent / "data" / "top_pypi_packages.json"
+NPM_CORPUS_NAME = "top_npm_packages.json"
+
+PYPI = "pypi"
+NPM = "npm"
+ECOSYSTEM_LABELS = {PYPI: "PyPI", NPM: "npm"}
+INSTALLERS = {PYPI: "pip install", NPM: "npm install"}
+
+
+def canonical_name(name: str, ecosystem: str = PYPI) -> str:
+    """The form a registry treats as the same package.
+
+    PyPI folds case and `-_.` (PEP 503). npm does neither: it is case-sensitive for legacy
+    names (`JSONStream` is a real, different package from any lowercase spelling), so its
+    names are compared exactly.
+    """
+    return canonicalize_python_name(name) if ecosystem == PYPI else name.strip()
 
 MAX_SCORE = 100
 NONEXISTENT_SCORE = 100
@@ -95,9 +111,13 @@ class Corpus:
     source: str = ""
     upstream_last_update: str = ""
     vendored_on: str = ""
+    ecosystem: str = PYPI
+
+    def canonical(self, name: str) -> str:
+        return canonical_name(name, self.ecosystem)
 
     def __contains__(self, name: str) -> bool:
-        return canonicalize_python_name(name) in self.downloads
+        return self.canonical(name) in self.downloads
 
     def __len__(self) -> int:
         return len(self.downloads)
@@ -105,12 +125,13 @@ class Corpus:
     @property
     def provenance(self) -> str:
         parts = [part for part in (self.source, self.upstream_last_update) if part]
-        return f"top {len(self.downloads)} PyPI packages" + (f" ({', '.join(parts)})" if parts else "")
+        label = ECOSYSTEM_LABELS.get(self.ecosystem, self.ecosystem)
+        return f"top {len(self.downloads)} {label} packages" + (f" ({', '.join(parts)})" if parts else "")
 
 
-def load_corpus(path: Path | None = None) -> Corpus:
-    """Read the vendored top-packages snapshot. Raises OSError if it is missing."""
-    source = path or _corpus_path()
+def load_corpus(path: Path | None = None, ecosystem: str = PYPI) -> Corpus:
+    """Read a vendored top-packages snapshot. Raises OSError if it is missing."""
+    source = path or (_corpus_path() if ecosystem == PYPI else _npm_corpus_path())
     data = json.loads(source.read_text(encoding="utf-8"))
 
     downloads: dict[str, int] = {}
@@ -119,20 +140,29 @@ def load_corpus(path: Path | None = None) -> Corpus:
         if not isinstance(name, str):
             continue
         count = entry.get("downloads")
-        downloads[canonicalize_python_name(name)] = count if isinstance(count, int) else 0
+        downloads[canonical_name(name, ecosystem)] = count if isinstance(count, int) else 0
 
     return Corpus(
         downloads=downloads,
         source=str(data.get("source") or ""),
         upstream_last_update=str(data.get("upstream_last_update") or ""),
         vendored_on=str(data.get("vendored_on") or ""),
+        ecosystem=ecosystem,
     )
 
 
+def _npm_corpus_path() -> Path:
+    packaged = PACKAGED_CORPUS_PATH.with_name(NPM_CORPUS_NAME)
+    return packaged if packaged.is_file() else DEFAULT_CORPUS_PATH.with_name(NPM_CORPUS_NAME)
+
+
 def _corpus_path() -> Path:
-    if DEFAULT_CORPUS_PATH.is_file():
-        return DEFAULT_CORPUS_PATH
-    return PACKAGED_CORPUS_PATH
+    # Installed wheel first: `parents[...]/data` of an installed package is site-packages,
+    # where an unrelated distribution's `data/` could sit. A source checkout has no
+    # packaged copy, so it falls through to the repository's own `data/`.
+    if PACKAGED_CORPUS_PATH.is_file():
+        return PACKAGED_CORPUS_PATH
+    return DEFAULT_CORPUS_PATH
 
 
 def edit_distance(left: str, right: str, max_distance: int | None = None) -> int:
@@ -195,7 +225,7 @@ def nearest_popular(
     downloaded package: that is the one an attacker would be imitating, and it makes the
     evidence line deterministic.
     """
-    candidate = canonicalize_python_name(name)
+    candidate = corpus.canonical(name)
     if not candidate or candidate in corpus.downloads:
         return None
 
@@ -216,7 +246,8 @@ def score_package(
 ) -> RiskScore:
     """Score one package. Pure: every input is already resolved, nothing is fetched here."""
     now = today or datetime.now(tz=UTC).date()
-    canonical = canonicalize_python_name(name)
+    canonical = corpus.canonical(name)
+    installer = INSTALLERS.get(corpus.ecosystem, "installing it")
 
     if canonical in corpus.downloads:
         downloads = corpus.downloads[canonical]
@@ -253,7 +284,7 @@ def score_package(
             Factor(
                 "installability",
                 0,
-                "nothing on the index resolves this name, so `pip install` would fail "
+                f"nothing on the index resolves this name, so `{installer}` would fail "
                 "or fetch whatever an attacker registers under it next",
             ),
         ]
@@ -275,6 +306,10 @@ def score_package(
             neighbour=neighbour,
         )
 
+    definitive = _definitive_npm_state(name, facts, corpus, installer)
+    if definitive is not None:
+        return definitive
+
     factors = [
         _age_factor(facts, now),
         _release_factor(facts),
@@ -291,6 +326,61 @@ def score_package(
         score=score,
         severity=severity_for(score),
         verdict=_verdict_for(score),
+        factors=factors,
+        neighbour=neighbour,
+    )
+
+
+def _definitive_npm_state(
+    name: str, facts: PackageFacts, corpus: Corpus, installer: str
+) -> RiskScore | None:
+    """Two registry facts that settle the question as firmly as a 404 does.
+
+    - **Unpublished**: the record survives with only `time.unpublished`; no version can be
+      installed, and once npm's waiting period passes anyone may register the name.
+    - **Security holding package**: npm's security team replaced the package after removing
+      malware. Its latest version is `0.0.N-security` and its description says so. Both
+      conditions are required, so a real release that merely ends in `-security` is not
+      caught.
+    """
+    neighbour = nearest_popular(name, corpus)
+    if facts.unpublished:
+        factors = [
+            Factor("registry", NONEXISTENT_SCORE, f"{facts.url} lists the package as unpublished"),
+            Factor(
+                "installability",
+                0,
+                f"no version is installable, so `{installer}` fails - and the name can be "
+                "registered again by anyone",
+            ),
+        ]
+        verdict = "unpublished-package"
+    elif facts.security_holding:
+        factors = [
+            Factor(
+                "registry",
+                NONEXISTENT_SCORE,
+                f"{facts.url}: npm replaced this package with a security holding package "
+                "(latest version ends in -security) after removing malicious code",
+            )
+        ]
+        verdict = "security-holding-package"
+    else:
+        return None
+    if neighbour is not None:
+        factors.append(
+            Factor(
+                "typo-adjacency",
+                0,
+                f"{neighbour.distance} edit(s) from '{neighbour.name}' "
+                f"({neighbour.downloads:,} downloads) - the likely intended package",
+            )
+        )
+    return RiskScore(
+        name=name,
+        score=NONEXISTENT_SCORE,
+        severity=Severity.HIGH,
+        verdict=verdict,
         factors=factors,
         neighbour=neighbour,
     )
@@ -379,6 +469,10 @@ def _hygiene_factors(facts: PackageFacts) -> list[Factor]:
     factors: list[Factor] = []
     if facts.yanked:
         factors.append(Factor("yanked", 10, "the latest release is yanked on the index"))
+    if facts.deprecated_note:
+        factors.append(
+            Factor("deprecated", 10, f"the latest version is deprecated on the registry: {facts.deprecated_note}")
+        )
     if facts.vulnerability_count:
         factors.append(
             Factor("vulnerabilities", 5, f"{facts.vulnerability_count} advisory record(s) on the index")

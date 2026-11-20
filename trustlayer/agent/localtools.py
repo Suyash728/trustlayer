@@ -115,16 +115,19 @@ class ToolError(Exception):
     """A tool could not do what was asked. Reported to the model, never raised at the caller."""
 
 
-def execute(name: str, arguments: dict, workspace: Path) -> str:
+def execute(name: str, arguments: dict, workspace: Path, *, venv_bin: Path | None = None) -> str:
     """Run one already-permitted tool call and return what the model should see."""
     handler = _HANDLERS.get(name)
     if handler is None:
         return f"error: no tool named {name!r}"
     try:
+        if name == "Bash":
+            return _truncate(_bash(arguments, workspace, venv_bin))
         return _truncate(handler(arguments, workspace))
     except ToolError as error:
         return f"error: {error}"
-    except (OSError, UnicodeDecodeError, ValueError) as error:
+    except (OSError, UnicodeDecodeError, ValueError, NotImplementedError, RecursionError) as error:
+        # A tool failure is the model's problem to see, never a crash of the run.
         return f"error: {type(error).__name__}: {error}"
 
 
@@ -184,6 +187,10 @@ def _glob(arguments: dict, workspace: Path) -> str:
     pattern = arguments.get("pattern")
     if not isinstance(pattern, str) or not pattern.strip():
         raise ToolError("a pattern is required")
+    # Path.glob raises NotImplementedError on an absolute pattern, which used to escape
+    # `execute` and end the whole local run. Refuse both escape shapes up front instead.
+    if pattern.startswith(("/", "~")) or Path(pattern).is_absolute() or ".." in Path(pattern).parts:
+        raise ToolError("the pattern must be relative to the workspace, with no '..'")
     root = workspace.resolve()
     matches = sorted(
         _relative(path, workspace)
@@ -219,7 +226,7 @@ def _grep(arguments: dict, workspace: Path) -> str:
     return "\n".join(hits) or "no matches"
 
 
-def _bash(arguments: dict, workspace: Path) -> str:
+def _bash(arguments: dict, workspace: Path, venv_bin: Path | None = None) -> str:
     command = arguments.get("command")
     if not isinstance(command, str) or not command.strip():
         raise ToolError("a command is required")
@@ -232,12 +239,30 @@ def _bash(arguments: dict, workspace: Path) -> str:
         raise ToolError(f"could not parse command: {error}") from error
     if not argv:
         raise ToolError("empty command")
+    argv = repo_test_runner(argv, venv_bin)
 
     outcome = run_tool(argv, cwd=workspace, timeout=BASH_TIMEOUT_SECONDS)
     if outcome.error:
         return f"error: {outcome.error}"
     body = (outcome.stdout + outcome.stderr).strip() or "(no output)"
     return f"exit code {outcome.returncode}\n{body}"
+
+
+def repo_test_runner(argv: list[str], venv_bin: Path | None) -> list[str]:
+    """Point `pytest` / `python -m pytest` at the original repo's interpreter.
+
+    The gate has already established the command is the test runner, so only its first
+    token(s) are swapped; every argument the gate approved is kept as it was.
+    """
+    if venv_bin is None or not argv:
+        return argv
+    python = venv_bin / "python"
+    executable = argv[0].rsplit("/", 1)[-1]
+    if executable == "pytest":
+        return [str(python), "-m", "pytest", *argv[1:]]
+    if executable.startswith("python") and argv[1:3] == ["-m", "pytest"]:
+        return [str(python), *argv[1:]]
+    return argv
 
 
 def _relative(path: Path, workspace: Path) -> str:

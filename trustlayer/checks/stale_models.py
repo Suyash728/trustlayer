@@ -93,9 +93,12 @@ def load_registry(path: Path | None = None) -> list[DeprecatedModel]:
 
 
 def _registry_path() -> Path:
-    if DEFAULT_REGISTRY_PATH.is_file():
-        return DEFAULT_REGISTRY_PATH
-    return PACKAGED_REGISTRY_PATH
+    # Installed wheel first: `parents[...]/data` of an installed package is site-packages,
+    # where an unrelated distribution's `data/` could sit. A source checkout has no
+    # packaged copy, so it falls through to the repository's own `data/`.
+    if PACKAGED_REGISTRY_PATH.is_file():
+        return PACKAGED_REGISTRY_PATH
+    return DEFAULT_REGISTRY_PATH
 
 
 def check_stale_models(
@@ -129,6 +132,11 @@ def check_stale_models(
         source = read_source(path)
         if source is None:
             continue
+        if path.suffix == ".toml" and is_registry_document(source):
+            # Any copy of a deprecation registry - the repository's own data/ when TrustLayer
+            # runs from an installed wheel, an older or forked version - lists every ID by
+            # definition. Matching it by path alone flagged the whole file.
+            continue
         relative = relative_to(path, root)
         for text, line in _candidate_strings(path, source):
             for model, pattern in patterns:
@@ -159,8 +167,14 @@ def _build_finding(
         verdict = "scheduled-retirement"
         when = f"{model.provider} retires this model on {model.deprecated_on} ({days} days from now)"
     else:
-        severity = Severity.HIGH
-        verdict = "retired-model"
+        if model.verified and model.source_url:
+            severity = Severity.HIGH
+            verdict = "retired-model"
+        else:
+            # A maintainer note is not vendor evidence. It may be right, but it cannot carry
+            # the severity that fails a build, so it is capped at MEDIUM and says why.
+            severity = Severity.MEDIUM
+            verdict = "retired-model-unverified"
         when = (
             f"{model.provider} retired this model on {model.deprecated_on}"
             f" ({abs(days)} days ago)"
@@ -187,6 +201,21 @@ def _build_finding(
         claim=matched,
         verdict=verdict,
         evidence=evidence,
+    )
+
+
+def is_registry_document(source: str) -> bool:
+    """True for a TOML file shaped like this registry: a `[models]` table of entries that
+    each carry `provider` and `verified`. A config that merely names a model is not."""
+    try:
+        data = tomllib.loads(source)
+    except tomllib.TOMLDecodeError:
+        return False
+    models = data.get("models")
+    return (
+        isinstance(models, dict)
+        and bool(models)
+        and all(isinstance(entry, dict) and {"provider", "verified"} <= entry.keys() for entry in models.values())
     )
 
 

@@ -14,56 +14,119 @@
 #   deprecated_on  date of retirement; OMIT the key when the date is not known
 #   successor      recommended replacement; empty string when the vendor named none
 #   source_url     official deprecation notice
-#   verified       true only when source_url was checked by a human
+#   verified       true only when the id, date and successor were read on source_url
+#
+# Severity follows verification: a retired row is HIGH only when verified with a source_url;
+# an unverified row is reported as MEDIUM (`retired-model-unverified`) so a maintainer note
+# can never fail a build on its own. `scripts/check_model_sources.py` re-fetches every
+# source_url and fails when a verified id is no longer on its page.
 #
 # A model ID may contain a `*` wildcard, which matches the rest of an ID segment.
 
+
+# Groq. Verified 2026-11-20 against the raw HTML of the deprecations page, section
+# "August 16, 2026: llama-3.1-8b-instant and llama-3.3-70b-versatile" (shutdown 08/16/26).
+# The seeded rows said 2026-06-17; the vendor page says otherwise.
 [models."llama-3.1-8b-instant"]
 provider = "groq"
-deprecated_on = 2026-06-17
+deprecated_on = 2026-08-16
 successor = "openai/gpt-oss-20b"
-source_url = ""
-verified = false
+source_url = "https://console.groq.com/docs/deprecations"
+verified = true
 
 [models."llama-3.3-70b-versatile"]
 provider = "groq"
-deprecated_on = 2026-06-17
-successor = "openai/gpt-oss-120b"
-source_url = ""
-verified = false
+deprecated_on = 2026-08-16
+successor = "openai/gpt-oss-120b or qwen/qwen3.6-27b"
+source_url = "https://console.groq.com/docs/deprecations"
+verified = true
 
-# "gemini-2.0-flash family" per maintainer note. No successor was given, and inventing one
-# would be exactly the failure this check exists to catch, so the field is left empty.
-[models."gemini-2.0-flash*"]
+
+# Google Gemini API. Verified 2026-11-20 against the raw HTML of the deprecations page
+# (ai.google.dev/gemini-api/docs/deprecations now 301s to aistudio.google.com). The seeded
+# `gemini-2.0-flash*` wildcard is gone: the vendor gives the lite and preview variants their
+# own dates and successors, and one pattern would have reported some of them wrong.
+[models."gemini-2.0-flash"]
 provider = "google"
 deprecated_on = 2026-06-01
-successor = ""
-source_url = ""
-verified = false
+successor = "gemini-3.6-flash"
+source_url = "https://aistudio.google.com/docs/deprecations"
+verified = true
 
+[models."gemini-2.0-flash-001"]
+provider = "google"
+deprecated_on = 2026-06-01
+successor = "gemini-3.6-flash"
+source_url = "https://aistudio.google.com/docs/deprecations"
+verified = true
+
+[models."gemini-2.0-flash-lite"]
+provider = "google"
+deprecated_on = 2026-06-01
+successor = "gemini-3.1-flash-lite"
+source_url = "https://aistudio.google.com/docs/deprecations"
+verified = true
+
+[models."gemini-2.0-flash-lite-001"]
+provider = "google"
+deprecated_on = 2026-06-01
+successor = "gemini-3.1-flash-lite"
+source_url = "https://aistudio.google.com/docs/deprecations"
+verified = true
+
+[models."gemini-2.0-flash-lite-preview"]
+provider = "google"
+deprecated_on = 2025-12-09
+successor = "gemini-3.1-flash-lite"
+source_url = "https://aistudio.google.com/docs/deprecations"
+verified = true
+
+[models."gemini-2.0-flash-lite-preview-02-05"]
+provider = "google"
+deprecated_on = 2025-12-09
+successor = "gemini-3.1-flash-lite"
+source_url = "https://aistudio.google.com/docs/deprecations"
+verified = true
+
+
+# Scheduled, not yet retired: the page says API requests route to the successor
+# effective December 1, 2026. The seeded row said 2026-10-16 / gemini-3.5-flash.
 [models."gemini-2.5-flash"]
 provider = "google"
-deprecated_on = 2026-10-16
-successor = "gemini-3.5-flash"
-source_url = ""
-verified = false
+deprecated_on = 2026-12-01
+successor = "gemini-3.5-flash-lite"
+source_url = "https://aistudio.google.com/docs/deprecations"
+verified = true
 
-# Retired per maintainer note, no date given, so deprecated_on is omitted rather than guessed.
-# These are Google Gemini API embedding model IDs, not OpenAI's.
+
+# Embedding models. These are Google Gemini API IDs, not OpenAI's. `embedding-001` does not
+# match inside `gemini-embedding-001` (still active, shutdown 2028) because ID boundaries
+# include '-'. The seeded `gemini-embedding-exp-*` wildcard missed the bare
+# `gemini-embedding-exp`, so both IDs are listed explicitly.
 [models."text-embedding-004"]
 provider = "google"
-successor = ""
-source_url = ""
-verified = false
+deprecated_on = 2026-01-14
+successor = "gemini-embedding-2"
+source_url = "https://aistudio.google.com/docs/deprecations"
+verified = true
 
 [models."embedding-001"]
 provider = "google"
-successor = ""
-source_url = ""
-verified = false
+deprecated_on = 2025-10-30
+successor = "gemini-embedding-2"
+source_url = "https://aistudio.google.com/docs/deprecations"
+verified = true
 
-[models."gemini-embedding-exp-*"]
+[models."gemini-embedding-exp"]
 provider = "google"
-successor = ""
-source_url = ""
-verified = false
+deprecated_on = 2025-10-30
+successor = "gemini-embedding-2"
+source_url = "https://aistudio.google.com/docs/deprecations"
+verified = true
+
+[models."gemini-embedding-exp-03-07"]
+provider = "google"
+deprecated_on = 2025-10-30
+successor = "gemini-embedding-2"
+source_url = "https://aistudio.google.com/docs/deprecations"
+verified = true

@@ -1,3 +1,3 @@
-"""TrustLayer — proves whether AI-written tests actually catch bugs."""
+"""TrustLayer — mechanical verification for AI-written code and tests."""
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

@@ -24,6 +24,7 @@ import time
 from trustlayer.agent.harden import HardenEvent, HardenResult, harden
 from trustlayer.checks.base import CheckResult
 from trustlayer.checks.runner import iter_checks
+from trustlayer.config import ConfigError
 from trustlayer.detect import profile_repository
 from trustlayer.report import Report
 from trustlayer.store import save_run
@@ -76,6 +77,9 @@ def run_audit(
         status("reading the test suite")
         suite = inspect_suite(root)
     except OSError as error:
+        return AuditOutcome(error=f"could not audit {root}: {error}")
+    except ConfigError as error:
+        # A bad [tool.trustlayer] table is operational, exactly as it is for the CLI (exit 3).
         return AuditOutcome(error=f"could not audit {root}: {error}")
 
     duration = time.monotonic() - started

@@ -17,6 +17,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from fastapi import FastAPI, Request
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.templating import Jinja2Templates
 
@@ -34,9 +35,20 @@ from trustlayer.store import (
 
 TEMPLATES = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
 
+# A page on any website can point its own hostname at 127.0.0.1 (DNS rebinding) and then
+# read this UI as same-origin. Checking the Host header is what stops that: a rebound
+# request still carries the attacker's hostname. "testserver" is Starlette's TestClient.
+LOOPBACK_HOSTS = ("127.0.0.1", "localhost", "[::1]", "::1", "testserver")
 
-def create_app(db_path: Path | str | None = None) -> FastAPI:
+
+def create_app(
+    db_path: Path | str | None = None, allowed_hosts: tuple[str, ...] | None = LOOPBACK_HOSTS
+) -> FastAPI:
+    """`allowed_hosts=None` disables the Host check; only `ui --host` on a non-loopback
+    interface does that, and the CLI warns when it happens."""
     app = FastAPI(title="TrustLayer", docs_url=None, redoc_url=None)
+    if allowed_hosts is not None:
+        app.add_middleware(TrustedHostMiddleware, allowed_hosts=list(allowed_hosts))
 
     def render(request: Request, template: str, **context) -> HTMLResponse:
         return TEMPLATES.TemplateResponse(request, template, context)

@@ -15,10 +15,20 @@ venv/
 .ruff_cache/
 .mypy_cache/
 .coverage
+.coverage.*
 coverage.xml
 # ...but the low-coverage fixture is test data, not a generated artifact.
 !tests/fixtures/**/coverage.xml
 htmlcov/
+
+# Packaging (uv build writes dist/; dist/ is also listed under JavaScript below)
+build/
+*.whl
+*.tar.gz
+
+# Local databases (the real run database lives in ~/.trustlayer, never in the repo)
+*.db
+*.sqlite3
 
 # Mutation testing
 mutants/

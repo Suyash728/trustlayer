@@ -52,6 +52,7 @@ class CheckResult:
     skipped: bool = False
     skip_reason: str | None = None
     notes: list[str] = field(default_factory=list)  # caveats that are not findings
+    suppressed: int = 0  # findings hidden by exclude/inline ignore - reported, never silent
 
     @property
     def counts(self) -> dict[Severity, int]:
@@ -83,13 +84,19 @@ def run_tool(
     cwd: Path | None = None,
     timeout: float = DEFAULT_TIMEOUT_SECONDS,
     stdin: str | None = None,
+    env: dict[str, str] | None = None,
 ) -> ToolRun:
-    """Run a subprocess with a mandatory explicit timeout (CLAUDE.md rule)."""
+    """Run a subprocess with a mandatory explicit timeout (CLAUDE.md rule).
+
+    `env` replaces the child's environment entirely when given; pass `{**os.environ, ...}`
+    to extend it.
+    """
     try:
         completed = subprocess.run(
             command,
             cwd=cwd,
             input=stdin,
+            env=env,
             capture_output=True,
             text=True,
             timeout=timeout,

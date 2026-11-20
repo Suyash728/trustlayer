@@ -1,0 +1,18 @@
+{
+  "name": "slopsquat-npm-dirty",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "lodahs": "^4.17.21",
+    "@types/nodee": "^20.0.0",
+    "my-express": "npm:expresss@^4.19.0",
+    "local-thing": "file:../local-thing",
+    "forked": "someone/forked-lib#main",
+    "fresh-helper": "^0.0.1"
+  },
+  "devDependencies": {
+    "crossenv": "^1.0.0",
+    "azure-sdk-v4": "*"
+  }
+}

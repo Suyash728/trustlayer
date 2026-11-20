@@ -14,6 +14,7 @@ from typing import ClassVar
 import pytest
 from textual.widgets import Switch
 
+from trustlayer.agent.verify import CoverageMeasure
 from trustlayer.checks.base import CheckResult, Finding, Severity
 from trustlayer.checks.runner import ALL_CHECKS, DEFAULT_CHECKS
 from trustlayer.detect import profile_repository
@@ -537,6 +538,7 @@ def test_listening_to_events_cannot_change_the_outcome(tmp_path):
         with (
             patch.object(harden_module, "_mutmut_executable", lambda s: Path("mutmut")),
             patch.object(harden_module, "tooling_interpreter", lambda s: Path("python")),
+            patch.object(harden_module, "measure_coverage", lambda *a, **k: CoverageMeasure(80.0)),
             patch.object(
                 harden_module,
                 "run_mutation",
@@ -563,3 +565,13 @@ def test_listening_to_events_cannot_change_the_outcome(tmp_path):
     assert silent.stopped_because == watched.stopped_because
     assert silent.total_discarded == watched.total_discarded
     assert len(silent.iterations) == len(watched.iterations)
+
+
+def test_a_bad_config_is_reported_by_the_audit_worker_not_raised(tmp_path):
+    from trustlayer.tui.workers import run_audit
+
+    (tmp_path / ".trustlayer.toml").write_text("excludes = []\n")
+    outcome = run_audit(tmp_path, ["stale-models"], save=False)
+
+    assert outcome.report is None
+    assert "excludes" in outcome.error

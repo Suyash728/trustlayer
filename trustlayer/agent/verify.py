@@ -13,6 +13,7 @@ import ast
 from dataclasses import dataclass, field
 from pathlib import Path
 import re
+import tempfile
 
 from trustlayer.checks.base import run_tool
 
@@ -24,6 +25,71 @@ SUITE_TIMEOUT_SECONDS = 300
 #   ERROR  tests/test_x.py::test_name
 FAILURE_RE = re.compile(r"^(?:FAILED|ERROR)\s+(?P<file>[^\s:]+)::(?P<test>[\w\[\]\-.]+)")
 COLLECTION_ERROR_RE = re.compile(r"^ERROR\s+(?P<file>[^\s:]+)\s*$")
+
+
+COVERAGE_REPORT_TIMEOUT_SECONDS = 60
+
+
+@dataclass(frozen=True)
+class CoverageMeasure:
+    """Line coverage measured by running the suite, or the reason it could not be."""
+
+    percent: float | None = None
+    reason: str | None = None  # set exactly when percent is None
+
+    def render(self) -> str:
+        if self.percent is None:
+            return f"n/a ({self.reason})"
+        return f"{self.percent:.1f}%"
+
+
+def measure_coverage(
+    root: Path, interpreter: list[str] | None, timeout: float = SUITE_TIMEOUT_SECONDS
+) -> CoverageMeasure:
+    """Run the suite under coverage.py and read the total. Never reads a stale artifact.
+
+    The workspace copy carries whatever `.coverage` the user last produced, and reading it
+    reports the user's old number before *and* after the agent ran - so this always measures
+    fresh. The data file lives in its own temp directory: never in the user's repository,
+    and never inside the workspace, where it would show up in the diff.
+
+    `--fail-under=0` overrides a project's own `fail_under`, which would otherwise turn a
+    low number into a non-zero exit and an unparseable report.
+    """
+    if interpreter is None:
+        return CoverageMeasure(reason="no virtualenv in the original repository")
+
+    with tempfile.TemporaryDirectory(prefix="trustlayer-coverage-") as scratch:
+        data_file = Path(scratch) / ".coverage"
+        run = run_tool(
+            [
+                *interpreter, "-m", "coverage", "run", f"--data-file={data_file}",
+                "-m", "pytest", "-q", "--tb=no", "-p", "no:cacheprovider",
+            ],
+            cwd=root,
+            timeout=timeout,
+        )
+        if run.error:
+            return CoverageMeasure(reason=run.error)
+        if "No module named coverage" in run.stderr:
+            return CoverageMeasure(reason=f"coverage is not installed in {interpreter[0]}")
+        if not data_file.is_file():
+            return CoverageMeasure(reason="the suite produced no coverage data")
+
+        report = run_tool(
+            [
+                *interpreter, "-m", "coverage", "report", "--format=total", "--fail-under=0",
+                f"--data-file={data_file}",
+            ],
+            cwd=root,
+            timeout=COVERAGE_REPORT_TIMEOUT_SECONDS,
+        )
+    lines = report.stdout.strip().splitlines()
+    try:
+        return CoverageMeasure(percent=float(lines[-1]))
+    except (IndexError, ValueError):
+        detail = (report.stderr.strip().splitlines() or [report.error or "no output"])[-1]
+        return CoverageMeasure(reason=f"coverage report failed: {detail}")
 
 
 @dataclass(frozen=True)

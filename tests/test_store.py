@@ -80,7 +80,7 @@ def test_a_run_round_trips_with_its_findings(tmp_path):
     assert stored.repo_name == "failopen-dirty"
     assert stored.duration_s == 2.25
     assert stored.counts == {
-        "high": 3, "medium": 3, "low": 0, "total": 6,
+        "high": 3, "medium": 3, "low": 0, "total": 6, "suppressed": 0, "baselined": 0,
     }
     assert len(rows) == len(report.findings)
     assert rows[0].evidence  # evidence survives the JSON round-trip
@@ -294,3 +294,24 @@ def test_tests_never_write_to_the_real_home_database(_, tmp_path):
         assert DEFAULT_DB_PATH.stat().st_mtime_ns == before
     else:
         assert not DEFAULT_DB_PATH.exists()
+
+
+def test_the_database_tolerates_a_concurrent_writer(tmp_path):
+    """WAL plus a busy timeout: a reader is not refused while another connection writes."""
+    from trustlayer.store import connect
+
+    db = tmp_path / "runs.db"
+    writer = connect(db)
+    writer.execute("BEGIN IMMEDIATE")
+    writer.execute(
+        "INSERT INTO runs (repo_path, repo_name, started_at, duration_s, summary_json)"
+        " VALUES ('/x', 'x', '2026-01-01', 1.0, '{}')"
+    )
+    reader = connect(db)
+    try:
+        assert reader.execute("PRAGMA journal_mode").fetchone()[0] == "wal"
+        assert reader.execute("SELECT COUNT(*) FROM runs").fetchone()[0] == 0
+    finally:
+        writer.rollback()
+        writer.close()
+        reader.close()

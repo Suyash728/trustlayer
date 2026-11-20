@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 import re
@@ -15,11 +16,14 @@ from rich.text import Text
 import typer
 
 from trustlayer.checks.runner import ALL_CHECKS, run_checks, select
-from trustlayer.checks.slopsquat import scan
+from trustlayer.checks.slopsquat import scan, scan_findings
 from trustlayer.checks.stale_models import load_registry
+from trustlayer.config import apply_baseline, load_baseline, load_config
 from trustlayer.detect import profile_repository
 from trustlayer.report import (
+    DEFAULT_FAIL_ON,
     EXIT_ERROR,
+    FAIL_ON_LEVELS,
     Report,
     deps_exit_code,
     render_deps,
@@ -28,6 +32,7 @@ from trustlayer.report import (
     render_registry,
     render_text,
 )
+from trustlayer.sarif import render_sarif, to_sarif
 from trustlayer.store import diff_runs, list_runs, save_run
 from trustlayer.suite import inspect_suite
 
@@ -36,13 +41,58 @@ from trustlayer.suite import inspect_suite
 # rather than collapsing to `trustlayer <path>` when only one command is registered.
 app = typer.Typer(add_completion=False, help="Prove whether AI-written tests catch bugs.")
 
+OUTPUT_FORMATS = ("text", "json", "sarif")
 DURATION_RE = re.compile(r"^(?P<count>\d+)\s*(?P<unit>[dwmy]?)$", re.IGNORECASE)
 UNIT_DAYS = {"": 1, "d": 1, "w": 7, "m": 30, "y": 365}
 
 
+def _print_version(value: bool) -> None:
+    if value:
+        from trustlayer import __version__
+
+        print(f"trustlayer {__version__}")
+        raise typer.Exit()
+
+
 @app.callback()
-def main() -> None:
+def main(
+    version: Annotated[
+        bool,
+        typer.Option("--version", callback=_print_version, is_eager=True, help="Print the version."),
+    ] = False,
+) -> None:
     """TrustLayer."""
+
+
+def main_entry() -> int:
+    """The console-script entry point.
+
+    Typer exits 1 on an uncaught exception, and 1 means "medium findings" to a hook. A crash
+    is an operational failure, so it is mapped to 3 here with a one-line reason on stderr.
+    """
+    try:
+        # Without standalone mode, a `typer.Exit(code)` comes back as the return value.
+        returned = app(standalone_mode=False)
+    except typer.Exit as exit_:
+        return exit_.exit_code
+    except typer.Abort:
+        Console(stderr=True).print("aborted")
+        return EXIT_ERROR
+    except KeyboardInterrupt:
+        return EXIT_ERROR
+    except Exception as error:  # noqa: BLE001 - the whole point is to catch everything
+        if callable(getattr(error, "show", None)) and isinstance(getattr(error, "exit_code", None), int):
+            # A Click usage error (bad option, missing argument). Typer vendors Click as a
+            # private module whose layout changed between 0.27 and 0.29, so it is matched by
+            # Click's documented interface rather than imported. Click exits 2 for these,
+            # and 2 means "high findings" here, so it is remapped.
+            error.show()
+            return EXIT_ERROR
+        Console(stderr=True).print(
+            f"error: trustlayer crashed: {type(error).__name__}: {error}", markup=False
+        )
+        return EXIT_ERROR
+    return returned if isinstance(returned, int) else 0
 
 
 def _fail(message: str) -> typer.Exit:
@@ -67,15 +117,30 @@ def audit(
         typer.Option("--warn-expiring-within", metavar="90d", help="Also flag models retiring within this window."),
     ] = None,
     no_save: Annotated[bool, typer.Option("--no-save", help="Do not record this run in ~/.trustlayer/runs.db.")] = False,
+    output_format: Annotated[
+        str | None,
+        typer.Option("--format", metavar="text|json|sarif", help="Output format. --json is --format json."),
+    ] = None,
+    fail_on: Annotated[
+        str,
+        typer.Option("--fail-on", metavar="high|medium|low", help="Lowest severity that fails (exit 1/2)."),
+    ] = DEFAULT_FAIL_ON,
+    baseline: Annotated[
+        Path | None,
+        typer.Option("--baseline", help="Hide findings already in this `--format json` output."),
+    ] = None,
 ) -> None:
     """Audit a repository and report findings by severity.
 
     Exit codes: 0 clean, 1 medium findings, 2 high findings, 3 operational error. The first
     three are what a pre-commit hook branches on.
 
-    `api-resolution`, `composed` and `slopsquat` are opt-in: the first imports code from
-    the audited repository's environment, the second shells out to linters, and the last
-    two contact package registries.
+    `api-resolution`, `composed`, `slopsquat` and `pinned-version` are opt-in:
+    `api-resolution` imports code from the audited repository's environment, `composed`
+    shells out to linters, and `slopsquat` and `pinned-version` contact package registries.
+
+    `[tool.trustlayer] exclude = [...]` in pyproject.toml (or `.trustlayer.toml`) and an
+    inline `# trustlayer: ignore[check]` hide findings; the count hidden is always printed.
     """
     if not path.is_dir():
         raise _fail(f"{path} is not a directory")
@@ -83,19 +148,25 @@ def audit(
     try:
         selected = select(only, run_all)
         warn_days = _parse_duration(warn_expiring_within)
-    except ValueError as error:
+        fmt = _output_format(output_format, as_json)
+        _check_fail_on(fail_on)
+        config = load_config(path)
+        known = load_baseline(baseline) if baseline is not None else None
+    except ValueError as error:  # ConfigError is a ValueError
         raise _fail(str(error)) from error
 
     started = time.monotonic()
     try:
         profile = profile_repository(path)
-        results = run_checks(path, selected, warn_days, profile)
+        results = run_checks(path, selected, warn_days, profile, config)
         suite = inspect_suite(path)
     except OSError as error:
         raise _fail(f"could not audit {path}: {error}") from error
     duration = time.monotonic() - started
 
-    report = Report(root=path.resolve(), profile=profile, results=results, suite=suite)
+    report = Report(
+        root=path.resolve(), profile=profile, results=results, suite=suite, fail_on=fail_on
+    )
 
     if not no_save:
         try:
@@ -105,13 +176,40 @@ def audit(
             # a hook branches on, so this is a warning on stderr, not an exit code.
             Console(stderr=True).print(f"warning: could not record run: {error}")
 
-    if as_json:
-        # stdout carries JSON and nothing else, so it stays pipeable.
+    if known is not None:
+        # The database keeps the full run; only what is shown and the exit code are filtered,
+        # so `history` and `diff` still see every finding.
+        filtered, hidden = apply_baseline(report.results, known)
+        report = replace(report, results=filtered, baselined=hidden, baseline_source=str(baseline))
+
+    # stdout carries the machine format and nothing else, so it stays pipeable.
+    if fmt == "json":
         print(render_json(report))
+    elif fmt == "sarif":
+        notes = [f"{report.baselined} known finding(s) hidden by baseline {baseline}"] if report.baselined else []
+        print(
+            render_sarif(
+                to_sarif(report.findings, results=report.results, exit_code=report.exit_code, notes=notes)
+            )
+        )
     else:
         render_text(report, Console(no_color=no_color))
 
     raise typer.Exit(code=report.exit_code)
+
+
+def _output_format(output_format: str | None, as_json: bool) -> str:
+    chosen = (output_format or ("json" if as_json else "text")).lower()
+    if chosen not in OUTPUT_FORMATS:
+        raise ValueError(f"--format must be one of {', '.join(OUTPUT_FORMATS)}, got {chosen!r}")
+    if as_json and chosen != "json":
+        raise ValueError(f"--json conflicts with --format {chosen}")
+    return chosen
+
+
+def _check_fail_on(fail_on: str) -> None:
+    if fail_on not in FAIL_ON_LEVELS:
+        raise ValueError(f"--fail-on must be one of {', '.join(FAIL_ON_LEVELS)}, got {fail_on!r}")
 
 
 def _parse_duration(value: str | None) -> int | None:
@@ -161,6 +259,14 @@ def deps(
         typer.Option("--backend", help="Model backend for --explain: claude (default) or ollama."),
     ] = None,
     no_color: Annotated[bool, typer.Option("--no-color", help="Disable colour. NO_COLOR is also honoured.")] = False,
+    output_format: Annotated[
+        str | None,
+        typer.Option("--format", metavar="text|json|sarif", help="Output format. --json is --format json."),
+    ] = None,
+    fail_on: Annotated[
+        str,
+        typer.Option("--fail-on", metavar="high|medium|low", help="Lowest severity that fails (exit 1/2)."),
+    ] = DEFAULT_FAIL_ON,
 ) -> None:
     """Score declared dependencies against real registry state.
 
@@ -173,9 +279,15 @@ def deps(
     """
     if not path.is_dir():
         raise _fail(f"{path} is not a directory")
+    try:
+        fmt = _output_format(output_format, as_json)
+        _check_fail_on(fail_on)
+        config = load_config(path)
+    except ValueError as error:
+        raise _fail(str(error)) from error
 
     try:
-        result = scan(path, offline=no_network)
+        result = scan(path, offline=no_network, config=config)
     except OSError as error:
         raise _fail(f"could not scan {path}: {error}") from error
 
@@ -191,12 +303,15 @@ def deps(
             # Losing the prose must never change the verdict a hook branches on.
             Console(stderr=True).print(f"warning: could not generate an explanation: {failure}")
 
-    if as_json:
+    code = deps_exit_code(result, fail_on)
+    if fmt == "json":
         print(render_deps_json(result, path.resolve(), explanation))
+    elif fmt == "sarif":
+        print(render_sarif(to_sarif(scan_findings(result), exit_code=code, notes=result.notes)))
     else:
         render_deps(result, path.resolve(), Console(no_color=no_color), explanation)
 
-    raise typer.Exit(code=deps_exit_code(result))
+    raise typer.Exit(code=code)
 
 
 @app.command()
@@ -239,9 +354,7 @@ def baseline(
     )
     for file, name in result.discards:
         console.print(f"  - {file}::{name}")
-    console.print(
-        f"coverage      {result.coverage_before or 0:.0f}% -> {result.coverage_after or 0:.0f}%"
-    )
+    console.print(Text(f"coverage      {_coverage_change(result.coverage_before, result.coverage_after)}"))
     if result.agent:
         console.print(f"cost          {_spend(result.agent)}")
     if result.agent and result.agent.denied:
@@ -301,13 +414,17 @@ def harden(
             f"  written {step.tests_written}  discarded {step.tests_discarded}"
         )
     console.print(f"final score     {result.final_score}%  ({result.improvement:+}%)")
+    console.print(Text(f"line coverage   {_coverage_change(result.coverage_before, result.coverage_after)}"))
     console.print(f"[bold]stopped[/bold]         {result.stopped_because}")
     console.print(f"tests discarded {result.total_discarded}")
     console.print(f"cost            {_harden_spend(result)}")
     console.print("\n--- diff for review (nothing applied) ---")
     console.print(result.diff or "(no changes)")
-if __name__ == "__main__":  # pragma: no cover
-    sys.exit(app())
+def _coverage_change(before, after) -> str:
+    """Never prints a missing measurement as 0%: "unknown" and "zero" are different claims."""
+    left = before.render() if before is not None else "n/a"
+    right = after.render() if after is not None else "n/a"
+    return f"{left} -> {right}"
 
 
 def _spend(agent) -> str:
@@ -412,6 +529,42 @@ def diff(
 
 
 @app.command()
+def mcp() -> None:
+    """Serve the checks to coding agents over a local stdio MCP server.
+
+    Tools: trustlayer_audit, trustlayer_deps, trustlayer_models. stdout carries JSON-RPC
+    and nothing else; logs go to stderr. Register it with, for example:
+
+        claude mcp add trustlayer -- uvx trustlayer mcp
+    """
+    from trustlayer.mcp_server import serve
+
+    serve()
+
+
+@app.command(name="setup-node")
+def setup_node(
+    directory: Annotated[
+        Path | None,
+        typer.Option("--dir", help="Where to install (default: $TRUSTLAYER_NODE_DIR or ~/.trustlayer/node)."),
+    ] = None,
+) -> None:
+    """Install the ts-morph helper that the TypeScript checks need. Requires node and npm.
+
+    An installed wheel cannot carry node_modules, and Node resolves ESM imports next to the
+    script, so the helper scripts and their dependencies are set up together in one
+    directory outside site-packages.
+    """
+    from trustlayer.checks import node_helper
+
+    target, outcome = node_helper.setup(directory)
+    if not outcome.ok:
+        detail = outcome.error or (outcome.stderr.strip().splitlines() or ["npm failed"])[-1]
+        raise _fail(f"could not install the helper in {target}: {detail}")
+    Console().print(Text(f"ts-morph helper installed in {target}"))
+
+
+@app.command()
 def tui() -> None:
     """Browse recorded runs in the terminal.
 
@@ -437,16 +590,26 @@ def ui(
     import uvicorn
 
     from trustlayer.ui import create_app
+    from trustlayer.ui.app import LOOPBACK_HOSTS
 
     url = f"http://{host}:{port}"
     Console().print(f"trustlayer ui  {url}   (ctrl-c to stop)")
+
+    # The Host check only works when every legitimate name is known. On a loopback bind it
+    # is; on any other interface the user chose exposure, so say so instead of guessing.
+    loopback = host in LOOPBACK_HOSTS
+    if not loopback:
+        Console(stderr=True).print(
+            f"warning: serving run data on {host}, not loopback; anyone who can reach it can read it"
+        )
 
     if not no_browser:
         # Open after a short delay so the server is listening when the tab loads.
         threading.Timer(0.8, lambda: webbrowser.open(url)).start()
 
-    uvicorn.run(create_app(), host=host, port=port, log_level="warning")
+    app_ = create_app(allowed_hosts=LOOPBACK_HOSTS if loopback else None)
+    uvicorn.run(app_, host=host, port=port, log_level="warning")
 
 
 if __name__ == "__main__":  # pragma: no cover
-    sys.exit(app())
+    sys.exit(main_entry())

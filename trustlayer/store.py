@@ -24,6 +24,7 @@ from trustlayer.report import Report, to_dict
 
 DEFAULT_DB_PATH = Path.home() / ".trustlayer" / "runs.db"
 GIT_TIMEOUT_SECONDS = 15
+BUSY_TIMEOUT_SECONDS = 10
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS runs (
@@ -130,8 +131,14 @@ def connect(db_path: Path | str | None = None) -> sqlite3.Connection:
     """Open (and create) the run database. Callers own closing it."""
     path = Path(db_path) if db_path else DEFAULT_DB_PATH
     path.parent.mkdir(parents=True, exist_ok=True)
-    connection = sqlite3.connect(path)
+    # The TUI's audit worker, a pre-commit hook and the web UI can all hold the database at
+    # once. WAL lets readers proceed during a write, and the timeout waits out a writer
+    # instead of failing with "database is locked".
+    connection = sqlite3.connect(path, timeout=BUSY_TIMEOUT_SECONDS)
     connection.row_factory = sqlite3.Row
+    # SQLite does not raise when it cannot switch (e.g. no shared memory on the filesystem):
+    # the pragma returns the mode still in effect, and the rollback journal keeps working.
+    connection.execute("PRAGMA journal_mode = WAL")
     connection.execute("PRAGMA foreign_keys = ON")
     connection.executescript(SCHEMA)
     return connection

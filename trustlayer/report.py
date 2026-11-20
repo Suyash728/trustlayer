@@ -7,6 +7,7 @@ what makes the audit callable from a pre-commit hook.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 import json
 from pathlib import Path
@@ -35,6 +36,26 @@ EXIT_MEDIUM = 1
 EXIT_HIGH = 2
 EXIT_ERROR = 3
 
+# `--fail-on`: the lowest severity that still fails. "medium" is the historical behaviour
+# (low findings never changed the exit code). Exit 3 is outside this: an operational error
+# is never a threshold decision.
+FAIL_ON_LEVELS = ("high", "medium", "low")
+DEFAULT_FAIL_ON = "medium"
+
+
+def exit_code_for(severities: Iterable[Severity], fail_on: str = DEFAULT_FAIL_ON) -> int:
+    present = set(severities)
+    if fail_on not in FAIL_ON_LEVELS:
+        raise ValueError(f"--fail-on must be one of {', '.join(FAIL_ON_LEVELS)}, got {fail_on!r}")
+    if Severity.HIGH in present:
+        return EXIT_HIGH
+    if Severity.MEDIUM in present and fail_on in ("medium", "low"):
+        return EXIT_MEDIUM
+    if Severity.LOW in present and fail_on == "low":
+        return EXIT_MEDIUM  # a non-high finding; 2 stays reserved for high
+    return EXIT_CLEAN
+
+
 SEVERITY_STYLES = {Severity.HIGH: "red", Severity.MEDIUM: "yellow", Severity.LOW: "cyan"}
 LABEL_WIDTH = 7
 INDENT = "  "
@@ -46,6 +67,9 @@ class Report:
     profile: RepoProfile
     results: list[CheckResult]
     suite: SuiteState
+    fail_on: str = DEFAULT_FAIL_ON
+    baselined: int = 0  # known findings hidden by --baseline; reported, never silent
+    baseline_source: str | None = None
 
     @property
     def findings(self) -> list[Finding]:
@@ -71,17 +95,17 @@ class Report:
         return counts
 
     @property
+    def suppressed(self) -> int:
+        return sum(result.suppressed for result in self.results)
+
+    @property
     def skipped(self) -> list[CheckResult]:
         return [result for result in self.results if result.skipped]
 
     @property
     def exit_code(self) -> int:
-        counts = self.counts
-        if counts[Severity.HIGH]:
-            return EXIT_HIGH
-        if counts[Severity.MEDIUM]:
-            return EXIT_MEDIUM
-        return EXIT_CLEAN
+        """`--fail-on high` cannot hide a HIGH finding: HIGH always exits 2."""
+        return exit_code_for((finding.severity for finding in self.findings), self.fail_on)
 
 
 def render_text(report: Report, console: Console) -> None:
@@ -97,6 +121,7 @@ def render_text(report: Report, console: Console) -> None:
         console.print()
 
     _print_skipped(report, console)
+    _print_notes(report, console)
     _print_suite(report, console)
     _print_summary(report, console)
 
@@ -151,6 +176,34 @@ def _print_skipped(report: Report, console: Console) -> None:
     console.print()
 
 
+def _print_notes(report: Report, console: Console) -> None:
+    """Caveats a check could not turn into a finding, and what was suppressed.
+
+    Suppression is printed every time it happened: a clean report that hid findings must
+    say so, or "clean" stops meaning anything.
+    """
+    noted = [result for result in report.results if result.notes and not result.skipped]
+    if noted:
+        console.print(Text("notes"))
+        for result in noted:
+            for note in result.notes:
+                console.print(Text(f"{INDENT}{result.check}  {note}"))
+        console.print()
+    if report.baselined:
+        console.print(
+            Text(f"baselined   {report.baselined} known finding(s) from {report.baseline_source}")
+        )
+        console.print()
+    if report.suppressed:
+        by_check = ", ".join(
+            f"{result.check} {result.suppressed}" for result in report.results if result.suppressed
+        )
+        console.print(
+            Text(f"suppressed  {report.suppressed} finding(s) by exclude/inline ignore ({by_check})")
+        )
+        console.print()
+
+
 def _print_suite(report: Report, console: Console) -> None:
     suite = report.suite
     parts = [
@@ -201,6 +254,8 @@ def to_dict(report: Report) -> dict:
             "medium": counts[Severity.MEDIUM],
             "low": counts[Severity.LOW],
             "total": len(report.findings),
+            "suppressed": report.suppressed,
+            "baselined": report.baselined,
         },
         "checks": [
             {
@@ -209,6 +264,7 @@ def to_dict(report: Report) -> dict:
                 "skip_reason": result.skip_reason,
                 "notes": list(result.notes),
                 "findings": len(result.findings),
+                "suppressed": result.suppressed,
             }
             for result in report.results
         ],
@@ -266,14 +322,9 @@ def render_json(report: Report) -> str:
     return json.dumps(to_dict(report), indent=2)
 
 
-def deps_exit_code(result: ScanResult) -> int:
+def deps_exit_code(result: ScanResult, fail_on: str = DEFAULT_FAIL_ON) -> int:
     """Severity owns the exit code here exactly as it does for `audit`."""
-    severities = {item.risk.severity for item in result.reportable}
-    if Severity.HIGH in severities:
-        return EXIT_HIGH
-    if Severity.MEDIUM in severities:
-        return EXIT_MEDIUM
-    return EXIT_CLEAN
+    return exit_code_for((item.risk.severity for item in result.reportable), fail_on)
 
 
 def render_deps(
@@ -322,7 +373,7 @@ def _print_scored(item, console: Console) -> None:
     severity = item.risk.severity
     label = Text(INDENT)
     label.append(f"{severity.value.upper():<{LABEL_WIDTH}}", style=SEVERITY_STYLES[severity])
-    label.append(f"{item.risk.score:>3}  {item.name}{item.declared_spec or ''}  {item.file}:{item.line}")
+    label.append(f"{item.risk.score:>3}  {_spec_text(item)}  {item.file}:{item.line}")
     console.print(label)
 
     pad = INDENT + " " * LABEL_WIDTH
@@ -334,6 +385,13 @@ def _print_scored(item, console: Console) -> None:
         for wrapped in textwrap.wrap(line, width=width, break_long_words=False, break_on_hyphens=False) or [""]:
             console.print(Text(f"{prefix}{wrapped}"))
     console.print()
+
+
+def _spec_text(item) -> str:
+    """`requests==2.0` for PyPI, `lodash@^4.17.0` for npm - how each ecosystem writes it."""
+    if getattr(item, "ecosystem", "pypi") == "npm":
+        return f"{item.name}@{item.declared_spec}" if item.declared_spec else item.name
+    return f"{item.name}{item.declared_spec or ''}"
 
 
 def _print_deps_summary(result: ScanResult, console: Console) -> None:
@@ -363,10 +421,20 @@ def deps_to_dict(result: ScanResult, root: Path, explanation: Explanation | None
             "upstream_last_update": result.corpus.upstream_last_update if result.corpus else "",
             "vendored_on": result.corpus.vendored_on if result.corpus else "",
         },
+        "corpora": {
+            ecosystem: {
+                "source": table.source,
+                "packages": len(table),
+                "upstream_last_update": table.upstream_last_update,
+                "vendored_on": table.vendored_on,
+            }
+            for ecosystem, table in result.corpora.items()
+        },
         "notes": list(result.notes),
         "packages": [
             {
                 "name": item.name,
+                "ecosystem": item.ecosystem,
                 "declared_spec": item.declared_spec,
                 "pinned": item.pinned,
                 "file": item.file,

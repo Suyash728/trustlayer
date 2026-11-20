@@ -1,0 +1,81 @@
+# Keeps the two hand-vendored data files honest.
+#
+# - data/top_pypi_packages.json is refreshed from hugovk/top-pypi-packages. The script is
+#   deterministic and only moves `vendored_on` when the package list changed, so a week with
+#   no upstream change produces no diff and no pull request.
+# - data/top_npm_packages.json is rebuilt only when the npm-high-impact package publishes a
+#   new version (download counts move daily; the list version is the anchor). A rebuild
+#   counts ~600 scoped packages one request a second, so it takes about ten minutes.
+# - data/model_deprecations.toml is NOT rewritten - vendor pages are prose, and parsing dates
+#   out of them would be guessing. The tripwire only checks that every verified ID is still
+#   named on the page it cites; a failure turns this run red and a human re-verifies the row.
+#
+# Changes arrive as a pull request for review. Nothing is merged automatically.
+# Action refs were checked to exist on 2026-11-20 (setup-uv has no floating v10 tag).
+name: update-corpora
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"  # Mondays 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # The same token pushes the branch; see the note on the pull-request step.
+          token: ${{ secrets.CORPUS_PAT || github.token }}
+
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          python-version: "3.12"
+
+      - name: Refresh the top-PyPI corpus
+        run: uv run --no-project python scripts/update_top_pypi.py
+
+      - name: Refresh the top-npm corpus when its upstream list moved
+        run: uv run --no-project python scripts/update_top_npm.py
+
+      - name: Check every verified deprecation row against its source page
+        id: sources
+        continue-on-error: true
+        run: uv run --no-project python scripts/check_model_sources.py
+
+      # GITHUB_TOKEN cascade limitation: a branch pushed and a pull request opened with the
+      # default GITHUB_TOKEN do NOT trigger other workflows (GitHub's guard against recursive
+      # runs), so ci.yml will not run on these PRs on its own - close and reopen the PR, or
+      # push a commit to it, to get checks. To make checks run automatically, add a
+      # fine-grained personal access token (contents + pull-requests: write) as the repository
+      # secret CORPUS_PAT. No code change is needed: it is picked up here and in checkout above.
+      - name: Open a pull request when the corpus changed
+        env:
+          GH_TOKEN: ${{ secrets.CORPUS_PAT || github.token }}
+        run: |
+          if git diff --quiet -- data/; then
+            echo "corpus unchanged; nothing to propose"
+            exit 0
+          fi
+          branch="corpus-refresh/$(date -u +%Y-%m-%d)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add data/
+          git commit -m "data: refresh package corpora"
+          git push --force-with-lease origin "$branch"
+          gh pr create --base "${{ github.event.repository.default_branch }}" --head "$branch" \
+            --title "data: refresh package corpora" \
+            --body "Automated refresh by scripts/update_top_pypi.py and scripts/update_top_npm.py. Review the diff before merging; nothing is merged automatically." \
+            || echo "a pull request for $branch already exists"
+
+      - name: Fail when a deprecation source no longer names its models
+        if: steps.sources.outcome == 'failure'
+        run: |
+          echo "::error::a verified row in data/model_deprecations.toml no longer appears on its source page - re-verify it by hand"
+          exit 1

@@ -1,0 +1,10 @@
+{
+  "name": "slopsquat-npm-clean",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "lodash": "^4.17.21",
+    "@types/node": "^20.0.0"
+  }
+}

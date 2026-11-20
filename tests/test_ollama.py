@@ -80,34 +80,112 @@ def test_the_model_and_host_can_be_overridden_by_environment(monkeypatch):
     assert ollama.host() == "http://box:9999"  # trailing slash trimmed
 
 
-def test_the_default_model_is_a_tool_capable_agent_variant():
-    """The -agent-* builds raise num_ctx in their Modelfile; the server caps it at 4096."""
-    assert "agent" in ollama.DEFAULT_MODEL
-    assert ollama.supports_tools(ollama.DEFAULT_MODEL)
+@pytest.fixture(autouse=True)
+def capable_model(monkeypatch):
+    """Every test sees a tool-capable model unless it says otherwise.
+
+    `/api/show` is probed before any tool loop; stubbing it here keeps the scripted
+    `/api/chat` queues below one-response-per-turn.
+    """
+    info = ollama.ModelInfo(tools=True, context_length=131072, modelfile_num_ctx=16384)
+    monkeypatch.setattr(ollama, "model_info", lambda model: info)
+    monkeypatch.delenv(ollama.NUM_CTX_ENV, raising=False)
+    return info
+
+
+def show_payload(capabilities, context=131072, num_ctx=None, arch="gpt-oss"):
+    """The /api/show shape, as probed from Ollama 0.40.16 on 2026-11-20."""
+    payload = {
+        "capabilities": capabilities,
+        "model_info": {
+            f"{arch}.context_length": context,
+            f"{arch}.rope.scaling.original_context_length": 4096,
+        },
+        "parameters": "stop                           \"<|end|>\"",
+    }
+    if num_ctx is not None:
+        payload["parameters"] += f"\nnum_ctx                        {num_ctx}"
+    return payload
+
+
+def test_capabilities_and_context_are_read_from_api_show(monkeypatch):
+    respond_with(show_payload(["completion", "tools", "thinking"], num_ctx=16384), monkeypatch)
+
+    info = ollama.fetch_model_info("gpt-oss-20b-16k:latest")
+
+    assert info == ollama.ModelInfo(tools=True, context_length=131072, modelfile_num_ctx=16384)
+
+
+def test_rope_scaling_is_not_mistaken_for_the_context_length(monkeypatch):
+    respond_with(show_payload(["tools"], context=131072), monkeypatch)
+
+    assert ollama.fetch_model_info("m").context_length == 131072
+
+
+def test_a_model_without_the_tools_capability_is_refused_before_any_chat():
+    info = ollama.ModelInfo(tools=False, context_length=2048)
+
+    refusal = ollama.tool_loop_refusal("nomic-embed-text", info)
+    assert "does not support tools" in refusal
+
+
+def test_a_missing_model_reports_the_server_error(monkeypatch):
+    body = json.dumps({"error": "model 'nope:latest' not found"})
+    fail_with(urllib.error.HTTPError("u", 404, "Not Found", {}, io.BytesIO(body.encode())), monkeypatch)
+
+    info = ollama.fetch_model_info("nope:latest")
+    assert "404" in info.error and "not found" in info.error
 
 
 @pytest.mark.parametrize(
-    ("model", "capable"),
+    ("env", "modelfile", "trained", "expected"),
     [
-        ("gpt-oss-agent-64k:latest", True),
-        ("gpt-oss:20b", True),
-        ("qwen2.5-coder-agent-32k:latest", False),
-        ("qwen2.5-coder:14b-instruct-q4_K_M", False),
-        ("gemma3:12b", False),
+        (None, None, 131072, 32768),  # no opinion anywhere: the agent default
+        (None, 16384, 131072, 16384),  # the Modelfile was tuned for this machine
+        ("65536", 16384, 131072, 65536),  # the environment wins
+        ("65536", None, 32768, 32768),  # never beyond what the model was trained for
     ],
 )
-def test_only_the_gpt_oss_family_is_treated_as_tool_capable(model, capable):
-    """qwen emits its call as text. That is a model bug, verified twice - see CLAUDE.md."""
-    assert ollama.supports_tools(model) is capable
+def test_num_ctx_is_chosen_explicitly(monkeypatch, env, modelfile, trained, expected):
+    if env:
+        monkeypatch.setenv(ollama.NUM_CTX_ENV, env)
+    info = ollama.ModelInfo(tools=True, context_length=trained, modelfile_num_ctx=modelfile)
+
+    assert ollama.effective_num_ctx(info) == expected
 
 
-def test_a_model_that_emits_tool_calls_as_text_is_refused_before_spending_a_call():
-    result = ollama.run_ollama(
-        "go", model="qwen2.5-coder-agent-32k:latest", allowed_tools=("Read",)
-    )
+def test_a_tool_loop_is_refused_at_the_server_default_context(monkeypatch):
+    monkeypatch.setenv(ollama.NUM_CTX_ENV, "4096")
+    info = ollama.ModelInfo(tools=True, context_length=131072)
+
+    refusal = ollama.tool_loop_refusal("m", info)
+    assert "num_ctx=4096" in refusal
+
+
+def test_a_refused_model_never_reaches_the_chat_endpoint(monkeypatch, tmp_path):
+    monkeypatch.setattr(ollama, "model_info", lambda m: ollama.ModelInfo(tools=False))
+    fail_with(AssertionError("chat must not be called"), monkeypatch)
+
+    result = ollama.run_ollama("go", model="gemma3:12b", allowed_tools=("Read",), workspace=tmp_path)
 
     assert result.ok is False
-    assert "does not return structured tool calls" in result.error
+    assert "does not support tools" in result.error
+
+
+def test_the_chosen_context_is_sent_on_every_chat(tmp_path, monkeypatch):
+    sent = scripted([turn("done")], monkeypatch)
+
+    ollama.run_ollama("go", allowed_tools=("Read",), workspace=tmp_path, model="m")
+
+    assert sent[0]["options"] == {"num_ctx": 16384}
+
+
+def test_an_unreachable_server_is_not_cached_as_a_fact(monkeypatch):
+    monkeypatch.undo()  # use the real model_info for this one
+    ollama._INFO_CACHE.clear()
+    fail_with(urllib.error.URLError("refused"), monkeypatch)
+    assert ollama.model_info("m").error is not None
+    assert ollama._INFO_CACHE == {}
 
 
 # --------------------------------------------------------------------- happy path
@@ -374,15 +452,161 @@ def test_the_explanation_carries_its_attribution():
     assert "claude-opus-5" in remote.attribution
 
 
-@pytest.mark.parametrize("model", [ollama.DEFAULT_MODEL])
+@pytest.mark.parametrize("model", [ollama.default_model()])
 def test_a_real_local_model_answers(model):
-    """Opt-in: skips when nothing is listening on the Ollama port."""
+    """Opt-in: skips when nothing is listening on the Ollama port.
+
+    Runs against TRUSTLAYER_OLLAMA_MODEL when set, else the stock default.
+    """
     result = ollama.run_ollama(
         "Reply with exactly the word READY and nothing else.", model=model, timeout=180
     )
     if not result.ok and "unreachable" in (result.error or ""):
         pytest.skip("ollama not running")
+    if not result.ok and "not found" in (result.error or ""):
+        pytest.skip(f"{model} is not installed on this server")
 
     assert result.ok is True, result.error
     assert result.output_tokens > 0
     assert result.model == model
+
+
+# ------------------------------------------------------- text-emitted tool calls
+
+
+OFFERED = {"Read", "Bash"}
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        '{"name": "Read", "arguments": {"file_path": "a.py"}}',
+        '  {"name": "Read", "arguments": {"file_path": "a.py"}}\n',
+        '```json\n{"name": "Read", "arguments": {"file_path": "a.py"}}\n```',
+        '<tool_call>\n{"name": "Read", "arguments": {"file_path": "a.py"}}\n</tool_call>',
+    ],
+)
+def test_exactly_one_call_is_recovered(content):
+    assert ollama.recover_text_call(content, OFFERED) == {
+        "function": {"name": "Read", "arguments": {"file_path": "a.py"}}
+    }
+
+
+@pytest.mark.parametrize(
+    ("label", "content"),
+    [
+        ("prose around it", 'Sure! {"name": "Read", "arguments": {"file_path": "a.py"}}'),
+        ("two calls", '{"name": "Read", "arguments": {}}\n{"name": "Read", "arguments": {}}'),
+        ("a tool not offered", '{"name": "Write", "arguments": {"file_path": "a"}}'),
+        ("arguments as a string", '{"name": "Read", "arguments": "a.py"}'),
+        ("extra keys", '{"name": "Read", "arguments": {}, "then": "rm -rf /"}'),
+        # glm-4-9b on Ollama 0.40.16, verbatim shape: a name line, JSON, then invented output.
+        ("glm-4 style", 'Read\n{"file_path": "config.yaml"}\nThe content of the file is: ...'),
+        ("plain prose", "I have finished writing the tests."),
+    ],
+)
+def test_anything_ambiguous_is_not_recovered(label, content):
+    assert ollama.recover_text_call(content, OFFERED) is None, label
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        'Read\n{"file_path": "config.yaml"}\nThe content of the file is: ...',
+        'Sure! {"name": "Read", "arguments": {"file_path": "a.py"}}',
+        "<tool_call>broken",
+    ],
+)
+def test_a_garbled_call_is_detected(content):
+    assert ollama.looks_like_text_call(content, OFFERED)
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        "I have finished writing the tests.",
+        "Read the docstring: it says the function returns a dict.",
+        "",
+    ],
+)
+def test_ordinary_prose_is_not_mistaken_for_a_call(content):
+    assert not ollama.looks_like_text_call(content, OFFERED)
+
+
+def test_a_recovered_call_goes_through_the_same_gate(tmp_path, monkeypatch):
+    (tmp_path / "seed.txt").write_text("the contents")
+    sent = scripted(
+        [turn('{"name": "Read", "arguments": {"file_path": "seed.txt"}}'), turn("Read it.")],
+        monkeypatch,
+    )
+
+    result = ollama.run_ollama("go", allowed_tools=("Read",), workspace=tmp_path, model="m")
+
+    assert result.ok is True
+    assert result.recovered_text_calls == 1
+    assert sent[1]["messages"][-1] == {
+        "role": "tool", "content": "the contents", "tool_name": "Read",
+    }
+
+
+def test_a_recovered_call_can_still_be_denied(tmp_path, monkeypatch):
+    scripted(
+        [turn('{"name": "Bash", "arguments": {"command": "git push"}}'), turn("ok")],
+        monkeypatch,
+    )
+
+    result = ollama.run_ollama("go", allowed_tools=("Bash",), workspace=tmp_path, model="m")
+
+    assert result.recovered_text_calls == 1
+    assert len(result.denied) == 1
+
+
+def test_a_garbled_call_ends_the_run_instead_of_reading_as_finished(tmp_path, monkeypatch):
+    scripted([turn('Read\n{"file_path": "seed.txt"}\nThe file says hello.')], monkeypatch)
+
+    result = ollama.run_ollama("go", allowed_tools=("Read",), workspace=tmp_path, model="m")
+
+    assert result.ok is False
+    assert "not exactly one call" in result.error
+
+
+@pytest.mark.parametrize("model", [ollama.default_model()])
+def test_a_real_local_tool_loop_reads_a_file_through_the_gate(model, tmp_path, monkeypatch):
+    """Opt-in, live: one real Read call, through ToolGate, against a real model."""
+    monkeypatch.setattr(ollama, "model_info", ollama.fetch_model_info)  # undo the autouse stub
+    (tmp_path / "config.py").write_text("secret_value = 4217\n")
+    result = ollama.run_ollama(
+        "Use the Read tool to read config.py, then reply with only the value of secret_value.",
+        model=model, allowed_tools=("Read",), workspace=tmp_path, timeout=300,
+    )
+    if not result.ok and "unreachable" in (result.error or ""):
+        pytest.skip("ollama not running")
+    if not result.ok and "not found" in (result.error or ""):
+        pytest.skip(f"{model} is not installed on this server")
+
+    assert result.ok is True, result.error
+    assert result.num_turns >= 2  # a tool turn, then the answer
+    assert "4217" in result.text
+
+
+def test_a_missing_model_names_what_is_installed(monkeypatch):
+    responses = {
+        "/api/tags": {"models": [{"name": "qwen3.5-9b:latest"}, {"name": "nomic-embed-text:latest"}]},
+    }
+    monkeypatch.setattr(ollama, "_get", lambda path, timeout: (responses[path], None))
+    monkeypatch.setattr(
+        ollama, "fetch_model_info",
+        lambda name: ollama.ModelInfo(tools=name.startswith("qwen")),
+    )
+
+    hint = ollama._missing_model_hint("gpt-oss:20b", "ollama returned HTTP 404: model 'gpt-oss:20b' not found")
+
+    assert "ollama pull gpt-oss:20b" in hint
+    assert ollama.MODEL_ENV in hint
+    assert "qwen3.5-9b:latest" in hint and "nomic" not in hint
+
+
+def test_other_errors_are_passed_through_unchanged():
+    assert ollama._missing_model_hint("m", "ollama did not respond within 5s") == (
+        "ollama did not respond within 5s"
+    )

@@ -11,9 +11,14 @@ Verified against the live APIs rather than remembered (2026-08-16):
 - `releases` maps a version to a list of files, each carrying `upload_time_iso_8601`. A
   version can have an empty file list, so the age of a project is the earliest upload across
   all files, not the timestamp of the first key.
-- npm's `registry.npmjs.org/<name>` carries `time.created` and `maintainers`, and
-  `api.npmjs.org/downloads/point/last-week/<name>` is an official download endpoint. npm is
-  not implemented yet; `PackageFacts` is registry-neutral so it slots in behind this shape.
+- npm (probed 2026-11-20): `registry.npmjs.org/<name>` - scoped names with the slash as
+  `%2F` - carries `time.created`, `versions`, `maintainers`, `dist-tags.latest`, and a
+  per-version `deprecated` message. A missing name is HTTP 404 `{"error":"Not found"}`. An
+  *unpublished* package is HTTP **200** with only `{_id, name, time}` and
+  `time.unpublished = {time, versions}`. A package npm took over after removing malware has
+  `latest` like `0.0.1-security` (also seen: `1.0.0-security`) and the description
+  "security holding package". Downloads are first-party at
+  `api.npmjs.org/downloads/point/last-month/<name>` -> `{downloads, start, end, package}`.
 
 The three-state contract from `pypi_package_exists` is preserved everywhere: True means the
 registry answered, False means a definitive 404, and None means the network could not answer.
@@ -45,6 +50,10 @@ CACHE_FORMAT_VERSION = 2
 
 PYPI_URL = "https://pypi.org/pypi/{name}/json"
 PYPISTATS_URL = "https://pypistats.org/api/packages/{name}/recent"
+NPM_URL = "https://registry.npmjs.org/{name}"
+NPM_DOWNLOADS_URL = "https://api.npmjs.org/downloads/point/last-month/{name}"
+NPM_TIMEOUT_SECONDS = 8
+SECURITY_HOLDING_DESCRIPTION = "security holding package"
 
 
 @dataclass(frozen=True)
@@ -69,6 +78,10 @@ class PackageFacts:
     # Both default to empty so a row missing them can never crash a run.
     versions: list[str] = field(default_factory=list)
     yanked_versions: dict[str, str] = field(default_factory=dict)
+    # npm states that are as definitive as a 404. Defaulted, so older cache rows still load.
+    unpublished: bool = False
+    security_holding: bool = False
+    deprecated_note: str | None = None  # the latest version's deprecation message
     from_cache: bool = False
 
     def to_json(self) -> str:
@@ -164,6 +177,76 @@ def fetch_pypi(name: str, *, timeout: float = PYPI_TIMEOUT_SECONDS, downloads: b
     return replace(facts, downloads_last_month=count, downloads_note=note)
 
 
+def npm_url_name(name: str) -> str:
+    """`@scope/pkg` -> `@scope%2Fpkg`, the form the registry documents for scoped names."""
+    return urllib.parse.quote(name.strip(), safe="@")
+
+
+def fetch_npm(name: str, *, timeout: float = NPM_TIMEOUT_SECONDS, downloads: bool = True) -> PackageFacts:
+    """Resolve one npm package. Never raises; a failure comes back as `unreachable`."""
+    url = NPM_URL.format(name=npm_url_name(name))
+    response = _get_json(url, timeout)
+
+    if response.not_found:
+        return PackageFacts(name=name, ecosystem="npm", url=url, exists=False)
+    if response.data is None:
+        return PackageFacts(
+            name=name, ecosystem="npm", url=url, exists=None, unreachable=True, error=response.error
+        )
+
+    payload = response.data
+    times = payload.get("time") if isinstance(payload.get("time"), dict) else {}
+    if isinstance(times.get("unpublished"), dict):
+        return PackageFacts(
+            name=name, ecosystem="npm", url=url, exists=True, unpublished=True,
+            first_release=_parse_timestamp(times.get("created")),
+        )
+
+    versions = payload.get("versions") if isinstance(payload.get("versions"), dict) else {}
+    tags = payload.get("dist-tags") if isinstance(payload.get("dist-tags"), dict) else {}
+    latest = tags.get("latest") if isinstance(tags.get("latest"), str) else None
+    latest_meta = versions.get(latest) if latest and isinstance(versions.get(latest), dict) else {}
+    description = str(payload.get("description") or latest_meta.get("description") or "")
+    maintainers = payload.get("maintainers")
+    deprecated = latest_meta.get("deprecated")
+
+    stamps = [_parse_timestamp(times.get(version)) for version in versions]
+    published = [stamp for stamp in stamps if stamp is not None]
+    facts = PackageFacts(
+        name=name,
+        ecosystem="npm",
+        url=url,
+        exists=True,
+        first_release=_parse_timestamp(times.get("created")) or (min(published) if published else None),
+        last_release=max(published) if published else None,
+        release_count=len(versions) or None,
+        versions=sorted(versions),
+        maintainer_count=len(maintainers) if isinstance(maintainers, list) else None,
+        security_holding=bool(latest and latest.endswith("-security"))
+        and SECURITY_HOLDING_DESCRIPTION in description.lower(),
+        # npm un-deprecates by setting the message to "", so only a non-empty one counts.
+        deprecated_note=(deprecated.strip() or None) if isinstance(deprecated, str) else None,
+    )
+
+    if not downloads:
+        return replace(facts, downloads_note="download lookup disabled")
+    count, note = _npm_downloads(name)
+    return replace(facts, downloads_last_month=count, downloads_note=note)
+
+
+def _npm_downloads(name: str) -> tuple[int | None, str | None]:
+    """First-party on npm, but still optional: a failure is 'unavailable', never a signal."""
+    response = _get_json(NPM_DOWNLOADS_URL.format(name=npm_url_name(name)), NPM_TIMEOUT_SECONDS)
+    if response.not_found:
+        return None, "npm has no download record for this package"
+    if response.data is None:
+        return None, f"npm downloads API unreachable: {response.error}"
+    count = response.data.get("downloads")
+    if not isinstance(count, int):
+        return None, "npm downloads API returned no figure"
+    return count, None
+
+
 def _release_window(releases: dict) -> tuple[date | None, date | None]:
     """Earliest and latest upload across every file of every version.
 
@@ -249,6 +332,7 @@ def fetch_many(
     offline: bool = False,
     use_cache: bool = True,
     max_workers: int = MAX_WORKERS,
+    ecosystem: str = "pypi",
 ) -> dict[str, PackageFacts]:
     """Resolve many packages, reading and writing the cache on this thread only.
 
@@ -257,7 +341,7 @@ def fetch_many(
     In `offline` mode the cache is consulted without a TTL and nothing is ever fetched - a
     warm cache then reproduces an online run exactly, which is the point of `--no-network`.
     """
-    lookup = fetcher or fetch_pypi
+    lookup = fetcher or (fetch_npm if ecosystem == "npm" else fetch_pypi)
     if fetcher is not None:
         # The cache holds real registry answers. A caller supplying its own fetcher is a
         # test or a simulation, and writing that into ~/.trustlayer would poison every later
@@ -267,9 +351,9 @@ def fetch_many(
     results: dict[str, PackageFacts] = {}
     pending: list[str] = []
 
-    cached = _read_cache(unique, db_path, ignore_ttl=offline) if use_cache else {}
+    cached = _read_cache(unique, db_path, ignore_ttl=offline, ecosystem=ecosystem) if use_cache else {}
     for name in unique:
-        hit = cached.get(canonicalize_python_name(name))
+        hit = cached.get(_cache_key(name, ecosystem))
         if hit is not None:
             results[name] = replace(hit, name=name)
         elif offline:
@@ -287,15 +371,20 @@ def fetch_many(
             for name, facts in zip(pending, pool.map(lookup, pending), strict=True):
                 results[name] = facts
         if use_cache:
-            _write_cache([results[name] for name in pending], db_path)
+            _write_cache([results[name] for name in pending], db_path, ecosystem)
 
     return results
 
 
-def _read_cache(names: list[str], db_path, ignore_ttl: bool) -> dict[str, PackageFacts]:
+def _cache_key(name: str, ecosystem: str) -> str:
+    """PyPI folds names (PEP 503); npm does not, so its key is the name as written."""
+    return canonicalize_python_name(name) if ecosystem == "pypi" else name.strip()
+
+
+def _read_cache(names: list[str], db_path, ignore_ttl: bool, ecosystem: str = "pypi") -> dict[str, PackageFacts]:
     try:
         rows = read_registry_cache(
-            "pypi", [canonicalize_python_name(name) for name in names], db_path=db_path, ignore_ttl=ignore_ttl
+            ecosystem, [_cache_key(name, ecosystem) for name in names], db_path=db_path, ignore_ttl=ignore_ttl
         )
     except OSError:
         return {}
@@ -308,15 +397,15 @@ def _read_cache(names: list[str], db_path, ignore_ttl: bool) -> dict[str, Packag
     return facts
 
 
-def _write_cache(entries: list[PackageFacts], db_path) -> None:
+def _write_cache(entries: list[PackageFacts], db_path, ecosystem: str = "pypi") -> None:
     # Never cache a failure: the next run must retry rather than inherit an outage.
     fresh = [facts for facts in entries if not facts.unreachable]
     if not fresh:
         return
     try:
         write_registry_cache(
-            "pypi",
-            [(canonicalize_python_name(facts.name), facts.to_json()) for facts in fresh],
+            ecosystem,
+            [(_cache_key(facts.name, ecosystem), facts.to_json()) for facts in fresh],
             db_path=db_path,
         )
     except OSError:

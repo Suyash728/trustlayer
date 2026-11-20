@@ -20,6 +20,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+from trustlayer.checks import node_helper
 from trustlayer.checks.base import (
     PYTHON_SUFFIXES,
     TYPESCRIPT_SUFFIXES,
@@ -36,8 +37,6 @@ from trustlayer.checks.base import (
 
 CHECK_NAME = "api-resolution"
 PROBE_PATH = Path(__file__).parent / "_probe.py"
-NODE_HELPER_DIR = Path(__file__).parent / "node"
-NODE_HELPER = NODE_HELPER_DIR / "resolve_imports.mjs"
 
 PROBE_TIMEOUT_SECONDS = 60
 NODE_TIMEOUT_SECONDS = 120
@@ -98,6 +97,12 @@ def check_python_apis(root: Path, *, pypi_lookup=None, interpreter: Path | None 
 
     `interpreter` overrides discovery of the repo's own venv; production callers leave it
     None so resolution always happens against the audited repo's environment.
+
+    Sources are grouped by the project that owns them (the nearest directory with a Python
+    manifest or its own virtualenv), and each group resolves against *that* project's
+    environment. A nested project with no environment of its own borrows the root one, but
+    then "not installed" is no longer evidence - the borrowed venv was never meant to hold
+    that project's dependencies - so those verdicts are withheld and a note says so.
     """
     check = f"{CHECK_NAME}:python"
     lookup = pypi_lookup if pypi_lookup is not None else pypi_package_exists
@@ -107,27 +112,80 @@ def check_python_apis(root: Path, *, pypi_lookup=None, interpreter: Path | None 
         return CheckResult(check, skipped=True, skip_reason="no Python sources found")
 
     if interpreter is not None:
-        origin = "caller-supplied interpreter"
+        root_env: tuple[Path | None, str] = (interpreter, "caller-supplied interpreter")
     else:
-        interpreter, origin = find_interpreter(root)
-    if interpreter is None:
-        return CheckResult(
-            check,
-            skipped=True,
-            skip_reason=(
-                "no virtualenv found at .venv/ or venv/ and no poetry env; "
-                "install one (e.g. `uv venv && uv pip install -e .`) so imports can be resolved"
-            ),
-        )
+        root_env = find_interpreter(root)
 
-    module_claims, attribute_claims, call_claims = collect_python_claims(root, sources)
+    groups: dict[Path, list[Path]] = {}
+    for path in sources:
+        groups.setdefault(_owning_project(root, path), []).append(path)
+
+    findings: list[Finding] = []
+    notes: list[str] = []
+    errors: list[str] = []
+    resolved_any = False
+    for project, files in sorted(groups.items()):
+        borrowed = False
+        if interpreter is not None or project == root:
+            chosen, origin = root_env
+        else:
+            chosen, origin = find_interpreter(project)
+            if chosen is None and root_env[0] is not None:
+                chosen, origin = root_env[0], f"{root_env[1]}, borrowed from the repository root"
+                borrowed = True
+        label = relative_to(project, root) if project != root else "."
+        if chosen is None:
+            if project != root:
+                notes.append(f"{label}: no virtualenv of its own, imports not resolved")
+            continue
+
+        outcome = _check_group(root, files, chosen, origin, lookup, borrowed)
+        if isinstance(outcome, str):
+            errors.append(outcome)
+            continue
+        resolved_any = True
+        group_findings, group_notes = outcome
+        findings += group_findings
+        notes += [f"{label}: {note}" if label != "." else note for note in group_notes]
+
+    if not resolved_any:
+        reason = errors[0] if errors else (
+            "no virtualenv found at .venv/ or venv/ and no poetry env; "
+            "install one (e.g. `uv venv && uv pip install -e .`) so imports can be resolved"
+        )
+        return CheckResult(check, skipped=True, skip_reason=reason, notes=notes)
+    return CheckResult(check, sort_findings(findings), notes=notes + errors)
+
+
+def _owning_project(root: Path, path: Path) -> Path:
+    """The nearest directory, at or below `root`, that is a Python project of its own."""
+    current = path.parent
+    while current != root and root in current.parents:
+        if _is_python_project(current):
+            return current
+        current = current.parent
+    return root
+
+
+def _is_python_project(directory: Path) -> bool:
+    if any((directory / name).is_file() for name in ("pyproject.toml", "setup.py", "setup.cfg")):
+        return True
+    if any(directory.glob("requirements*.txt")):
+        return True
+    return any((directory / candidate).is_file() for candidate in INTERPRETER_CANDIDATES)
+
+
+def _check_group(
+    root: Path, files: list[Path], interpreter: Path, origin: str, lookup, borrowed: bool
+) -> tuple[list[Finding], list[str]] | str:
+    module_claims, attribute_claims, call_claims = collect_python_claims(root, files)
     external = {
         claim.module
         for claim in module_claims
-        if not is_first_party(root, claim.module)
+        if not is_first_party(root, claim.module, root / claim.file)
     }
     if not external:
-        return CheckResult(check)
+        return [], []
 
     wanted: dict[str, list[str]] = {module: [] for module in external}
     for claim in (*attribute_claims, *call_claims):
@@ -136,12 +194,15 @@ def check_python_apis(root: Path, *, pypi_lookup=None, interpreter: Path | None 
 
     resolved, probe_error = run_probe(interpreter, wanted)
     if probe_error is not None:
-        return CheckResult(check, skipped=True, skip_reason=probe_error)
+        return probe_error
 
-    findings = _module_findings(module_claims, resolved, root, interpreter, origin, lookup)
+    module_findings, notes = _module_findings(
+        module_claims, resolved, root, interpreter, origin, lookup, borrowed
+    )
+    findings = module_findings
     findings += _attribute_findings(attribute_claims, resolved, external)
     findings += _signature_findings(call_claims, resolved, external)
-    return CheckResult(check, sort_findings(findings))
+    return findings, notes
 
 
 def _module_findings(
@@ -151,12 +212,22 @@ def _module_findings(
     interpreter: Path,
     origin: str,
     lookup,
-) -> list[Finding]:
+    borrowed: bool = False,
+) -> tuple[list[Finding], list[str]]:
+    """Findings for imports the environment could not find, plus notes for what it can't say.
+
+    Only two outcomes are findings: a definitive PyPI 404 (HIGH) and "on PyPI but not
+    installed" (MEDIUM). When PyPI is unreachable nothing is known, so that is a note rather
+    than a finding. A borrowed interpreter makes "not installed" meaningless, so it becomes a
+    note too - but a 404 is a fact about PyPI and stands either way.
+    """
     findings: list[Finding] = []
-    verdict_cache: dict[str, tuple[Severity, str, list[str]]] = {}
+    verdict_cache: dict[str, tuple[Severity, str, list[str]] | None] = {}
+    unknown: set[str] = set()
+    withheld: set[str] = set()
 
     for claim in module_claims:
-        if is_first_party(root, claim.module):
+        if is_first_party(root, claim.module, root / claim.file):
             continue
         info = resolved.get(claim.module)
         if info is None or info.get("found"):
@@ -165,7 +236,14 @@ def _module_findings(
         top_level = claim.module.split(".")[0]
         if top_level not in verdict_cache:
             verdict_cache[top_level] = _unresolved_verdict(top_level, interpreter, origin, lookup)
-        severity, verdict, evidence = verdict_cache[top_level]
+        verdict_entry = verdict_cache[top_level]
+        if verdict_entry is None:
+            unknown.add(top_level)
+            continue
+        severity, verdict, evidence = verdict_entry
+        if borrowed and verdict == "not-installed":
+            withheld.add(top_level)
+            continue
 
         detail = list(evidence)
         if info.get("import_error"):
@@ -181,12 +259,24 @@ def _module_findings(
                 evidence=detail,
             )
         )
-    return findings
+
+    notes: list[str] = []
+    if unknown:
+        notes.append(
+            "not importable and PyPI unreachable, so a missing install cannot be told apart "
+            f"from a fake package: {', '.join(sorted(unknown))}"
+        )
+    if withheld:
+        notes.append(
+            "not importable by the borrowed root environment; not reported because this "
+            f"project has no virtualenv of its own: {', '.join(sorted(withheld))}"
+        )
+    return findings, notes
 
 
 def _unresolved_verdict(
     top_level: str, interpreter: Path, origin: str, lookup
-) -> tuple[Severity, str, list[str]]:
+) -> tuple[Severity, str, list[str]] | None:
     base = [
         f"not importable by {interpreter} ({origin})",
         "note: import name and distribution name can differ (e.g. `yaml` ships as `PyYAML`)",
@@ -205,11 +295,7 @@ def _unresolved_verdict(
             "not-installed",
             [*base, f"exists on PyPI: https://pypi.org/project/{top_level}/ - not installed here"],
         )
-    return (
-        Severity.LOW,
-        "unresolvable",
-        [*base, "PyPI unreachable, so a missing install cannot be told apart from a fake package"],
-    )
+    return None  # PyPI could not answer: nothing is known, so nothing is claimed
 
 
 def _attribute_findings(
@@ -405,6 +491,13 @@ class _ClaimCollector(ast.NodeVisitor):
             elif isinstance(child, ast.Call) and isinstance(child.func, ast.Attribute):
                 self._called_attribute_ids.add(id(child.func))
 
+        # A name bound anywhere else in the file - `json = resp.json()`, a loop variable, a
+        # parameter - may not be the module at the point of use. Scope analysis would be
+        # needed to know, so the name is dropped and nothing is claimed about it.
+        for name in _rebound_names(node):
+            self.aliases.pop(name, None)
+            self.imported.pop(name, None)
+
         for child in ast.walk(node):
             if isinstance(child, ast.Attribute):
                 self._visit_attribute(child)
@@ -479,6 +572,33 @@ class _ClaimCollector(ast.NodeVisitor):
         )
 
 
+_NAMED_BINDINGS = (
+    ast.FunctionDef,
+    ast.AsyncFunctionDef,
+    ast.ClassDef,
+    ast.ExceptHandler,
+    ast.MatchAs,
+    ast.MatchStar,
+)
+
+
+def _rebound_names(tree: ast.AST) -> set[str]:
+    """Every name bound by something other than an import statement."""
+    names: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store | ast.Del):
+            names.add(node.id)
+        elif isinstance(node, ast.arg):
+            names.add(node.arg)
+        elif isinstance(node, _NAMED_BINDINGS) and node.name:
+            names.add(node.name)
+        elif isinstance(node, ast.Global | ast.Nonlocal):
+            names.update(node.names)
+        elif isinstance(node, ast.MatchMapping) and node.rest:
+            names.add(node.rest)
+    return names
+
+
 def find_interpreter(root: Path) -> tuple[Path | None, str]:
     """Locate the audited repo's own interpreter. Never falls back to ours."""
     for relative in INTERPRETER_CANDIDATES:
@@ -514,12 +634,24 @@ def run_probe(interpreter: Path, wanted: dict[str, list[str]]) -> tuple[dict[str
     return payload.get("modules") or {}, None
 
 
-def is_first_party(root: Path, module: str) -> bool:
-    """True when the module is defined in this repository rather than installed."""
+def is_first_party(root: Path, module: str, file: Path | None = None) -> bool:
+    """True when the module is defined in this repository rather than installed.
+
+    Looks in the root and its `src/`, and - when the importing file is known - in every
+    directory between that file and the root, plus each one's `src/`. That is what makes
+    `apps/api/tests/test_x.py: import app` and a nested project's `src/` layout first-party.
+    """
     top_level = module.split(".")[0]
-    for base in (root, root / "src"):
-        if (base / f"{top_level}.py").is_file() or (base / top_level / "__init__.py").is_file():
-            return True
+    bases = [root]
+    if file is not None:
+        current = file.parent
+        while current != root and root in current.parents:
+            bases.append(current)
+            current = current.parent
+    for directory in bases:
+        for base in (directory, directory / "src"):
+            if (base / f"{top_level}.py").is_file() or (base / top_level / "__init__.py").is_file():
+                return True
     return False
 
 
@@ -555,20 +687,14 @@ def check_typescript_apis(root: Path) -> CheckResult:
     if not sources:
         return CheckResult(check, skipped=True, skip_reason="no TypeScript or JavaScript sources found")
 
-    if not (NODE_HELPER_DIR / "node_modules" / "ts-morph").is_dir():
-        return CheckResult(
-            check,
-            skipped=True,
-            skip_reason=(
-                "ts-morph helper not installed; run "
-                f"`npm install --prefix {NODE_HELPER_DIR}`"
-            ),
-        )
+    helper_dir = node_helper.helper_dir()
+    if helper_dir is None:
+        return CheckResult(check, skipped=True, skip_reason=node_helper.missing_reason())
 
     # cwd is the helper dir so node resolves ts-morph, so the repo path must be absolute.
     helper = run_tool(
-        ["node", str(NODE_HELPER), str(root.resolve())],
-        cwd=NODE_HELPER_DIR,
+        ["node", str(helper_dir / "resolve_imports.mjs"), str(root.resolve())],
+        cwd=helper_dir,
         timeout=NODE_TIMEOUT_SECONDS,
     )
     if not helper.ok:
@@ -581,20 +707,9 @@ def check_typescript_apis(root: Path) -> CheckResult:
         return CheckResult(check, skipped=True, skip_reason=f"helper returned invalid JSON: {error}")
 
     if payload.get("unresolvable"):
-        return CheckResult(
-            check,
-            findings=[
-                Finding(
-                    severity=Severity.LOW,
-                    check=check,
-                    file=payload.get("file", "package.json"),
-                    line=payload.get("line", 1),
-                    claim="TypeScript import resolution",
-                    verdict="unresolvable",
-                    evidence=[payload["unresolvable"]],
-                )
-            ],
-        )
+        # The helper could not resolve anything, so it has nothing to claim. A finding here
+        # would invent a location (there may be no root package.json at all).
+        return CheckResult(check, skipped=True, skip_reason=str(payload["unresolvable"]))
 
     findings = [
         Finding(

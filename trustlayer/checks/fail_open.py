@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 import re
 
+from trustlayer.checks import node_helper
 from trustlayer.checks.base import (
     PYTHON_SUFFIXES,
     TYPESCRIPT_SUFFIXES,
@@ -27,8 +28,6 @@ from trustlayer.checks.base import (
 
 
 CHECK_NAME = "fail-open"
-NODE_HELPER_DIR = Path(__file__).parent / "node"
-NODE_HELPER = NODE_HELPER_DIR / "fail_open.mjs"
 NODE_TIMEOUT_SECONDS = 120
 
 URLISH_RE = re.compile(r"url|uri|endpoint|host|dsn|conn|base|webhook|origin", re.IGNORECASE)
@@ -335,17 +334,14 @@ def check_typescript_fail_open(root: Path) -> CheckResult:
     if not list(iter_source_files(root, TYPESCRIPT_SUFFIXES)):
         return CheckResult(check, skipped=True, skip_reason="no TypeScript or JavaScript sources found")
 
-    if not (NODE_HELPER_DIR / "node_modules" / "ts-morph").is_dir():
-        return CheckResult(
-            check,
-            skipped=True,
-            skip_reason=f"ts-morph helper not installed; run `npm install --prefix {NODE_HELPER_DIR}`",
-        )
+    helper_dir = node_helper.helper_dir()
+    if helper_dir is None:
+        return CheckResult(check, skipped=True, skip_reason=node_helper.missing_reason())
 
     # cwd is the helper dir so node resolves ts-morph, so the repo path must be absolute.
     helper = run_tool(
-        ["node", str(NODE_HELPER), str(root.resolve())],
-        cwd=NODE_HELPER_DIR,
+        ["node", str(helper_dir / "fail_open.mjs"), str(root.resolve())],
+        cwd=helper_dir,
         timeout=NODE_TIMEOUT_SECONDS,
     )
     if not helper.ok:

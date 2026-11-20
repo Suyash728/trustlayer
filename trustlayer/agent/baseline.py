@@ -15,9 +15,14 @@ import ast
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from trustlayer.agent.runtime import DEFAULT_ALLOWED_TOOLS, AgentResult, run_agent
-from trustlayer.agent.verify import count_tests, prune_to_passing, run_suite
-from trustlayer.suite import inspect_suite
+from trustlayer.agent.runtime import DEFAULT_ALLOWED_TOOLS, AgentResult, run_agent, venv_bin_for
+from trustlayer.agent.verify import (
+    CoverageMeasure,
+    count_tests,
+    measure_coverage,
+    prune_to_passing,
+    run_suite,
+)
 
 
 SYSTEM_PROMPT = (
@@ -44,8 +49,8 @@ class BaselineResult:
     tests_kept: int = 0
     tests_discarded: int = 0
     discards: list[tuple[str, str]] = field(default_factory=list)
-    coverage_before: float | None = None
-    coverage_after: float | None = None
+    coverage_before: CoverageMeasure | None = None
+    coverage_after: CoverageMeasure | None = None
     agent: AgentResult | None = None
     error: str | None = None
 
@@ -150,7 +155,8 @@ def generate_baseline(
     test_file = f"tests/test_{absolute.stem}_generated.py"
     (root / "tests").mkdir(exist_ok=True)
 
-    before = inspect_suite(root).coverage_percent
+    interpreter = tooling_interpreter(Path(tools_root)) if tools_root else None
+    before = measure_coverage(root, interpreter)
 
     agent = run_agent(
         build_prompt(absolute, relative, profiles, test_file),
@@ -160,6 +166,7 @@ def generate_baseline(
         max_budget_usd=max_budget_usd,
         backend=backend,
         system_prompt=SYSTEM_PROMPT,
+        venv_bin=venv_bin_for(Path(tools_root)) if tools_root else None,
     )
 
     target = root / test_file
@@ -175,7 +182,6 @@ def generate_baseline(
         )
 
     written = count_tests(target)
-    interpreter = tooling_interpreter(Path(tools_root)) if tools_root else None
     suite, discarded = prune_to_passing(root, [target], interpreter=interpreter)
     kept = count_tests(target) if target.is_file() else 0
 
@@ -198,7 +204,7 @@ def generate_baseline(
         tests_discarded=written - kept,
         discards=discarded,
         coverage_before=before,
-        coverage_after=inspect_suite(root).coverage_percent,
+        coverage_after=measure_coverage(root, interpreter),
         agent=agent,
     )
 

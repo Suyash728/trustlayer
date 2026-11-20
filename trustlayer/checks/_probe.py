@@ -70,13 +70,33 @@ def describe(module_name, attributes):
         return result
 
     result["exports"] = sorted(name for name in dir(module) if not name.startswith("_"))
-    result["missing"] = [name for name in attributes if not hasattr(module, name)]
+    result["missing"] = [
+        name
+        for name in attributes
+        if not hasattr(module, name) and not _is_submodule(module, module_name, name)
+    ]
 
     for name in attributes:
         described = _signature_for(getattr(module, name, None))
         if described is not None:
             result["signatures"][name] = described
     return result
+
+
+def _is_submodule(module, module_name, name):
+    """True when `name` is an importable submodule of a package.
+
+    `from xml.etree import ElementTree` is valid, yet `ElementTree` is not in
+    `dir(xml.etree)` until something imports it - so `hasattr` alone would call a real
+    submodule missing. Only a package (one with `__path__`) can have submodules, and
+    `find_spec` locates one without executing it.
+    """
+    if not hasattr(module, "__path__"):
+        return False
+    try:
+        return importlib.util.find_spec(f"{module_name}.{name}") is not None
+    except Exception:  # noqa: BLE001 - an unanswerable lookup is not evidence of absence
+        return True
 
 
 def _signature_for(obj):
