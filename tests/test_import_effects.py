@@ -17,6 +17,12 @@ from killscore.checks.import_effects import CHECK_NAME, check_import_effects
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
+def _module(root):
+    """A module inside a package, so each test is about its call, not about reachability."""
+    (root / "__init__.py").write_text("")
+    return root / "m.py"
+
+
 def findings_for(name: str):
     return check_import_effects(FIXTURES / name).findings
 
@@ -49,7 +55,7 @@ def test_a_module_of_guarded_calls_reports_nothing():
 )
 def test_nesting_of_any_kind_means_silence(tmp_path, guard, source):
     """AST cannot see that a call sits behind a feature flag, so it never guesses."""
-    (tmp_path / "m.py").write_text(source)
+    _module(tmp_path).write_text(source)
 
     assert check_import_effects(tmp_path).findings == [], f"reported inside a {guard}"
 
@@ -66,13 +72,13 @@ def test_nesting_of_any_kind_means_silence(tmp_path, guard, source):
     ],
 )
 def test_reads_are_not_effects(tmp_path, source):
-    (tmp_path / "m.py").write_text(source)
+    _module(tmp_path).write_text(source)
 
     assert check_import_effects(tmp_path).findings == []
 
 
 def test_a_computed_mode_is_unknowable_so_it_stays_silent(tmp_path):
-    (tmp_path / "m.py").write_text("import os\nMODE = os.environ.get('M', 'r')\nH = open('/tmp/x', MODE)\n")
+    _module(tmp_path).write_text("import os\nMODE = os.environ.get('M', 'r')\nH = open('/tmp/x', MODE)\n")
 
     assert check_import_effects(tmp_path).findings == []
 
@@ -87,20 +93,20 @@ def test_a_computed_mode_is_unknowable_so_it_stays_silent(tmp_path):
 )
 def test_constructors_that_perform_no_io_are_not_flagged(tmp_path, source):
     """Flagging these would make the evidence line untrue."""
-    (tmp_path / "m.py").write_text(source)
+    _module(tmp_path).write_text(source)
 
     assert check_import_effects(tmp_path).findings == []
 
 
 def test_an_unresolvable_receiver_is_never_guessed_about(tmp_path):
     """`get_client().get(...)` says nothing about what `.get` does."""
-    (tmp_path / "m.py").write_text("R = get_client().get('https://x')\nQ = registry['a'].remove('/tmp/y')\n")
+    _module(tmp_path).write_text("R = get_client().get('https://x')\nQ = registry['a'].remove('/tmp/y')\n")
 
     assert check_import_effects(tmp_path).findings == []
 
 
 def test_a_syntactically_broken_module_is_skipped_not_crashed(tmp_path):
-    (tmp_path / "m.py").write_text("import requests\nrequests.get(\n")
+    _module(tmp_path).write_text("import requests\nrequests.get(\n")
 
     assert check_import_effects(tmp_path).findings == []
 
@@ -153,7 +159,7 @@ def test_the_finding_quotes_the_line_it_is_about():
     ],
 )
 def test_each_flagged_call_is_recognised(tmp_path, source, verdict):
-    (tmp_path / "m.py").write_text(source)
+    _module(tmp_path).write_text(source)
     findings = check_import_effects(tmp_path).findings
 
     assert [f.verdict for f in findings] == [verdict]
@@ -168,7 +174,7 @@ def test_each_flagged_call_is_recognised(tmp_path, source, verdict):
     ],
 )
 def test_import_aliases_are_resolved(tmp_path, source):
-    (tmp_path / "m.py").write_text(source)
+    _module(tmp_path).write_text(source)
 
     assert len(check_import_effects(tmp_path).findings) == 1
 
@@ -186,3 +192,58 @@ def test_the_check_runs_by_default():
     from killscore.checks.runner import DEFAULT_CHECKS
 
     assert "import-effects" in DEFAULT_CHECKS
+
+
+# ------------------------------------------- public-repo field test (2026-11-21)
+# All six findings across 11 public repositories were in examples/, scripts/, tools/ and
+# docs/conf.py: files nothing imports. "Every importer performs the request" is false when
+# there is no importer. Two mechanical signals together mark a script: it is not inside a
+# package, and no file in the repository imports it. pytest imports test files and
+# conftest.py whether or not they are in a package, so those are never scripts.
+
+NETWORK_AT_TOP = "from urllib.request import urlopen\nDATA = urlopen('https://example.com').read()\n"
+
+
+def _audit(root):
+    return check_import_effects(root)
+
+
+def test_a_script_nothing_imports_is_not_judged_and_says_so(tmp_path):
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "scripts" / "fetch.py").write_text(NETWORK_AT_TOP)
+    (tmp_path / "app.py").write_text("print('hello')\n")
+
+    result = _audit(tmp_path)
+    assert result.findings == []
+    assert any("not judged" in note and "1 file" in note for note in result.notes)
+
+
+def test_a_module_another_file_imports_is_judged(tmp_path):
+    (tmp_path / "fetch.py").write_text(NETWORK_AT_TOP)
+    (tmp_path / "app.py").write_text("import fetch\n")
+
+    assert [f.file for f in _audit(tmp_path).findings] == ["fetch.py"]
+
+
+def test_a_from_import_of_the_module_counts_as_importing_it(tmp_path):
+    (tmp_path / "lib").mkdir()
+    (tmp_path / "lib" / "fetch.py").write_text(NETWORK_AT_TOP)
+    (tmp_path / "app.py").write_text("from lib import fetch\n")
+
+    assert [f.file for f in _audit(tmp_path).findings] == ["lib/fetch.py"]
+
+
+def test_a_module_inside_a_package_is_judged_even_if_unimported(tmp_path):
+    (tmp_path / "pkg").mkdir()
+    (tmp_path / "pkg" / "__init__.py").write_text("")
+    (tmp_path / "pkg" / "client.py").write_text(NETWORK_AT_TOP)
+
+    assert [f.file for f in _audit(tmp_path).findings] == ["pkg/client.py"]
+
+
+@pytest.mark.parametrize("name", ["conftest.py", "test_live.py", "live_test.py"])
+def test_files_pytest_imports_are_never_scripts(tmp_path, name):
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "tests" / name).write_text(NETWORK_AT_TOP)
+
+    assert [f.file for f in _audit(tmp_path).findings] == [f"tests/{name}"]

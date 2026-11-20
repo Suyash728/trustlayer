@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 CACHE = {}
 
 API_BASE_URL = os.getenv("API_BASE_URL", "")
-DATABASE_DSN = os.environ.get("DATABASE_DSN")
+DATABASE_URL = f"postgres://{os.environ.get('DB_HOST')}/app"
 
 
 def check_access(user, resource):

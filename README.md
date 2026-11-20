@@ -166,9 +166,17 @@ finding carries the source line plus the concrete failure mode.
 | `cors-wildcard-with-credentials` | MEDIUM | `allow_origins=["*"]` with `allow_credentials=True` |
 
 Each detector needs two independent signals. An empty env default is only reported when the
-variable or its target names a URL, host or endpoint, and **only when nothing tests it before
-use**: a getter that is itself an `if` condition, has a non-empty `or` fallback, or whose
-variable is checked later (`if not endpoint: raise`) is silent.
+variable or its target names a URL, host or endpoint (a credential such as `WEBHOOK_SECRET`
+does not count), and **only when nothing tests it before use**: a getter that is itself a
+condition, has a non-empty `or` fallback, or whose variable is checked later
+(`if not endpoint: raise`, `return url is None or ...`, `url != ""`) is silent. An implicit
+`None` default (`os.environ.get("URL")`) is reported only when it is formatted into a URL
+string: `None` is Python's "not set", which a library replaces with its default or rejects,
+while `f"https://{None}/v1"` is a request to the wrong host.
+
+A gate is a function whose name asks a yes/no question about access (`is_`, `has_`, `can_`,
+`check_`, `allow`, `authorize`, ...). `resolve_auth_mode()` falling through to `True` picks a
+mode; it does not grant anything, so it is not judged.
 
 An empty handler with an explanatory comment **still fires**. `except ValueError: pass  #
 ignore malformed input` is exactly what a model writes when it cuts a corner, so a comment is
@@ -187,6 +195,11 @@ The check is its silence. **Nesting of any kind means nothing is reported**: a c
 a `subprocess` call sits behind a feature flag or under `if TYPE_CHECKING`. **Reads are not
 effects** either: `open(path)`, `Path.read_text()` and `json.load(open(...))` never report.
 Deleting data on import is HIGH; being slow or spawning a process is MEDIUM.
+
+**A script has no importer to affect.** A file outside any package (no `__init__.py` beside
+it) that no file in the repository imports, such as `examples/`, `scripts/` or
+`docs/conf.py`, is not judged, and the report says how many were skipped. pytest imports
+`conftest.py`, `test_*.py` and `*_test.py` on its own, so those are always judged.
 
 ### `test-tautology`
 
@@ -208,6 +221,10 @@ is decided from the AST, and pytest itself confirms every one of them *passes*:
 were generated from. killscore compares those with the manifest as it is now (the same
 comparison `uv sync --locked`, `npm ci` and `pnpm install --frozen-lockfile` make before
 refusing to install) and checks each `uv.lock` version against its PEP 440 specifier.
+
+A pnpm v6 lockfile for a single project records its specs at the top level rather than under
+`importers`, and both shapes are read. When uv locks one package at several versions (forked
+resolutions for conflicting groups), a spec is satisfied if any locked version satisfies it.
 
 npm semver ranges are never evaluated: comparing what the lockfile recorded is exact, and
 re-implementing range arithmetic is where a false accusation would come from. Requirements
@@ -277,7 +294,9 @@ nonexistent one look identical without credentials.
 ### `composed`
 
 Runs ruff, semgrep, vulture, eslint and knip when they are installed and reports their
-findings, deduplicated against killscore's own. A missing linter is a skip with a reason,
+findings, deduplicated against killscore's own. Security rules are MEDIUM (ruff's
+flake8-bandit `S` + digits, semgrep `ERROR`, eslint errors); everything else, including
+ruff's `SIM` style rules, is LOW. A missing linter is a skip with a reason,
 never an audit failure. semgrep runs only with a local config (`.semgrep.yml`), because
 `--config=auto` needs the network and sends metrics.
 
@@ -315,7 +334,7 @@ Additive, capped at 100, higher is riskier. Every point is attached to a stated 
 | releases | exactly one release / three or fewer | 15 / 8 |
 | maintainers | one account or none | 10 |
 | downloads | under 1 000 / 10 000 in the last month | 20 / 10 |
-| typo-adjacency | 1 / 2 edits from a top-2000 package | 25 / 12 |
+| typo-adjacency | 1 / 2 edits from a top-2000 package, unless the package itself has 1M+ downloads a month | 25 / 12 |
 | yanked | latest release is yanked | 10 |
 | deprecated (npm) | latest version carries a deprecation message | 10 |
 | vulnerabilities | the index carries advisories | 5 |

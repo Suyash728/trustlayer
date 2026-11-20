@@ -31,7 +31,18 @@ CHECK_NAME = "fail-open"
 NODE_TIMEOUT_SECONDS = 120
 
 URLISH_RE = re.compile(r"url|uri|endpoint|host|dsn|conn|base|webhook|origin", re.IGNORECASE)
+# A name that holds a credential is not a URL, however it is prefixed: WEBHOOK_SECRET and
+# WEBHOOK_SIGNING_KEY matched "webhook" and were reported as URLs on two real SDKs.
+CREDENTIAL_PARTS = frozenset(
+    {"secret", "key", "token", "password", "passwd", "signing", "signature", "credential", "credentials"}
+)
 GATE_NAME_RE = re.compile(r"auth|tier|gate|permission|access|allow", re.IGNORECASE)
+# A gate answers a yes/no question about a caller, so its name starts with one. Found on
+# anthropic-sdk-python: `resolve_auth_mode()` returns True to mean "use SigV4", not "allow".
+QUESTION_WORDS = frozenset(
+    {"is", "has", "can", "check", "may", "should", "verify", "validate", "authorize",
+     "authorise", "allow", "allowed", "permit", "require", "ensure"}
+)
 ENV_GETTERS = ("getenv", "environ.get")
 
 FAILURE_MODES = {
@@ -132,14 +143,21 @@ def _env_default_detections(tree: ast.AST) -> list[_Detection]:
     for node in ast.walk(tree):
         if not isinstance(node, ast.Call) or not _is_env_getter(node.func):
             continue
-        if not _has_degrading_default(node):
+        default = _degrading_default(node)
+        if default is None:
             continue
+        if default == "none" and _falls_back_to_empty(node, parents):
+            default = "empty"  # `getenv("URL") or ""` is an empty default spelled differently
 
         variable = _first_string_arg(node)
         targets = _enclosing_assignment_names(node, parents)
         in_url_fstring = _inside_url_fstring(node, parents)
 
-        signals = [name for name in ([variable] + targets) if name and URLISH_RE.search(name)]
+        if default == "none" and not in_url_fstring:
+            # None is Python's "not set": a library substitutes its default or raises. It only
+            # degrades a URL once it is formatted into one (f"https://{None}/v1").
+            continue
+        signals = [name for name in ([variable] + targets) if name and _names_a_url(name)]
         if not signals and not in_url_fstring:
             continue  # only one signal: not enough to call it a defect
         if _is_guarded(node, targets, parents, tree):
@@ -173,8 +191,8 @@ def _call_name(func: ast.expr) -> str:
     return ""
 
 
-def _has_degrading_default(call: ast.Call) -> bool:
-    """True when the fallback is an empty string or None, explicit or implicit."""
+def _degrading_default(call: ast.Call) -> str | None:
+    """`"empty"` for an explicit `""` fallback, `"none"` for None (explicit or implicit)."""
     default: ast.expr | None = None
     if len(call.args) >= 2:
         default = call.args[1]
@@ -183,8 +201,28 @@ def _has_degrading_default(call: ast.Call) -> bool:
             default = keyword.value
 
     if default is None:
-        return True  # implicit None
-    return isinstance(default, ast.Constant) and default.value in ("", None)
+        return "none"
+    if isinstance(default, ast.Constant) and default.value == "":
+        return "empty"
+    if isinstance(default, ast.Constant) and default.value is None:
+        return "none"
+    return None
+
+
+def _falls_back_to_empty(call: ast.Call, parents: dict[int, ast.AST]) -> bool:
+    parent = parents.get(id(call))
+    if not (isinstance(parent, ast.BoolOp) and isinstance(parent.op, ast.Or)):
+        return False
+    later = parent.values[parent.values.index(call) + 1 :]
+    return bool(later) and all(_is_empty_constant(value) for value in later)
+
+
+def _names_a_url(name: str) -> bool:
+    """URL-ish, and not a credential: `WEBHOOK_URL` is a URL, `WEBHOOK_SECRET` is not."""
+    if not URLISH_RE.search(name):
+        return False
+    snake = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", name).lower()
+    return not any(part in CREDENTIAL_PARTS for part in re.split(r"[^a-z0-9]+", snake))
 
 
 def _first_string_arg(call: ast.Call) -> str | None:
@@ -242,12 +280,33 @@ def _is_guarded(
             scope = walker
             break
     assigned_at = getattr(statement, "end_lineno", None) or call.lineno
+    names = set(targets)
     for node in ast.walk(scope):
-        if not isinstance(node, _TEST_OWNERS) or node.lineno < assigned_at:
+        if getattr(node, "lineno", 0) < assigned_at:
             continue
-        mentioned = {n.id for n in ast.walk(node.test) if isinstance(n, ast.Name)}
-        if mentioned.intersection(targets):
+        if isinstance(node, _TEST_OWNERS):
+            if {n.id for n in ast.walk(node.test) if isinstance(n, ast.Name)} & names:
+                return True
+        elif _tests_name(node, names):
             return True
+    return False
+
+
+def _tests_name(node: ast.AST, names: set[str]) -> bool:
+    """A test of the value outside an `if`: `url is None or not url.strip()`, `url != ""`.
+
+    Found on two real SDKs, where the check was a `return` expression or an assignment.
+    """
+    def is_target(expr: ast.expr) -> bool:
+        return isinstance(expr, ast.Name) and expr.id in names
+
+    if isinstance(node, ast.Compare):
+        operands = [node.left, *node.comparators]
+        return any(is_target(o) for o in operands) and any(_is_empty_constant(o) for o in operands)
+    if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
+        return is_target(node.operand)
+    if isinstance(node, ast.BoolOp):
+        return any(is_target(value) for value in node.values[:-1])
     return False
 
 
@@ -279,7 +338,7 @@ def _fail_open_gate_detections(tree: ast.AST) -> list[_Detection]:
     for node in ast.walk(tree):
         if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             continue
-        if not GATE_NAME_RE.search(node.name):
+        if not GATE_NAME_RE.search(node.name) or not _reads_as_question(node.name):
             continue
         # Requires real branching: a function that always returns True is not "failing open".
         if not any(isinstance(statement, ast.If) for statement in node.body):
@@ -296,6 +355,12 @@ def _fail_open_gate_detections(tree: ast.AST) -> list[_Detection]:
                 )
             )
     return detections
+
+
+def _reads_as_question(name: str) -> bool:
+    words = re.split(r"[^a-z0-9]+", re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", name).lower())
+    first = next((word for word in words if word), "")
+    return first in QUESTION_WORDS
 
 
 def _is_permissive(value: ast.expr | None) -> bool:

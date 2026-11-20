@@ -62,7 +62,7 @@ the misunderstanding into the suite and everything downstream would inherit it.
 uv sync                                        # install; there is no requirements.txt
 npm install --prefix killscore/checks/node    # optional: TS checks (or `killscore setup-node`)
 uv run ruff check .                            # lint — must be clean
-uv run pytest -q                               # ~625 tests, offline, single root config
+uv run pytest -q                               # ~665 tests, offline, single root config
 uv run killscore audit <path> --all
 uv run killscore audit <path> --format sarif --fail-on high --baseline known.json
 uv run killscore mcp                          # stdio MCP server for coding agents
@@ -131,6 +131,17 @@ uv run killscore tui                          # terminal UI; a=audit, h=harden, 
   resolver treats a relative import naming an existing *file* (`./globals.css`) as resolved.
   `tests/test_env_default_guards.py`, `tests/test_ts_asset_imports.py` and the alias tests in
   `tests/test_api_resolution_guards.py` pin both silence and firing.
+- **Public-repo field test (2026-11-21; 11 repos incl. openai-python, anthropic-sdk-python,
+  rich, zod, taxonomy).** Decisions, each pinned by silence *and* firing tests:
+  implicit-`None` env defaults report only inside a URL f-string (12 false HIGHs on the two
+  SDKs); `CREDENTIAL_PARTS` names are never URLs; `_tests_name` counts `is None`, `!= ""`,
+  `not x`, `x or ...` anywhere later in scope as a guard; gates need a `QUESTION_WORDS` first
+  word; ruff security is `S\d`, not prefix `S` (`SIM`/`SLF` are style); typo-adjacency
+  scores 0 at `ESTABLISHED_MONTHLY_DOWNLOADS` (1M; real beautifulsoup is ~155k and stays
+  adjacent); `import-effects` skips scripts (no `__init__.py` **and** never imported, never
+  pytest-collected files) with a note; uv.lock keeps every locked version per name; pnpm v6
+  single-project lockfiles are read from the top level. The script rule over-approximates
+  "imported" by name, which keeps findings, never hides them.
 - **Empty handlers with a comment still fire `swallowed-exception` — by decision.** Models
   write `except ValueError: pass  # ignore malformed input` when cutting corners, so a comment
   is not evidence of intent. Deliberate cases use `# killscore: ignore[fail-open]`.

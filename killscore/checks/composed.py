@@ -56,7 +56,9 @@ EXTERNAL_RULE_BUCKETS = {
     "no-empty": "swallowed-exception",
     "no-unsafe-finally": "swallowed-exception",
 }
-RUFF_SECURITY_PREFIX = "S"
+# flake8-bandit codes are `S` and digits (S102, S603). `SIM*` (flake8-simplify) and `SLF*`
+# (private access) also start with "S", and a prefix test reported style as security.
+RUFF_SECURITY_CODE = re.compile(r"S\d")
 
 
 @dataclass(frozen=True)
@@ -175,7 +177,7 @@ def _parse_ruff(stdout: str, root: Path) -> list[Finding]:
     findings = []
     for item in json.loads(stdout):
         code = item.get("code") or "ruff"
-        severity = Severity.MEDIUM if code.startswith(RUFF_SECURITY_PREFIX) else Severity.LOW
+        severity = Severity.MEDIUM if RUFF_SECURITY_CODE.match(code) else Severity.LOW
         findings.append(
             Finding(
                 severity=severity,

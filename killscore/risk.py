@@ -60,6 +60,10 @@ LOW_THRESHOLD = 20
 ADJACENT_DISTANCE_1_POINTS = 25
 ADJACENT_DISTANCE_2_POINTS = 12
 MAX_TYPO_DISTANCE = 2
+# A squat lives on mistakes, so it is obscure by construction. A package this many people
+# install every month is not one, whatever its name is near: prisma (112M) sat two edits
+# from prismjs and read as "unfamiliar". Real beautifulsoup (~155k) stays adjacent.
+ESTABLISHED_MONTHLY_DOWNLOADS = 1_000_000
 
 
 @dataclass(frozen=True)
@@ -317,7 +321,7 @@ def score_package(
         _download_factor(facts),
     ]
     neighbour = nearest_popular(name, corpus)
-    factors.append(_adjacency_factor(neighbour, corpus))
+    factors.append(_adjacency_factor(neighbour, corpus, facts))
     factors.extend(_hygiene_factors(facts))
 
     score = min(sum(factor.points for factor in factors), MAX_SCORE)
@@ -454,15 +458,19 @@ def _download_factor(facts: PackageFacts) -> Factor:
     return Factor("downloads", points, f"{count:,} downloads in the last month")
 
 
-def _adjacency_factor(neighbour: Neighbour | None, corpus: Corpus) -> Factor:
+def _adjacency_factor(neighbour: Neighbour | None, corpus: Corpus, facts: PackageFacts) -> Factor:
     if neighbour is None:
         return Factor("typo-adjacency", 0, f"no package within {MAX_TYPO_DISTANCE} edits in the {corpus.provenance}")
+    near = f"{neighbour.distance} edit(s) from '{neighbour.name}' ({neighbour.downloads:,} downloads)"
+    own = facts.downloads_last_month
+    if own is not None and own >= ESTABLISHED_MONTHLY_DOWNLOADS:
+        return Factor(
+            "typo-adjacency",
+            0,
+            f"{near}, but {own:,} downloads in the last month is too established to be a squat",
+        )
     points = ADJACENT_DISTANCE_1_POINTS if neighbour.distance == 1 else ADJACENT_DISTANCE_2_POINTS
-    return Factor(
-        "typo-adjacency",
-        points,
-        f"{neighbour.distance} edit(s) from '{neighbour.name}' ({neighbour.downloads:,} downloads)",
-    )
+    return Factor("typo-adjacency", points, near)
 
 
 def _hygiene_factors(facts: PackageFacts) -> list[Factor]:

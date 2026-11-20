@@ -5,6 +5,7 @@ real registry and skips when it is unreachable. Nothing else is stubbed.
 """
 
 from datetime import date
+import json
 from pathlib import Path
 import re
 import sys
@@ -415,3 +416,24 @@ def test_a_toml_config_that_names_a_retired_model_is_still_flagged(tmp_path):
     result = check_stale_models(tmp_path, today=TODAY)
 
     assert [f.claim for f in result.findings] == ["llama-3.3-70b-versatile"]  # killscore: ignore[stale-models]
+
+
+@pytest.mark.parametrize(
+    ("code", "severity"),
+    [
+        ("S102", Severity.MEDIUM),    # flake8-bandit: exec
+        ("S603", Severity.MEDIUM),    # flake8-bandit: subprocess without shell
+        ("SIM117", Severity.LOW),     # flake8-simplify: a style suggestion, not security
+        ("SIM102", Severity.LOW),
+        ("SLF001", Severity.LOW),     # private member access
+        ("E501", Severity.LOW),
+    ],
+)
+def test_only_bandit_codes_are_security(tmp_path, code, severity):
+    """Found on Textualize/rich: 17 `SIM*` style rules reported MEDIUM because "SIM" starts with "S"."""
+    stdout = json.dumps([{
+        "code": code, "name": "rule", "message": "m", "url": None,
+        "filename": str(tmp_path / "a.py"), "location": {"row": 3, "column": 1},
+    }])
+    [finding] = _parse_ruff(stdout, tmp_path)
+    assert finding.severity is severity

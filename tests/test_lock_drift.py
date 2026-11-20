@@ -223,3 +223,92 @@ def test_formats_without_recorded_specs_say_so(tmp_path, lock):
     result = check_lock_drift(tmp_path)
 
     assert result.findings == []
+
+
+# ------------------------------------------- public-repo field test (2026-11-21)
+
+
+def test_a_single_project_pnpm_v6_lock_records_specs_at_the_top_level(tmp_path):
+    """Found on shadcn-ui/taxonomy: no `importers:` key, so every dependency read as missing."""
+    (tmp_path / "package.json").write_text(json.dumps({
+        "name": "app",
+        "dependencies": {"next": "^13.3.2", "zod": "^3.21.4"},
+        "devDependencies": {"typescript": "4.7.4"},
+    }))
+    (tmp_path / "pnpm-lock.yaml").write_text(textwrap.dedent("""\
+        lockfileVersion: '6.0'
+
+        dependencies:
+          next:
+            specifier: ^13.3.2
+            version: 13.3.2
+          zod:
+            specifier: ^3.21.4
+            version: 3.21.4
+
+        devDependencies:
+          typescript:
+            specifier: 4.7.4
+            version: 4.7.4
+    """))
+    assert check_lock_drift(tmp_path).findings == []
+
+    manifest = json.loads((tmp_path / "package.json").read_text())
+    manifest["dependencies"]["zod"] = "^3.22.0"
+    (tmp_path / "package.json").write_text(json.dumps(manifest))
+    assert verdicts(check_lock_drift(tmp_path)) == [("spec-drift", "zod@^3.22.0")]
+
+
+CONFLICTING_PYPROJECT = """
+[project]
+name = "sdk"
+version = "1.0.0"
+dependencies = ["pydantic>=1.10.13,<3"]
+
+[dependency-groups]
+pydantic-v1 = ["pydantic>=1.10.26,<2"]
+pydantic-v2 = ["pydantic>=2,<3"]
+
+[tool.uv]
+conflicts = [[{ group = "pydantic-v1" }, { group = "pydantic-v2" }]]
+"""
+
+CONFLICTING_LOCK = """
+version = 1
+requires-python = ">=3.9"
+
+[[package]]
+name = "pydantic"
+version = "1.10.26"
+source = { registry = "https://pypi.org/simple" }
+
+[[package]]
+name = "pydantic"
+version = "2.12.5"
+source = { registry = "https://pypi.org/simple" }
+
+[[package]]
+name = "sdk"
+version = "1.0.0"
+source = { editable = "." }
+
+[package.metadata]
+requires-dist = [{ name = "pydantic", specifier = ">=1.10.13,<3" }]
+
+[package.metadata.requires-dev]
+pydantic-v1 = [{ name = "pydantic", specifier = ">=1.10.26,<2" }]
+pydantic-v2 = [{ name = "pydantic", specifier = ">=2,<3" }]
+"""
+
+
+def test_a_package_locked_twice_for_conflicting_groups_is_not_a_violation(tmp_path):
+    """Found on openai-python and anthropic-sdk-python: uv locks pydantic 1.x *and* 2.x."""
+    assert check_lock_drift(write_uv(tmp_path, CONFLICTING_PYPROJECT, CONFLICTING_LOCK)).findings == []
+
+
+def test_a_spec_no_locked_version_satisfies_still_fires(tmp_path):
+    pyproject = CONFLICTING_PYPROJECT.replace('pydantic-v1 = ["pydantic>=1.10.26,<2"]', 'pydantic-v1 = ["pydantic>=1.11,<2"]')
+    lock = CONFLICTING_LOCK.replace('pydantic-v1 = [{ name = "pydantic", specifier = ">=1.10.26,<2" }]',
+                                    'pydantic-v1 = [{ name = "pydantic", specifier = ">=1.11,<2" }]')
+    found = verdicts(check_lock_drift(write_uv(tmp_path, pyproject, lock)))
+    assert found == [("locked-version-violates-spec", "pydantic<2,>=1.11")]
